@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 
     
     private bool holdsDiamond = false;
-    private byte teamNumber = null;
+    private byte teamNumber = 0;
     private bool isCaptured = false;
     // TODO: bubble implementation
 
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
         return true;
     }
 
-    public bool capture()
+    public void capture()
     {
         // TODO: change appearance to captured player
         isCaptured = true;
