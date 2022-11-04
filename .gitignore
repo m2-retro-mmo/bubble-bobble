@@ -86,3 +86,5 @@ crashlytics-build.properties
 /OVRAssetBundles/*
 
 /[Aa]ssets/MRTK/**
+
+.fake
