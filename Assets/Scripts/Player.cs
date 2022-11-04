@@ -9,22 +9,21 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
-    // speed 
+
+    // movement speed 
     public static float baseSpeed = 3f;
     public float moveSpeed = 3f;
     public float collisionOffset = 0.1f;
 
-
-    private bool holdsDiamond = false;
+    // logic
+    private bool holdsDiamond = true;
     private byte teamNumber = 0;
     private bool isCaptured = false;
     // TODO: bubble implementation
 
-
     // bubble settings
     private byte maxBubbleCount = 3;
     private byte bubbleCount = 3;
-
     public float itemDuration = 0;
 
     /**
@@ -39,6 +38,12 @@ public class Player : MonoBehaviour
         return true;
     }
 
+    private void deliverDiamond()
+    {
+        // TODO: change appearance of dragon here
+        holdsDiamond = false;
+    }
+
     public void capture()
     {
         // TODO: change appearance to captured player
@@ -47,6 +52,7 @@ public class Player : MonoBehaviour
 
     public void uncapture()
     {
+        // TODO: change appearance to uncaptured player
         isCaptured = false;
     }
 
@@ -126,5 +132,42 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+
+    public void ApplyDamage(float test)
+    {
+        Debug.Log(test);
+    }
+
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        // check collision of Player with the Hort
+        // TODO: instea of compare name we should use tags here!
+        switch (col.gameObject.name)
+        {
+            case "Hort":
+                // TODO: check if hort belongs to players Team 
+                Hort hort = col.GetComponent("Hort") as Hort;
+                if (hort != null)
+                {
+                    // put diamond into hort
+                    if (holdsDiamond)
+                    {
+                        hort.AddDiamond();
+                        deliverDiamond();
+                    }
+                }
+                break;
+            case "Item":
+                // TODO: implement Item collision
+                break;
+
+            case "Bubble":
+                // TODO: Bubble collision goes here
+                break;
+
+            default:
+                break;
+        }
     }
 }
