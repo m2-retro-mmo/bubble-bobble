@@ -11,13 +11,14 @@ public class CameraFollow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 newPos = new Vector3(target.position.x, target.position.y, -10f);
-        transform.position = Vector3.Slerp(transform.position, newPos, followSpeed*Time.deltaTime); 
+        Vector3 newPos = new Vector3(target.position.x, target.position.y, -10);
+        // transform.position = Vector3.Slerp(transform.position, newPos, followSpeed * Time.deltaTime);
+        transform.position = newPos;
     }
 }
