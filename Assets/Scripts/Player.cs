@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     // direction indicator
     public Vector2 mousePosWorld;
     public Camera cam;
+    public Vector3 mousePosScreen = new Vector3();
 
     // logic
     private bool holdsDiamond = true;
@@ -109,7 +110,6 @@ public class Player : MonoBehaviour
     private void LookAtMouse()
     {
         // transform mouse screen coordinates into world coordinates
-        Vector3 mousePosScreen = new Vector3();
         mousePosScreen.x = Input.mousePosition.x;
         mousePosScreen.y = Input.mousePosition.y;
         mousePosScreen.z = cam.transform.position.z;
@@ -120,19 +120,20 @@ public class Player : MonoBehaviour
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        directionIndicator.transform.position = rb.position - lookDir.normalized * 3f;
+        // Vector2 newPos = rb.position - lookDir.normalized * 3f;
+        // directionIndicator.transform.position = Vector3.Slerp(directionIndicator.transform.position, newPos, Time.deltaTime * 30);
+        directionIndicator.transform.position = (Vector2)rb.position - lookDir.normalized * 3f;
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        moveInput.x = Input.GetAxis("Horizontal");
-        moveInput.y = Input.GetAxis("Vertical");
-        LookAtMouse();
     }
     private void FixedUpdate()
     {
+        moveInput.x = Input.GetAxis("Horizontal");
+        moveInput.y = Input.GetAxis("Vertical");
         if (!isCaptured)
         {
             bool success = MovePlayer(moveInput);
@@ -147,6 +148,11 @@ public class Player : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void LateUpdate()
+    {
+        LookAtMouse();
     }
 
     /**
