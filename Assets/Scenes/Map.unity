@@ -190,7 +190,7 @@ PrefabInstance:
         type: 3}
       propertyPath: bubbleCount_text
       value: 
-      objectReference: {fileID: 1879108566}
+      objectReference: {fileID: 1562117721}
     - target: {fileID: 7145253156527775165, guid: 2976d6f155c9715e88592944d2614b65,
         type: 3}
       propertyPath: m_Name
@@ -359,7 +359,8 @@ Transform:
   m_LocalPosition: {x: -0.053876877, y: 1.3546047, z: 0}
   m_LocalScale: {x: 1, y: 0.9159, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1471824574}
   m_Father: {fileID: 1307862444}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -480,7 +481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &740372234
 MonoBehaviour:
   m_ObjectHideFlags: 0
