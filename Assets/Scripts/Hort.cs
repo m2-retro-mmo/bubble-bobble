@@ -8,11 +8,19 @@ public class Hort : MonoBehaviour
     public int diamonds = 0;
     public byte team = 0;
 
-    public TextMeshProUGUI hortPointCounter;
+    // public TextMeshProUGUI hortPointCounter;
+
+    public GameObject plusOnePrefab;
 
     public void AddDiamond()
     {
         diamonds++;
-        hortPointCounter.text = diamonds.ToString();
+        SpawnPlusOne();
+        // hortPointCounter.text = diamonds.ToString();
+    }
+
+    private void SpawnPlusOne()
+    {
+        GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position, gameObject.transform.rotation);
     }
 }
