@@ -191,9 +191,9 @@ public class Player : MonoBehaviour
     {
         // check collision of Player with the Hort
         // TODO: instead of compare name we should use tags here!
-        switch (col.gameObject.name)
+        switch (col.gameObject.tag)
         {
-            case "Hort":
+            case "hort":
                 // TODO: check if hort belongs to players Team 
                 Hort hort = col.GetComponent("Hort") as Hort;
                 if (hort != null)
@@ -206,11 +206,11 @@ public class Player : MonoBehaviour
                     }
                 }
                 break;
-            case "Item":
+            case "item":
                 // TODO: implement Item collision
                 break;
 
-            case "Bubble":
+            case "bubble":
                 // TODO: Bubble collision goes here
                 break;
 
