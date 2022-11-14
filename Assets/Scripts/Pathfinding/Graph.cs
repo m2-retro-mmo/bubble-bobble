@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Graph
+public class Graph<TGraphObject>
 {
     private int width;
     private int height;
     private Tilemap tilemap;
     private BoundsInt bounds;
-    private int[,] graphArray;
-    private TextMesh[,] debugTextArray;
+    private TGraphObject[,] graphArray;
 
-    public Graph(Tilemap tilemap, bool drawGraph)
+    public Graph(Tilemap tilemap, bool drawGraph, Func<Graph<TGraphObject>, int, int, TGraphObject> createGraphObject)
     {
         this.tilemap = tilemap;
 
@@ -27,26 +25,28 @@ public class Graph
 
         GameObject textParent = new GameObject("TextParent");
 
-        graphArray = new int[width, height];
-        debugTextArray = new TextMesh[width, height];
+        graphArray = new TGraphObject[width, height];
+        string[,] debugTextArray = new string[width, height];
 
         // loop through the tiles
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                graphArray[x, y] = createGraphObject(this, x, y);
                 // get the tile at the current position
                 TileBase tile = tiles[x + y * width];
                 // if the tile is not null
-                if (tile != null)
-                {
-                    // set the value of the tilemap array at the current position to 1
-                    graphArray[x, y] = 1;
-                    Debug.Log("Tilemap: " + x + ", " + y);
-                }
+                //if (tile != null)
+                //{
+                //    // set the value of the tilemap array at the current position to 1
+                //    graphArray[x, y] = createGraphObject(this, x, y);
+                //    Debug.Log("Tilemap: " + x + ", " + y);
+                //}
                 if (drawGraph)
                 {
-                    debugTextArray[x, y] =  UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 10, Color.white, TextAnchor.MiddleCenter);
+                    UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
+                    //debugTextArray[x, y] = "1";
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                 }
@@ -72,7 +72,7 @@ public class Graph
         return position;
     }
 
-    public int GetValue(int x, int y)
+    public TGraphObject GetValue(int x, int y)
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
@@ -80,27 +80,26 @@ public class Graph
         }
         else
         {
-            return 0;
+            return default(TGraphObject);
         }
     }
 
-    public int GetValue(Vector3 worldPosition)
+    public TGraphObject GetValue(Vector3 worldPosition)
     {
         Vector2Int pos = GetXY(worldPosition);
         return GetValue(pos.x, pos.y);
     }
 
-    public void SetValue(int x, int y, int value)
+    public void SetValue(int x, int y, TGraphObject value)
     {
         if (0 <= x && x < width && 
             0 <= y && y < height)
         {
             graphArray[x, y] = value;
-            debugTextArray[x, y].text = graphArray[x, y].ToString();
         }
     }
 
-    public void SetValue(Vector3 worldPosition, int value)
+    public void SetValue(Vector3 worldPosition, TGraphObject value)
     {
         Vector2Int pos = GetXY(worldPosition);
         SetValue(pos.x, pos.y, value);

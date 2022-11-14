@@ -21,6 +21,7 @@ public class UtilsClass
         Transform transform = gameObject.transform;
         transform.SetParent(parent, false);
         transform.localPosition = localPosition;
+        transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
         TextMesh textMesh = gameObject.GetComponent<TextMesh>();
         textMesh.anchor = textAnchor;
         textMesh.alignment = textAlignment;
