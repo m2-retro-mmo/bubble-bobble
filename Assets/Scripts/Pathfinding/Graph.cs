@@ -2,15 +2,15 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Graph<TGraphObject>
+public class Graph
 {
     private int width;
     private int height;
     private Tilemap tilemap;
     private BoundsInt bounds;
-    private TGraphObject[,] graphArray;
+    private GraphNode[,] graphArray;
 
-    public Graph(Tilemap tilemap, bool drawGraph, Func<Graph<TGraphObject>, int, int, TGraphObject> createGraphObject)
+    public Graph(Tilemap tilemap, bool drawGraph)
     {
         this.tilemap = tilemap;
 
@@ -25,24 +25,20 @@ public class Graph<TGraphObject>
 
         GameObject textParent = new GameObject("TextParent");
 
-        graphArray = new TGraphObject[width, height];
-        string[,] debugTextArray = new string[width, height];
+        graphArray = new GraphNode[width, height];
+        TextMesh[,] debugTextArray = new TextMesh[width, height];
 
         // loop through the tiles
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                graphArray[x, y] = createGraphObject(this, x, y);
-                // get the tile at the current position
                 TileBase tile = tiles[x + y * width];
-                // if the tile is not null
-                //if (tile != null)
-                //{
-                //    // set the value of the tilemap array at the current position to 1
-                //    graphArray[x, y] = createGraphObject(this, x, y);
-                //    Debug.Log("Tilemap: " + x + ", " + y);
-                //}
+                GraphNode[] neighbours = new GraphNode[4];
+                neighbours = GetNeighbourList(new GraphNode(x, y));
+                GraphNode node = new GraphNode(x, y, (tile != null), neighbours);
+                graphArray[x, y] = node;
+                
                 if (drawGraph)
                 {
                     UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
@@ -72,7 +68,7 @@ public class Graph<TGraphObject>
         return position;
     }
 
-    public TGraphObject GetValue(int x, int y)
+    public GraphNode GetValue(int x, int y)
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
@@ -80,17 +76,17 @@ public class Graph<TGraphObject>
         }
         else
         {
-            return default(TGraphObject);
+            return default(GraphNode);
         }
     }
 
-    public TGraphObject GetValue(Vector3 worldPosition)
+    public GraphNode GetValue(Vector3 worldPosition)
     {
         Vector2Int pos = GetXY(worldPosition);
         return GetValue(pos.x, pos.y);
     }
 
-    public void SetValue(int x, int y, TGraphObject value)
+    public void SetValue(int x, int y, GraphNode value)
     {
         if (0 <= x && x < width && 
             0 <= y && y < height)
@@ -99,9 +95,26 @@ public class Graph<TGraphObject>
         }
     }
 
-    public void SetValue(Vector3 worldPosition, TGraphObject value)
+    public void SetValue(Vector3 worldPosition, GraphNode value)
     {
         Vector2Int pos = GetXY(worldPosition);
         SetValue(pos.x, pos.y, value);
+    }
+
+    public GraphNode GetNode(Vector3 worldPosition)
+    {
+        Vector2Int pos = GetXY(worldPosition);
+        return GetValue(pos.x, pos.y);
+    }
+
+    public GraphNode[] GetNeighbourList(GraphNode node)
+    {
+        Vector2Int pos = new Vector2Int(node.getX(), node.getY());
+        GraphNode[] neighbours = new GraphNode[4];
+        neighbours[0] = GetValue(pos.x, pos.y + 1);
+        neighbours[1] = GetValue(pos.x + 1, pos.y);
+        neighbours[2] = GetValue(pos.x, pos.y - 1);
+        neighbours[3] = GetValue(pos.x - 1, pos.y);
+        return neighbours;
     }
 }
