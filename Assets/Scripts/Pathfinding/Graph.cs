@@ -2,14 +2,29 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// The graph class that holds the GraphNodes.
+/// </summary>
 public class Graph
 {
-    private int width;
-    private int height;
+    // the size of the graph consisting of the number of nodes in the x and y direction
+    private int width, height;
+    
+    // the tilemap that is used to create the graph
     private Tilemap tilemap;
+    // the bounds of the tilemap
     private BoundsInt bounds;
+
+    // the 2D array of GraphNodes
     private GraphNode[,] graphArray;
 
+    private TextMesh[,] debugTextArray;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Graph"/> class.
+    /// </summary>
+    /// <param name="tilemap">The tilemap that is used to create the graph.</param>
+    /// <param name="drawGraph">If true, draw graph.</param>
     public Graph(Tilemap tilemap, bool drawGraph)
     {
         this.tilemap = tilemap;
@@ -25,24 +40,29 @@ public class Graph
 
         GameObject textParent = new GameObject("TextParent");
 
+        // create the 2D array for the GraphNodes with the width and height of the tilemap
         graphArray = new GraphNode[width, height];
-        TextMesh[,] debugTextArray = new TextMesh[width, height];
+        debugTextArray = new TextMesh[width, height];
 
-        // loop through the tiles
+        // loop through the tiles in the tilemap and create a GraphNode for each tile
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                // get the tile at the current position
                 TileBase tile = tiles[x + y * width];
-                GraphNode[] neighbours = new GraphNode[4];
-                neighbours = GetNeighbourList(new GraphNode(x, y));
+                // get the neihbors of the current tile
+                GraphNode[] neighbours = GetNeighbourList(new GraphNode(x, y));
+                // create a new GraphNode with the current position and the neighbors 
+                // and set the isObstacle node to true if the tile is not null
                 GraphNode node = new GraphNode(x, y, (tile != null), neighbours);
+                // add the GraphNode to the 2D array
                 graphArray[x, y] = node;
                 
                 if (drawGraph)
                 {
-                    UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
-                    //debugTextArray[x, y] = "1";
+                    // create a new TextMesh object with the current position
+                    debugTextArray[x, y] = UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                 }
@@ -55,20 +75,38 @@ public class Graph
         }
     }
 
+    /// <summary>
+    /// Gets the world position of the GraphNode at the given position.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <returns>A Vector3.</returns>
     private Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x, y) + bounds.min + tilemap.transform.position;
     }
 
+    /// <summary>
+    /// Gets the position in the graph of the given world position.
+    /// </summary>
+    /// <param name="worldPosition">The world position.</param>
+    /// <returns>A Vector2Int.</returns>
     private Vector2Int GetXY(Vector3 worldPosition)
     {
+        // calculates the rounded position of the given world position
         Vector2Int position = new Vector2Int(
             Mathf.FloorToInt(worldPosition.x - tilemap.transform.position.x - bounds.min.x), 
             Mathf.FloorToInt(worldPosition.y - tilemap.transform.position.y - bounds.min.y));
         return position;
     }
 
-    public GraphNode GetValue(int x, int y)
+    /// <summary>
+    /// Gets the GraphNode at the given position in the graph.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <returns>A GraphNode.</returns>
+    public GraphNode GetNode(int x, int y)
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
@@ -79,42 +117,60 @@ public class Graph
             return default(GraphNode);
         }
     }
-
-    public GraphNode GetValue(Vector3 worldPosition)
+    
+    /// <summary>
+    /// Gets the GraphNode at the given world position.
+    /// </summary>
+    /// <param name="worldPosition">The world position.</param>
+    /// <returns>A GraphNode.</returns>
+    public GraphNode GetNode(Vector3 worldPosition)
     {
+        // get the position in the graph of the given world position
         Vector2Int pos = GetXY(worldPosition);
-        return GetValue(pos.x, pos.y);
+        return GetNode(pos.x, pos.y);
     }
 
-    public void SetValue(int x, int y, GraphNode value)
+    /// <summary>
+    /// Sets the GraphNode at the given position in the graph.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="node">The GraphNode.</param>
+    public void SetNode(int x, int y, GraphNode node)
     {
         if (0 <= x && x < width && 
             0 <= y && y < height)
         {
-            graphArray[x, y] = value;
+            graphArray[x, y] = node;
         }
     }
 
-    public void SetValue(Vector3 worldPosition, GraphNode value)
+    /// <summary>
+    /// Sets the GraphNode at the given world position. 
+    /// </summary>
+    /// <param name="worldPosition">The world position.</param>
+    /// <param name="node">The node.</param>
+    public void SetNode(Vector3 worldPosition, GraphNode node)
     {
+        // get the position in the graph of the given world position
         Vector2Int pos = GetXY(worldPosition);
-        SetValue(pos.x, pos.y, value);
+        SetNode(pos.x, pos.y, node);
     }
 
-    public GraphNode GetNode(Vector3 worldPosition)
-    {
-        Vector2Int pos = GetXY(worldPosition);
-        return GetValue(pos.x, pos.y);
-    }
-
+    /// <summary>
+    /// Gets the neighbour list of a GraphNode
+    /// </summary>
+    /// <param name="node">The node.</param>
+    /// <returns>An array of GraphNodes.</returns>
     public GraphNode[] GetNeighbourList(GraphNode node)
     {
+        // get the position of the given GraphNode
         Vector2Int pos = new Vector2Int(node.getX(), node.getY());
         GraphNode[] neighbours = new GraphNode[4];
-        neighbours[0] = GetValue(pos.x, pos.y + 1);
-        neighbours[1] = GetValue(pos.x + 1, pos.y);
-        neighbours[2] = GetValue(pos.x, pos.y - 1);
-        neighbours[3] = GetValue(pos.x - 1, pos.y);
+        neighbours[0] = GetNode(pos.x, pos.y + 1);
+        neighbours[1] = GetNode(pos.x + 1, pos.y);
+        neighbours[2] = GetNode(pos.x, pos.y - 1);
+        neighbours[3] = GetNode(pos.x - 1, pos.y);
         return neighbours;
     }
 }

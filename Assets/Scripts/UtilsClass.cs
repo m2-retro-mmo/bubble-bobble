@@ -5,6 +5,18 @@ using UnityEngine;
 // source: https://unitycodemonkey.com/video.php?v=waEsGu--9P8
 public class UtilsClass
 {
+    /// <summary>
+    /// Creates a text object with the given text and position.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <param name="parent">The parent.</param>
+    /// <param name="localPosition">The local position.</param>
+    /// <param name="fontSize">The font size.</param>
+    /// <param name="color">The color.</param>
+    /// <param name="textAnchor">The text anchor.</param>
+    /// <param name="textAlignment">The text alignment.</param>
+    /// <param name="sortingOrder">The sorting order.</param>
+    /// <returns>A TextMesh.</returns>
     public static TextMesh CreateWorldText(string text, Transform parent = null, Vector3 localPosition = default(Vector3), int fontSize = 40, Color color = default(Color), TextAnchor textAnchor = TextAnchor.UpperLeft, TextAlignment textAlignment = TextAlignment.Left, int sortingOrder = 5000)
     {
         if (color == default(Color))
@@ -32,6 +44,10 @@ public class UtilsClass
         return textMesh;
     }
 
+    /// <summary>
+    /// Gets the position of the mouse in world space.
+    /// </summary>
+    /// <returns>the position as A Vector3.</returns>
     public static Vector3 GetMouseWorldPosition()
     {
         Vector3 mousePosScreen = new Vector3();

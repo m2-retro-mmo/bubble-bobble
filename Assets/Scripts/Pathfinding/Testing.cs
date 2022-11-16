@@ -22,8 +22,8 @@ public class Testing : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             Vector3 mousePos = UtilsClass.GetMouseWorldPosition();
-            //var value = graph.GetValue(mousePos);
-            //graph.SetValue(mousePos, value);
+            //var value = graph.GetNode(mousePos);
+            //graph.SetNode(mousePos, value);
         }
     }
 }
