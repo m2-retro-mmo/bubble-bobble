@@ -30,18 +30,6 @@ public class Player : MonoBehaviour
     public float itemDuration = 0;
 
     /**
-    * checks if the player already holds a diamond, if not the player now holds one
-    * @return true successfully collected Diamond, false player already holds a diamond 
-    */
-    public bool collectDiamond()
-    {
-        // TODO: change appearance of dragon to dragon holding diamond
-        if (holdsDiamond) return false;
-        else holdsDiamond = true;
-        return true;
-    }
-
-    /**
     * removes the diamonds from the users inventory
     */
     private void deliverDiamond()
@@ -206,13 +194,33 @@ public class Player : MonoBehaviour
                     }
                 }
                 break;
-            case "item":
-                // TODO: implement Item collision
+            case "Diamond":
+                // collect Diamond if possible
+                if (!holdsDiamond)
+                {
+                    Diamond diamond = col.GetComponent("Diamond") as Diamond;
+                    diamond.collect();
+                    holdsDiamond = true;
+                }
+                else
+                {
+                    Debug.Log("Player already holds a Diamond!");
+                }
                 break;
 
-            case "bubble":
-                // TODO: Bubble collision goes here
-                break;
+            // case "Bubble":
+            //     // check if player not already captured
+            //     Debug.Log("bubble collision");
+            //     if (!isCaptured)
+            //     {
+            //         Bubble bubble = col.GetComponent("Bubble") as Bubble;
+            //         bubble.
+            //     }
+            //     else
+            //     {
+            //         Debug.Log("Player already captured!");
+            //     }
+            //     break;
 
             default:
                 break;
