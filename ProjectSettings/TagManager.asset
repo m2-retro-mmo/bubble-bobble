@@ -8,6 +8,7 @@ TagManager:
   - hort
   - Diamond
   - Bubble
+  - Hort
   layers:
   - Default
   - TransparentFX
