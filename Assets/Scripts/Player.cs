@@ -21,13 +21,17 @@ public class Player : MonoBehaviour
 
     // logic
     private bool holdsDiamond = true;
-    private byte teamNumber = 0;
-    private bool isCaptured = false;
+    public byte teamNumber = 1;
+    public bool isCaptured = false;
 
     // bubble settings
     private byte maxBubbleCount = 3;
     private byte bubbleCount = 3;
     public float itemDuration = 0;
+    private float bubbleBreakoutTime = 5f;
+
+    // Debug
+    private SpriteRenderer spriteRenderer;
 
     /**
     * removes the diamonds from the users inventory
@@ -45,6 +49,8 @@ public class Player : MonoBehaviour
     {
         // TODO: change appearance to captured player
         isCaptured = true;
+        spriteRenderer.color = Color.red;
+        Invoke("uncapture", bubbleBreakoutTime);
     }
 
     /**
@@ -54,6 +60,7 @@ public class Player : MonoBehaviour
     {
         // TODO: change appearance to uncaptured player
         isCaptured = false;
+        spriteRenderer.color = Color.white;
     }
 
     /**
@@ -91,6 +98,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
@@ -108,8 +116,6 @@ public class Player : MonoBehaviour
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        // Vector2 newPos = rb.position - lookDir.normalized * 3f;
-        // directionIndicator.transform.position = Vector3.Slerp(directionIndicator.transform.position, newPos, Time.deltaTime * 30);
         directionIndicator.transform.position = (Vector2)rb.position - lookDir.normalized * 3f;
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
     }
@@ -146,7 +152,7 @@ public class Player : MonoBehaviour
     /**
     * moves the player to an givn direction
     * @direction direction the player should move to
-*/
+    */
     public bool MovePlayer(Vector2 direction)
     {
         int count = rb.Cast(
@@ -177,17 +183,15 @@ public class Player : MonoBehaviour
 */
     private void OnTriggerEnter2D(Collider2D col)
     {
-        // check collision of Player with the Hort
-        // TODO: instead of compare name we should use tags here!
+        // check collision of Player with other Game objects
         switch (col.gameObject.tag)
         {
-            case "hort":
-                // TODO: check if hort belongs to players Team 
+            case "Hort":
                 Hort hort = col.GetComponent("Hort") as Hort;
                 if (hort != null)
                 {
                     // put diamond into hort
-                    if (holdsDiamond)
+                    if (holdsDiamond && teamNumber == hort.team)
                     {
                         hort.AddDiamond();
                         deliverDiamond();
@@ -207,21 +211,6 @@ public class Player : MonoBehaviour
                     Debug.Log("Player already holds a Diamond!");
                 }
                 break;
-
-            // case "Bubble":
-            //     // check if player not already captured
-            //     Debug.Log("bubble collision");
-            //     if (!isCaptured)
-            //     {
-            //         Bubble bubble = col.GetComponent("Bubble") as Bubble;
-            //         bubble.
-            //     }
-            //     else
-            //     {
-            //         Debug.Log("Player already captured!");
-            //     }
-            //     break;
-
             default:
                 break;
         }

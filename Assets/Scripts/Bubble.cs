@@ -8,43 +8,35 @@ public class Bubble : MonoBehaviour
     [Tooltip("The time in seconds after which the bubble will disappear")]
     private float bubbleLifeTime = 5f;
 
-    private float breakoutTime = 5f;
-
-    private Player capturedPlayer = null;
+    [SerializeField]
+    private int team = 1;
 
     private void Start()
     {
         // destroy bubble after 5 seconds if no Player was captured
-        Invoke("destroyWhenNothingCaptured", bubbleLifeTime);
-    }
-
-    // destroys the bubble when no player is captured
-    private void destroyWhenNothingCaptured()
-    {
-        if (capturedPlayer == null)
-        {
-            Destroy(gameObject, 0f);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (capturedPlayer != null)
-        {
-            capturedPlayer.uncapture();
-        }
+        Destroy(gameObject, bubbleLifeTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("hit Player");
             // TODO: check Team of player
-            capturedPlayer = collision.gameObject.GetComponent("Player") as Player;
-            capturedPlayer.capture();
-            // set breakout time
-            Destroy(gameObject, breakoutTime);
+            Player player = collision.gameObject.GetComponent("Player") as Player;
+            if (!player.isCaptured)
+            {
+                if (player.getTeamNumber() != team)
+                {
+                    player.capture();
+                }
+
+                // destroy bubble instant
+                Destroy(gameObject, 0);
+            }
+        }
+        else if (collision.gameObject.tag == "Bubble")
+        {
+            Destroy(gameObject, 0.0f);
         }
     }
 }
