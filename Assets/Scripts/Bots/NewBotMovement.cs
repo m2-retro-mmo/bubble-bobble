@@ -6,9 +6,14 @@ using UnityEngine.Tilemaps;
 public class NewBotMovement : MonoBehaviour
 {
     private GameObject player;
+
     private Tilemap tilemap;
+
     private Pathfinding pathfinding;
+
     private List<GraphNode> path;
+
+    private Graph graph;
 
     private int currentIndex;
 
@@ -17,7 +22,8 @@ public class NewBotMovement : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player");
         tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-        pathfinding = new Pathfinding(tilemap);
+        graph = new Graph(tilemap, true);
+        pathfinding = new Pathfinding(graph);
 
         //Execute FollowPlayer() every 500ms, 1sec into game play
         InvokeRepeating("FollowPlayer", 1.0f, 0.5f);
