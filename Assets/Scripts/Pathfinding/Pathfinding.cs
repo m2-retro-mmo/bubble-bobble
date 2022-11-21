@@ -31,6 +31,7 @@ public class Pathfinding
         // get the start and end node from the graph
         GraphNode startNode = graph.GetNode(startPos);
         GraphNode endNode = graph.GetNode(endPos);
+        startNode.cameFromNode = null;
 
         // create a list for the open and closed nodes
         List<GraphNode> openList = new List<GraphNode>();
@@ -135,5 +136,10 @@ public class Pathfinding
             return 14 * dstY + 10 * (dstX - dstY);
         }
         return 14 * dstX + 10 * (dstY - dstX);
+    }
+
+    public Graph GetGraph()
+    {
+        return graph;
     }
 }

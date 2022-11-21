@@ -6,6 +6,7 @@ TagManager:
   tags:
   - directionIndicator
   - hort
+  - Bot
   layers:
   - Default
   - TransparentFX

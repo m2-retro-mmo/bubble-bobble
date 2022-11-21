@@ -82,7 +82,7 @@ public class Graph
     /// <param name="x">The x.</param>
     /// <param name="y">The y.</param>
     /// <returns>A Vector3.</returns>
-    private Vector3 GetWorldPosition(int x, int y)
+    public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x, y) + bounds.min + tilemap.transform.position;
     }
@@ -204,7 +204,7 @@ public class Graph
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns>An array of GraphNodes.</returns>
-    public GraphNode[] GetNeighbourList(GraphNode node)
+    public GraphNode[] GetNeighbourList(GraphNode node) //TODO: get real neighbors!
     {
         // get the position of the given GraphNode
         Vector2Int pos = new Vector2Int(node.getX(), node.getY());
