@@ -41,13 +41,13 @@ public class BotMovement : MonoBehaviour
 
     private void Update()
     {
-        if(path.Count != 0 && pathIndex < path.Count)
+        /*if(path.Count != 0 && pathIndex < path.Count)
         {
             GraphNode nextNode = path[pathIndex];
             Vector2 nextPosition = nextNode.getPosition();
             transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.deltaTime);
             pathIndex++;
-        }
+        }*/
     }
 
     private Vector3 GetPosition()
