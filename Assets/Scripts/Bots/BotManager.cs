@@ -24,7 +24,8 @@ public class BotManager : MonoBehaviour
             for (int i = 0; i < botNumber; i++)
             {
                 // spawn a bot
-                GameObject bot = Instantiate(botPrefab, new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10)), Quaternion.identity);
+                // TODO: spawn the bot within the bounds of the map
+                GameObject bot = Instantiate(botPrefab, new Vector3(Random.Range(-39, 10), Random.Range(-4, 23), 0), Quaternion.identity);
             }
         }
     }

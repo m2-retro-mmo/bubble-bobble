@@ -5,14 +5,20 @@ using UnityEngine.Tilemaps;
 
 public class Testing : MonoBehaviour
 {
+    private Graph graph;
+    
     // Start is called before the first frame update
     void Start()
     {
         Tilemap tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-        Pathfinding pathfinding = new Pathfinding(tilemap);
+        // create a new graph with the tilemap
+        graph = new Graph(tilemap, true);
+        Pathfinding pathfinding = new Pathfinding(graph);
         List<GraphNode> path = pathfinding.FindPath(new Vector3(0, 0, 0), new Vector3(5, 5, 0));
         foreach (GraphNode node in path)
         {
+            //graph.HighlightNode(node);
+            graph.SetText(node.getX(), node.getY(), "");
             Debug.Log("path - " + node);
         }
     }

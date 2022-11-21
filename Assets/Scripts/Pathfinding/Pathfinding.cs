@@ -15,10 +15,9 @@ public class Pathfinding
     /// Initializes a new instance of the <see cref="Pathfinding"/> class.
     /// </summary>
     /// <param name="tilemap">The tilemap that is used to create the graph structure</param>
-    public Pathfinding(Tilemap tilemap)
+    public Pathfinding(Graph graph)
     {
-        // create a new graph with the tilemap
-        graph = new Graph(tilemap, true);
+        this.graph = graph;
     }
 
     /// <summary>

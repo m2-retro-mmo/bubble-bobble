@@ -1,82 +1,106 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class BotMovement : MonoBehaviour
 {
-    public bool isWalking;
+    private Graph graph;
+    
+    private Pathfinding pathfinding;
 
-    public float walkTime;
+    private List<GraphNode> path = new List<GraphNode>();
 
-    public float waitTime;
+    private int pathIndex = 0;
 
-    [SerializeField] 
     private float speed = 3f;
 
     private Rigidbody2D rb;
 
-    private float walkCounter;
-
-    private float waitCounter;
-
-    private int walkDirection;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
+        Tilemap tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
+        // create a new graph with the tilemap
+        graph = new Graph(tilemap, true);
+        // create a new pathfinding object with the graph
+        pathfinding = new Pathfinding(graph);
         rb = GetComponent<Rigidbody2D>();
 
-        waitCounter = waitTime;
-        walkCounter = walkTime;
+        Vector3 playerPos = GameObject.Find("Player").transform.position;
 
-        ChooseDirection();
+        AddNewPath(playerPos);
+
+        //List<GraphNode> path = pathfinding.FindPath(new Vector3(0, 0, 0), new Vector3(5, 5, 0));
+        //foreach (GraphNode node in path)
+        //{
+        //    //graph.HighlightNode(node);
+        //    graph.SetText(node.getX(), node.getY(), "");
+        //    Debug.Log("path - " + node);
+        //}
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (isWalking)
+        if(path.Count != 0 && pathIndex < path.Count)
         {
-            walkCounter -= Time.deltaTime;
-            
-            switch (walkDirection)
-            {
-                case 0:
-                    rb.velocity = new Vector2(0, speed);
-                    break;
-                case 1:
-                    rb.velocity = new Vector2(speed, 0);
-                    break;
-                case 2:
-                    rb.velocity = new Vector2(0, -speed);
-                    break;
-                case 3:
-                    rb.velocity = new Vector2(-speed, 0);
-                    break;
-            }
-
-            if (walkCounter < 0f)
-            {
-                isWalking = false;
-                waitCounter = waitTime;
-            }
+            GraphNode nextNode = path[pathIndex];
+            Vector2 nextPosition = nextNode.getPosition();
+            transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.deltaTime);
+            pathIndex++;
         }
-        else
-        {
-            waitCounter -= Time.deltaTime;
-            rb.velocity = Vector2.zero;
+    }
 
-            if (waitCounter < 0f)
+    private Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    private void Move()
+    {
+        if (pathIndex < path.Count)
+        {
+            Vector3 targetPosition = graph.GetWorldPosition(path[pathIndex]);
+            Vector3 direction = (targetPosition - GetPosition()).normalized;
+            transform.position += direction * speed * Time.deltaTime;
+            if (Vector3.Distance(GetPosition(), targetPosition) <= 0.1f)
             {
-                ChooseDirection();
+                pathIndex++;
             }
         }
     }
 
-    public void ChooseDirection()
+    private void OnDrawGizmos()
     {
-        walkDirection = Random.Range(0, 4);
-        isWalking = true;
-        walkCounter = walkTime;
+        if (path != null)
+        {
+            for (int i = pathIndex; i < path.Count; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(graph.GetWorldPosition(path[i]), Vector3.one * 0.5f);
+                if (i == pathIndex)
+                {
+                    Gizmos.DrawLine(GetPosition(), graph.GetWorldPosition(path[i]));
+                }
+                else
+                {
+                    Gizmos.DrawLine(graph.GetWorldPosition(path[i - 1]), graph.GetWorldPosition(path[i]));
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="goal"></param>
+    /// <returns></returns>
+    private void AddNewPath(Vector3 goal)
+    {
+        Vector3 currentPos = GetPosition();
+        List<GraphNode> newPath = pathfinding.FindPath(currentPos, goal);
+        foreach(GraphNode node in newPath)
+        {
+            path.Add(node);
+        }
     }
 }

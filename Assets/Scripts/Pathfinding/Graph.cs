@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -86,12 +87,17 @@ public class Graph
         return new Vector3(x, y) + bounds.min + tilemap.transform.position;
     }
 
+    public Vector3 GetWorldPosition(GraphNode node)
+    {
+        return GetWorldPosition(node.getX(), node.getY());
+    }
+
     /// <summary>
     /// Gets the position in the graph of the given world position.
     /// </summary>
     /// <param name="worldPosition">The world position.</param>
     /// <returns>A Vector2Int.</returns>
-    private Vector2Int GetXY(Vector3 worldPosition)
+    public Vector2Int GetXY(Vector3 worldPosition)
     {
         // calculates the rounded position of the given world position
         Vector2Int position = new Vector2Int(
@@ -131,6 +137,17 @@ public class Graph
     }
 
     /// <summary>
+    /// Gets the text  of the <param name="debugArray</param> at the given position.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <returns>A string.</returns>
+    public string GetText(int x, int y)
+    {
+        return debugTextArray[x, y].text;
+    }
+
+    /// <summary>
     /// Sets the GraphNode at the given position in the graph.
     /// </summary>
     /// <param name="x">The x.</param>
@@ -155,6 +172,31 @@ public class Graph
         // get the position in the graph of the given world position
         Vector2Int pos = GetXY(worldPosition);
         SetNode(pos.x, pos.y, node);
+    }
+
+    /// <summary>
+    /// Sets the text at the given position.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="text">The text.</param>
+    public void SetText(int x, int y, string text)
+    {
+        debugTextArray[x, y].text = text;
+    }
+
+    /// <summary>
+    /// Highlights the node for a number of seconds.
+    /// </summary>
+    /// <param name="node">The node.</param>
+    /// <returns>An IEnumerator.</returns>
+    public void HighlightNode(GraphNode node)
+    {
+        int x = node.getX();
+        int y = node.getY();
+        debugTextArray[x, y].color = Color.red;
+        //yield return new WaitForSeconds(5f);
+        debugTextArray[x, y].color = Color.white;
     }
 
     /// <summary>

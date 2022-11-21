@@ -48,7 +48,12 @@ public class GraphNode
     {
         return y;
     }
-    
+
+    public Vector2 getPosition()
+    {
+        return new Vector2(x, y);
+    }
+
     public int getGCost()
     {
         return gCost;
