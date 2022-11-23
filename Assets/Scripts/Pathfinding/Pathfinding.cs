@@ -65,7 +65,7 @@ public class Pathfinding
             foreach (GraphNode neighbourNode in graph.GetNeighbourList(currentNode))
             {
                 // if the neighbor is not walkable or is in the closed list, ignore it
-                if (neighbourNode.isObstacle || closedList.Contains(neighbourNode))
+                if (neighbourNode.isObstacle || closedList.Contains(neighbourNode)) // TODO bounds of tile map
                 {
                     continue;
                 }

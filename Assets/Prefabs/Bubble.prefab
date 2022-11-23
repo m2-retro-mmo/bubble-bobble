@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2504326652704442901}
   m_Layer: 0
   m_Name: Bubble
-  m_TagString: Untagged
+  m_TagString: Bubble
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -137,3 +137,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c11057918377bee4ba0d11db93f21554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bubbleLifeTime: 5

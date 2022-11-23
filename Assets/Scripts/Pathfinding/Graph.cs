@@ -186,17 +186,17 @@ public class Graph
     }
 
     /// <summary>
-    /// Highlights the node for a number of seconds.
+    /// Resets the graph by setting all the GraphNodes to not visited 
     /// </summary>
-    /// <param name="node">The node.</param>
-    /// <returns>An IEnumerator.</returns>
-    public void HighlightNode(GraphNode node)
+    public void ResetGraph()
     {
-        int x = node.getX();
-        int y = node.getY();
-        debugTextArray[x, y].color = Color.red;
-        //yield return new WaitForSeconds(5f);
-        debugTextArray[x, y].color = Color.white;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                graphArray[x, y].cameFromNode = null;
+            }
+        }
     }
 
     /// <summary>
