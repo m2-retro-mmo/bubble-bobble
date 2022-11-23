@@ -112,6 +112,7 @@ public class BotBehavior : MonoBehaviour
                         interactionPriorities[(int)InteractionID.Opponent] += 1f;
                     }
 
+                    // set goal of bot movement to opponent position
                     botMovement.goal = opponent.transform;
 
                     // multiply interactionPriority with interactionWeight

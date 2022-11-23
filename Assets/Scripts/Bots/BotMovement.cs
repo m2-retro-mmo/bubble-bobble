@@ -19,8 +19,6 @@ public class BotMovement : MonoBehaviour
 
     private BotBehavior behavior;
 
-    private GameObject player;
-
     private Tilemap tilemap;
 
     private Pathfinding pathfinding;
@@ -31,12 +29,9 @@ public class BotMovement : MonoBehaviour
 
     private int currentIndex;
     
-    // Start is called before the first frame update
     void Start()
     {
         behavior = GetComponent<BotBehavior>();
-        
-        player = GameObject.FindWithTag("Player");
         
         tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
         graph = new Graph(tilemap, true);
@@ -49,6 +44,7 @@ public class BotMovement : MonoBehaviour
         {
             Debug.Log("Interaction changed to " + behavior.GetInteractionID().ToString());
 
+            // reset everythin for new interaction
             path = null;
             graph.ResetGraph();
             pathfinding = new Pathfinding(graph);
@@ -60,6 +56,9 @@ public class BotMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Starts the interaction according to the Interaction ID.
+    /// </summary>
     private void StartInteraction()
     {
         switch (behavior.GetInteractionID())
@@ -88,10 +87,15 @@ public class BotMovement : MonoBehaviour
                 break;
         }
     }
-    
+
+    /// <summary>
+    /// Follows the opponent.
+    /// if opponent is in shooting range, shoot opponent.
+    /// </summary>
+    /// <returns>An IEnumerator.</returns>
     IEnumerator FollowOpponent()
     {
-        InvokeRepeating("FollowPlayer", 1.0f, 0.5f);
+        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
@@ -116,19 +120,29 @@ public class BotMovement : MonoBehaviour
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
-                InvokeRepeating("FollowPlayer", 0.1f, 0.5f);
+                InvokeRepeating("CalculatePathToGoal", 0.1f, 0.5f);
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.001f);
         }
     }
-    private void FollowPlayer()
+
+    /// <summary>
+    /// Calculates the path to goal and resets the path index.
+    /// </summary>
+    private void CalculatePathToGoal()
     {
         path = pathfinding.FindPath(transform.position, goal.position);
         currentIndex = 0;
     }
 
 
+    /// <summary>
+    /// Gets the euclidean distance.
+    /// </summary>
+    /// <param name="start">The start.</param>
+    /// <param name="end">The end.</param>
+    /// <returns>A float.</returns>
     private float GetEuclideanDistance(Vector3 start, Vector3 end)
     {
         return Mathf.Pow(
@@ -142,6 +156,9 @@ public class BotMovement : MonoBehaviour
         return transform.position;
     }
 
+    /// <summary>
+    /// draws the path in the scene view
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (path != null)
@@ -162,30 +179,3 @@ public class BotMovement : MonoBehaviour
         }
     }
 }
-
-//float distToPlayer = GetEuclideanDistance(transform.position, player.transform.position);
-
-//if (path != null)
-//{
-//    Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].getX(), path[currentIndex].getY());
-//    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-//    if (distNextNode <= 5f && currentIndex < path.Count - 1)
-//    {
-//        currentIndex++;
-//    }
-
-//    if (distToPlayer <= shootRange)
-//    {
-//        Debug.Log("Shoot Player");
-//        path = null;
-//        break;
-//    }
-
-//    transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
-//} 
-//if (distToPlayer >= (shootRange + 5f))
-//{
-//    path = pathfinding.FindPath(transform.position, player.transform.position);
-//    currentIndex = 0;
-//    Debug.Log("new path...");
-//}

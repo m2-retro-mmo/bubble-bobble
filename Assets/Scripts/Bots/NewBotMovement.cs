@@ -26,7 +26,7 @@ public class NewBotMovement : MonoBehaviour
         pathfinding = new Pathfinding(graph);
 
         //Execute FollowPlayer() every 500ms, 1sec into game play
-        InvokeRepeating("FollowPlayer", 1.0f, 0.5f);
+        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
     }
 
     private void Update()
@@ -52,7 +52,7 @@ public class NewBotMovement : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, nextNode, 3f * Time.deltaTime);            
         } else if (distToPlayer >= 25f)
         {
-            InvokeRepeating("FollowPlayer", 0.1f, 0.5f);
+            InvokeRepeating("CalculatePathToGoal", 0.1f, 0.5f);
         }
 
 
