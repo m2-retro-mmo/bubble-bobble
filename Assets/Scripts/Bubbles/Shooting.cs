@@ -64,7 +64,7 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Shoots the bubble from the fire point and adds force to it
     /// </summary>
-    void ShootBubble()
+     public void ShootBubble()
     {
         // Check if the bubble count is greater than 0
         if (bubbleCount > 0)

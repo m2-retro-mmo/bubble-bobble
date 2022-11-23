@@ -10,11 +10,9 @@ public class BotMovement : MonoBehaviour
 {
     [HideInInspector]
     public Transform goal;
-
-    [SerializeField]
-    private float shootRange = 20f;
-
-    [SerializeField]
+    
+    private float shootRange = 200f;
+    
     private float botSpeed = 3f;
 
     private BotBehavior behavior;
@@ -28,10 +26,13 @@ public class BotMovement : MonoBehaviour
     private Graph graph;
 
     private int currentIndex;
-    
+
+    private Transform directionIndicator;
+
     void Start()
     {
         behavior = GetComponent<BotBehavior>();
+        directionIndicator = transform.Find("Triangle");
         
         tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
         graph = new Graph(tilemap, true);
@@ -54,6 +55,7 @@ public class BotMovement : MonoBehaviour
 
             behavior.SetChangedInteractionID(false);
         }
+        LookAtGoal();
     }
 
     /// <summary>
@@ -111,7 +113,7 @@ public class BotMovement : MonoBehaviour
 
                 if (distToPlayer <= shootRange)
                 {
-                    Debug.Log("Shoot Bubble!");
+                    GetComponent<BotShooting>().ShootBubble();
                     CancelInvoke();
                     path = null;
                 }
@@ -149,6 +151,18 @@ public class BotMovement : MonoBehaviour
             Mathf.Pow(end.x - start.x, 2) +
             Mathf.Pow(end.y - start.y, 2) +
             Mathf.Pow(end.z - start.z, 2), 2);
+    }
+
+    /// <summary>
+    /// rotates the direction indicator around the bot to look at the goal.
+    /// </summary>
+    private void LookAtGoal()
+    {
+        Vector3 lookDir = goal.position - transform.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
+
+        directionIndicator.position = transform.position + lookDir.normalized * 1f;
+        directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector3 GetPosition()
