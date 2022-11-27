@@ -20,8 +20,10 @@ public class Map : MonoBehaviour
     public Tile waterTile;
     public System.Random ran = new System.Random();
 
-    private float noise_density = 40;
-    private int iterations = 1; // low für viele Abschnitt, high für größere Höhlen
+    public GameObject diamondPrefab;
+
+    private float noise_density = 60;
+    private int iterations = 3; // low für viele Abschnitt, high für größere Höhlen
 
     void Awake()
     {
@@ -31,49 +33,24 @@ public class Map : MonoBehaviour
         
         apply_cellular_automaton(grid, iterations);
         DrawTilemap(grid, map, tiles);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        Tilemap tilemap = GetComponent<Tilemap>();
-
-        BoundsInt bounds = tilemap.cellBounds;
-        TileBase[] allTiles = tilemap.GetTilesBlock(bounds);
-
-        for (int x = 0; x < bounds.size.x; x++) {
-            for (int y = 0; y < bounds.size.y; y++) {
-                TileBase tile = allTiles[x + y * bounds.size.x];
-                if (tile.name == "sheet_160") {
-                    Debug.Log("x:" + x + " y:" + y + " tile:" + tile.name);
-                    int random = ran.Next(1, 100);
-                    if (random < 40)
-                    {
-                        // TODO: Instantiate Diamond
-                    }
-                } else {
-                    Debug.Log("x:" + x + " y:" + y + " tile: (null)");
-                }
-            }
-        } 
+        PlaceItems(map);
     }
 
     int[,] GenerateNoiseGrid(float density)
     {
-        int[,] numbers = new int[height, width];
+        int[,] numbers = new int[width, height];
 
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
                 int random = ran.Next(1, 100);
-                Debug.Log(random);
                 if (random > density)
                 {
-                    numbers[i,j] = 0; // tile.floor
+                    numbers[j, i] = 0; // tile.floor
                 }
                 else {
-                    numbers[i,j] = 1; // tile.water
+                    numbers[j, i] = 1; // tile.water
                 }
             }
         }
@@ -86,6 +63,8 @@ public class Map : MonoBehaviour
         while(i < iterations)
         {
             int[,] tempCells = cells.Clone() as int[,];
+            Debug.Log(height);
+            Debug.Log(cells.GetLength(1));
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -105,7 +84,6 @@ public class Map : MonoBehaviour
                                     if (tempCells[k, j] == 1)
                                     {
                                         neighbor_wall_count++;
-                                        Debug.Log(neighbor_wall_count);
                                     }
                                 }
                             }
@@ -118,56 +96,17 @@ public class Map : MonoBehaviour
                     //if there are more than 4 neighbors that are - make the coordinate a - and if not make it +
                     if (neighbor_wall_count > 4)
                     {
-                        cells[y, x] = 1;
-                        Debug.Log("+");
+                        cells[x, y] = 1;
                     }
                     else
                     {
-                        cells[y, x] = 0;
-                        Debug.Log("-");
+                        cells[x, y] = 0;
                     }
                 }
             }
             i++;
         }
     }
-
-    // int CheckWalls(int[,] cells, int cellJ, int cellK)
-    // {
-    //     // TODO: set Maximum X / Y boundary
-    //     int maxX = cells.GetUpperBound(0);
-    //     int maxY = cells.GetUpperBound(1);
-    //     int NeighborWallCount = 0;
-
-    //     // 1 / 8 N
-    //     int posN = cells[cellJ - 1, cellK];
-    //     if (cellJ - 1 >= 0 && posN == 1) { NeighborWallCount++; }
-        
-    //     // 2 / 8 NO
-    //     int posNO = cells[cellJ - 1, cellK + 1];
-    //     if (cellJ - 1 >= 0 && cellK + 1 < maxY && posNO == 1) { NeighborWallCount++; }
-
-    //     // 3 / 8 O
-    //     int posO = cells[cellJ, cellK + 1];
-    //     if (cellK + 1 < maxY && posO == 1) { NeighborWallCount++; }
-
-    //     // 4 / 8 OS
-    //     int posOS = cells[cellJ + 1, cellK + 1];
-    //     if (cellJ + 1 < maxX && cellK + 1 < maxY && posOS == 1) { NeighborWallCount++; }
-
-    //     // 5 / 8 S
-    //     int posS = cells[cellJ + 1, cellK];
-    //     if (cellJ + 1 < maxX && posS == 1) { NeighborWallCount++; }
-
-    //     // 6 / 8 SW
-    //     int posSW = cells[cellJ + 1, cellK - 1];
-    //     if (cellJ + 1 < maxX && cellK - 1 >= 0 && posSW == 1) { NeighborWallCount++; }
-
-    //     // 7 / 8 W
-    //     int posW = cells[cellJ, cellK - 1];
-    //     if (cellK - 1 >= 0 && posW == 1) { NeighborWallCount++; }
-        //     return NeighborWallCount;
-    // }
 
     void DrawTilemap(int[,] map, Tilemap tilemap, Tile[] tiles)
     {
@@ -178,11 +117,36 @@ public class Map : MonoBehaviour
             {
                 if (map[x, y] == 0)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
                 }
                 else 
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]); // Water
+                }
+            }
+        }
+    }
+
+    void PlaceItems(Tilemap map)
+    {
+        BoundsInt bounds = map.cellBounds;
+        TileBase[] allTiles = map.GetTilesBlock(bounds);
+        // TODO: save as global reference 
+        //int[,] mapCopy = new int[tilemap.,];
+
+        for (int x = 0; x < bounds.size.x; x++)
+        {
+            for (int y = 0; y < bounds.size.y; y++)
+            {
+                TileBase tile = allTiles[x + y * bounds.size.x];
+                if (tile.name == floorTile.name)
+                {
+                    int random = ran.Next(1, 100);
+                    if (random < 20)
+                    {
+                        // move by 0.5f to center diamond in a tile
+                        GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
+                    }
                 }
             }
         }

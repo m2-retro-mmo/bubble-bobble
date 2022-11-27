@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 964968709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 10, y: 20, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 1110822628}
   - component: {fileID: 1110822627}
   m_Layer: 0
-  m_Name: MapContainer
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -285,7 +285,7 @@ TilemapRenderer:
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
-  m_SortOrder: 3
+  m_SortOrder: 0
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
@@ -337,6 +337,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1788809226}
   - component: {fileID: 1788809225}
+  - component: {fileID: 1788809227}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -352,9 +353,9 @@ Grid:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788809224}
   m_Enabled: 1
-  m_CellSize: {x: 1, y: 0.5, z: 1}
+  m_CellSize: {x: 1, y: 1, z: 1}
   m_CellGap: {x: 0, y: 0, z: 0}
-  m_CellLayout: 2
+  m_CellLayout: 0
   m_CellSwizzle: 0
 --- !u!4 &1788809226
 Transform:
@@ -372,3 +373,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1788809227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788809224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e86e428634c3d41e0bd126825f26dffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 100
+  height: 50
+  map: {fileID: 0}
+  floorTile: {fileID: 11400000, guid: 9c828b88af59947488ba8de09e0970e2, type: 2}
+  waterTile: {fileID: 11400000, guid: 66eed7910fc4b450d81f9fcb0fc95b9f, type: 2}
+  diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
+    type: 3}
