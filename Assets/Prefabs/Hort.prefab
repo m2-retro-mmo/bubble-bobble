@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3189583790749191374}
   m_Layer: 0
   m_Name: Hort
-  m_TagString: hort
+  m_TagString: Hort
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -166,3 +166,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   diamonds: 0
   team: 0
+  teamPoints_text: {fileID: 0}
+  plusOnePrefab: {fileID: 0}

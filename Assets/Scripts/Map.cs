@@ -33,6 +33,31 @@ public class Map : MonoBehaviour
         DrawTilemap(grid, map, tiles);
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        Tilemap tilemap = GetComponent<Tilemap>();
+
+        BoundsInt bounds = tilemap.cellBounds;
+        TileBase[] allTiles = tilemap.GetTilesBlock(bounds);
+
+        for (int x = 0; x < bounds.size.x; x++) {
+            for (int y = 0; y < bounds.size.y; y++) {
+                TileBase tile = allTiles[x + y * bounds.size.x];
+                if (tile.name == "sheet_160") {
+                    Debug.Log("x:" + x + " y:" + y + " tile:" + tile.name);
+                    int random = ran.Next(1, 100);
+                    if (random < 40)
+                    {
+                        // TODO: Instantiate Diamond
+                    }
+                } else {
+                    Debug.Log("x:" + x + " y:" + y + " tile: (null)");
+                }
+            }
+        } 
+    }
+
     int[,] GenerateNoiseGrid(float density)
     {
         int[,] numbers = new int[height, width];
@@ -141,12 +166,7 @@ public class Map : MonoBehaviour
     //     // 7 / 8 W
     //     int posW = cells[cellJ, cellK - 1];
     //     if (cellK - 1 >= 0 && posW == 1) { NeighborWallCount++; }
-
-    //     // 8 / 8 WN
-    //     int posWN = cells[cellJ - 1, cellK - 1];
-    //     if (cellJ - 1 >= 0 && cellK - 1 >= 0 && posWN == 1) { NeighborWallCount++; }
-        
-    //     return NeighborWallCount;
+        //     return NeighborWallCount;
     // }
 
     void DrawTilemap(int[,] map, Tilemap tilemap, Tile[] tiles)

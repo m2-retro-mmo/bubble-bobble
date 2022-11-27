@@ -6,6 +6,9 @@ TagManager:
   tags:
   - directionIndicator
   - hort
+  - Diamond
+  - Bubble
+  - Hort
   layers:
   - Default
   - TransparentFX
