@@ -11,61 +11,38 @@ enum EnvironmentType
     // Obstacle
 }
 
-public class MapCell
-{
-    private EnvironmentType type;
-
-    public MapCell()
-    {
-        
-    }
-}
-
 public class Map : MonoBehaviour
 {
-    [SerializeField] private int width = 200;
-    [SerializeField] private int height = 300;
-    public Tilemap map = GameObject.Find("MapContainer").GetComponent<Tilemap>();
-    // public MapCell[,] cells;
-    // public MapCell[,] gen_cells;
-    public Tile floorTile = Tile.CreateInstance<Tile>();
-    public Tile waterTile = Tile.CreateInstance<Tile>();
+    [SerializeField] private int width = 50;
+    [SerializeField] private int height = 100;
+    public Tilemap map;
+    public Tile floorTile;
+    public Tile waterTile;
     public System.Random ran = new System.Random();
 
-    private float noise_density = 60;
-    private int iterations = 10; // low für viele Abschnitt, high für größere Höhlen
+    private float noise_density = 40;
+    private int iterations = 1; // low für viele Abschnitt, high für größere Höhlen
 
     void Awake()
     {
-        // Step 1: Create noise grid --> matches the desired size of the final map
-        // public TileBase[] tiles = { floorTile, waterTile };
-        int[,] grid = generate_noise_grid(noise_density);
+        map = GameObject.Find("Ground").GetComponent<Tilemap>();
+        int[,] grid = GenerateNoiseGrid(noise_density);
+        Tile[] tiles = { floorTile, waterTile };
         
         apply_cellular_automaton(grid, iterations);
-        draw_tilemap(grid, map, floorTile);
+        DrawTilemap(grid, map, tiles);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    int[,] generate_noise_grid(float density)
+    int[,] GenerateNoiseGrid(float density)
     {
         int[,] numbers = new int[height, width];
-        int random = ran.Next(1, 100);
 
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
+                int random = ran.Next(1, 100);
+                Debug.Log(random);
                 if (random > density)
                 {
                     numbers[i,j] = 0; // tile.floor
@@ -83,23 +60,46 @@ public class Map : MonoBehaviour
         int i = 0;
         while(i < iterations)
         {
-            int[,] tempCells = cells;
-            for (int j = 0; j < height; j++)
+            int[,] tempCells = cells.Clone() as int[,];
+            for (int y = 0; y < height; y++)
             {
-
-                for (int k = 0; k < width; k++)
+                for (int x = 0; x < width; x++)
                 {
-                    int NeighborWallCount = 0;
-
-                    CheckWalls(j, k);
-                    
-                    if (NeighborWallCount > 4)
+                    int neighbor_wall_count = 0;
+                    //go through neigbors
+                    for (int j = y-1; j <= y+1; j++)
                     {
-                        cells[j,k] = 1; // tile.water
+                        for(int k = x-1; k <= x+1; k++)
+                        {
+                            //check if in bounds of array if not just assume its -
+                            if (j >= 0 && j < cells.GetLength(1) && k >= 0 && k < cells.GetLength(0))
+                            {
+                                //check if this is not the coordinate whose neighbors we are checking
+                                if (!(j == y && k == x)) {
+                                    //check if neighbor is a - and if so add neighbor_wall_count
+                                    if (tempCells[k, j] == 1)
+                                    {
+                                        neighbor_wall_count++;
+                                        Debug.Log(neighbor_wall_count);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                neighbor_wall_count++;
+                            }
+                        }
+                    }
+                    //if there are more than 4 neighbors that are - make the coordinate a - and if not make it +
+                    if (neighbor_wall_count > 4)
+                    {
+                        cells[y, x] = 1;
+                        Debug.Log("+");
                     }
                     else
                     {
-                        cells[j,k] = 0; // tile.floor
+                        cells[y, x] = 0;
+                        Debug.Log("-");
                     }
                 }
             }
@@ -107,15 +107,50 @@ public class Map : MonoBehaviour
         }
     }
 
-    int CheckWalls(int cellJ, int cellK)
-    {
-        // TODO: Check all neighbors if wall
-        return 4;
-    }
+    // int CheckWalls(int[,] cells, int cellJ, int cellK)
+    // {
+    //     // TODO: set Maximum X / Y boundary
+    //     int maxX = cells.GetUpperBound(0);
+    //     int maxY = cells.GetUpperBound(1);
+    //     int NeighborWallCount = 0;
 
-    void draw_tilemap(int[,] map, Tilemap tilemap, TileBase tile)
+    //     // 1 / 8 N
+    //     int posN = cells[cellJ - 1, cellK];
+    //     if (cellJ - 1 >= 0 && posN == 1) { NeighborWallCount++; }
+        
+    //     // 2 / 8 NO
+    //     int posNO = cells[cellJ - 1, cellK + 1];
+    //     if (cellJ - 1 >= 0 && cellK + 1 < maxY && posNO == 1) { NeighborWallCount++; }
+
+    //     // 3 / 8 O
+    //     int posO = cells[cellJ, cellK + 1];
+    //     if (cellK + 1 < maxY && posO == 1) { NeighborWallCount++; }
+
+    //     // 4 / 8 OS
+    //     int posOS = cells[cellJ + 1, cellK + 1];
+    //     if (cellJ + 1 < maxX && cellK + 1 < maxY && posOS == 1) { NeighborWallCount++; }
+
+    //     // 5 / 8 S
+    //     int posS = cells[cellJ + 1, cellK];
+    //     if (cellJ + 1 < maxX && posS == 1) { NeighborWallCount++; }
+
+    //     // 6 / 8 SW
+    //     int posSW = cells[cellJ + 1, cellK - 1];
+    //     if (cellJ + 1 < maxX && cellK - 1 >= 0 && posSW == 1) { NeighborWallCount++; }
+
+    //     // 7 / 8 W
+    //     int posW = cells[cellJ, cellK - 1];
+    //     if (cellK - 1 >= 0 && posW == 1) { NeighborWallCount++; }
+
+    //     // 8 / 8 WN
+    //     int posWN = cells[cellJ - 1, cellK - 1];
+    //     if (cellJ - 1 >= 0 && cellK - 1 >= 0 && posWN == 1) { NeighborWallCount++; }
+        
+    //     return NeighborWallCount;
+    // }
+
+    void DrawTilemap(int[,] map, Tilemap tilemap, Tile[] tiles)
     {
-        // var grid = GameObject.Find("MapContainer");
         tilemap.ClearAllTiles();
         for (int x = 0; x < map.GetUpperBound(0); x++)
         {
@@ -123,15 +158,11 @@ public class Map : MonoBehaviour
             {
                 if (map[x, y] == 0)
                 {
-                    // create tilemap floor
-                    // GetTileByName()
-                    // var mapTile = new GameObject("Tilemap").AddComponent<Tilemap>();
-                    // mapTile.transform.SetParent(map.gameObject);
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]);
                 }
-                else {
-                    // create tilemap water
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                else 
+                {
+                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]);
                 }
             }
         }

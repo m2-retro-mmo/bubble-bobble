@@ -612,6 +612,7 @@ GameObject:
   - component: {fileID: 1493779878}
   - component: {fileID: 1493779880}
   - component: {fileID: 1493779879}
+  - component: {fileID: 1493779881}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -19905,6 +19906,23 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1493779881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493779877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e86e428634c3d41e0bd126825f26dffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 50
+  height: 100
+  map: {fileID: 0}
+  floorTile: {fileID: 11400000, guid: 4677b1c2ecee94b18b8580e719fe95a6, type: 2}
+  waterTile: {fileID: 11400000, guid: 22824d427cfa747c18d61de25c306478, type: 2}
 --- !u!1 &1540251974 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3128419441306674633, guid: 1149a5c82f56d0b01b6946e80e7ba269,
