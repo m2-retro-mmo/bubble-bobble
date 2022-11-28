@@ -181,13 +181,13 @@ public class Player : MonoBehaviour
     /**
     * is called when player collides with another Collider2D
 */
-    private void OnTriggerEnter2D(Collider2D col)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         // check collision of Player with other Game objects
-        switch (col.gameObject.tag)
+        switch (other.gameObject.tag)
         {
             case "Hort":
-                Hort hort = col.GetComponent("Hort") as Hort;
+                Hort hort = other.GetComponent("Hort") as Hort;
                 if (hort != null)
                 {
                     // put diamond into hort
@@ -202,7 +202,7 @@ public class Player : MonoBehaviour
                 // collect Diamond if possible
                 if (!holdsDiamond)
                 {
-                    Diamond diamond = col.GetComponent("Diamond") as Diamond;
+                    Diamond diamond = other.GetComponent("Diamond") as Diamond;
                     diamond.collect();
                     holdsDiamond = true;
                 }
