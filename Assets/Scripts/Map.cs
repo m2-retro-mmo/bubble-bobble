@@ -22,7 +22,7 @@ public class Map : MonoBehaviour
 
     public GameObject diamondPrefab;
 
-    private float noise_density = 60;
+    private float noise_density = 50;
     private int iterations = 3; // low für viele Abschnitt, high für größere Höhlen
 
     void Awake()
