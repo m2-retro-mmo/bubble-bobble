@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   diamonds: 0
-  team: 0
+  team: 1
   teamPoints_text: {fileID: 0}
-  plusOnePrefab: {fileID: 0}
+  plusOnePrefab: {fileID: 4114649147731558615, guid: e163b3d4071c86d188b3fca0d91a5ff2,
+    type: 3}
