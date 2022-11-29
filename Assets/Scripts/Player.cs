@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     // Movement
     private Vector2 moveInput;
     private Rigidbody2D rb;
+    private BoxCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     private GameObject directionIndicator;
@@ -18,6 +19,7 @@ public class Player : MonoBehaviour
     public Vector2 mousePosWorld;
     public Camera cam;
     public Vector3 mousePosScreen = new Vector3();
+    public float distanceFactor = 2f;
 
     // logic
     private bool holdsDiamond = false;
@@ -100,11 +102,14 @@ public class Player : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<BoxCollider2D>();
         directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
 
     private void LookAtMouse()
     {
+        Vector2 playerCenter = getCenterOfPlayer();
+
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
         mousePosScreen.y = Input.mousePosition.y;
@@ -112,12 +117,19 @@ public class Player : MonoBehaviour
         mousePosWorld = (Vector2)cam.ScreenToWorldPoint(mousePosScreen);
 
         // rotate the player 
-        Vector2 lookDir = mousePosWorld - rb.position;
+        Vector2 lookDir = mousePosWorld - playerCenter;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
+
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)rb.position - lookDir.normalized * 3f;
+        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+    }
+
+    private Vector2 getCenterOfPlayer()
+    {
+        // player rigidbody is not the center of the player --> use rb.position and add the scaled offset from the collider (=0.825)
+        return rb.position + (col.offset * transform.localScale);
     }
 
     // Update is called once per frame
