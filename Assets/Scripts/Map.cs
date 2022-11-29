@@ -240,7 +240,7 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                if (ran.Next(0, 100) < 20)
+                if (ran.Next(0, 100) < 5)
                 {
                     obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
                 }
