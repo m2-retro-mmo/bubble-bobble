@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The class of the Bubble object.
+/// </summary>
 public class Bubble : MonoBehaviour
 {
     [SerializeField]
@@ -17,6 +20,11 @@ public class Bubble : MonoBehaviour
         Destroy(gameObject, bubbleLifeTime);
     }
 
+    /// <summary>
+    /// this method is called when the bubble collides with another object
+    /// it handles the event that happens 
+    /// </summary>
+    /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")

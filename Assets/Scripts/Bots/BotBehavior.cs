@@ -1,0 +1,182 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+/// <summary>
+/// the states of the InteractionID
+/// </summary>
+public enum InteractionID
+{
+    Opponent = 0,
+    Teammate = 1,
+    OpponentBubble = 2,
+    Diamond = 3,
+    Hort = 4,
+    Item = 5,
+    None = 6
+}
+
+/// <summary>
+/// This class handles the bot behavior
+/// it checks the area around the bot and sets the Interaction id according to the colliders in the area
+/// the interactionId defines what the bot should do
+/// </summary>
+public class BotBehavior : MonoBehaviour
+{
+    public InteractionID interactionID = InteractionID.None;
+
+    [HideInInspector]
+    public bool foundInteraction;
+
+    [HideInInspector]
+    public bool changedInteractionID = false;
+
+    // the weights of the interactions
+    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 3, 1 };
+
+    private float[] interactionPriorities;
+
+    // area radius around the bot
+    private float interactionRadius = 10f;
+
+    private Vector3 botPosition;
+
+    private Collider2D[] colliders;
+
+    private BotMovement botMovement;
+
+    void Start()
+    {
+        botMovement = GetComponent<BotMovement>();
+
+        StartCoroutine(CheckAreaOfInterest());
+    }
+
+    /// <summary>
+    /// Checks the area around the bot with a given radius 
+    /// it sets the Interaction ID to the interaction with the highest priority
+    /// </summary>
+    /// <returns>An IEnumerator.</returns>
+    IEnumerator CheckAreaOfInterest()
+    {
+        // check area every ten seconds
+        while (true)
+        {
+            foundInteraction = false;
+            // reset all priority values
+            interactionPriorities = new float[6];
+
+            botPosition = transform.position;
+            // get all colliders in a radius around the bot
+            colliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
+
+            CheckForOpponents();
+
+            CalculateInteractionID();
+
+            //Debug.Log("found Interaction " + foundInteraction);
+            //Debug.Log("changedInteraction " + changedInteractionID);
+            //Debug.Log("interactionID: " + interactionID);
+
+            yield return new WaitForSeconds(10f);
+        }
+    }
+
+    /// <summary>
+    /// Checks the for opponents in the area around the bot and sets the interaction priorities
+    /// </summary>
+    private void CheckForOpponents()
+    {
+        // get all opponents in the area
+        Collider2D[] opponentColliders = GetCollidersByTag("Player"); // TODO: search for Tag of opponent Team
+
+        // if there are no opponents do nothing
+        if (opponentColliders.Length > 0)
+        {
+            // loop through all opponents 
+            foreach (Collider2D collider in opponentColliders)
+            {
+                Player opponent = collider.gameObject.GetComponent<Player>();
+
+                // check if the opponent is not captured
+                if (!opponent.GetIsCapture()) // TODO
+                {
+                    // has a higher priority if opponent holds diamond
+                    if (opponent.GetHoldsDiamond())
+                    {
+                        interactionPriorities[(int)InteractionID.Opponent] += 2f;
+                    }
+                    else
+                    {
+                        interactionPriorities[(int)InteractionID.Opponent] += 1f;
+                    }
+
+                    // set goal of bot movement to opponent position
+                    botMovement.goal = opponent.transform;
+
+                    // multiply interactionPriority with interactionWeight
+                    interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
+
+                    foundInteraction = true;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the colliders around the bot by tag.
+    /// orders by distance from the bot 
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <returns>An array of Collider2DS.</returns>
+    private Collider2D[] GetCollidersByTag(string tagName)
+    {
+        colliders = colliders.Where(c => c.gameObject.tag == tagName).ToArray();
+        // order by distance
+        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+
+        return colliders;
+    }
+
+    /// <summary>
+    /// sets the interactionID to the highest priority value
+    /// if no interaction was found, increase the radius of the area
+    /// </summary>
+    private void CalculateInteractionID()
+    {
+        // if an interaction was found, set the interactionID to highest priority
+        if (foundInteraction)
+        {
+            // get index of highest value in priority array
+            int highestPriorityIndex = interactionPriorities.ToList().IndexOf(interactionPriorities.Max());
+            // cast this index zo an InteractionID
+            InteractionID foundInteractionID = (InteractionID)highestPriorityIndex;
+            
+            if (foundInteractionID != interactionID) // TODO: only change id if according priority is a given amount higher than priority of old id
+            {
+                changedInteractionID = true;
+                interactionID = foundInteractionID;
+            }
+        }
+        else // if no interaction was found, increase the radius
+        {
+            interactionRadius += 10f;
+        }
+    }
+
+    public bool GetChangedInteractionID()
+    {
+        return changedInteractionID;
+    }
+
+    public void SetChangedInteractionID(bool value)
+    {
+        changedInteractionID = value;
+    }
+
+    public InteractionID GetInteractionID()
+    {
+        return interactionID;
+    }
+}

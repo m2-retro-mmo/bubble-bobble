@@ -215,4 +215,14 @@ public class Player : MonoBehaviour
                 break;
         }
     }
+
+    public bool GetIsCapture()
+    {
+        return isCaptured;
+    }
+
+    public bool GetHoldsDiamond()
+    {
+        return holdsDiamond;
+    }
 }

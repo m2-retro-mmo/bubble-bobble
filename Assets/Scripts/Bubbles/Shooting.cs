@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// This class is responsible for the shooting of the bubbles
+/// </summary>
 public class Shooting : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("the point where the bubble will be instantiated")]
     private Transform firePoint;
 
     [SerializeField]
@@ -66,7 +70,7 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Shoots the bubble from the fire point and adds force to it
     /// </summary>
-    void ShootBubble()
+    public void ShootBubble()
     {
         // Check if the bubble count is greater than 0
         if (bubbleCount > 0)
