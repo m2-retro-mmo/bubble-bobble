@@ -18,8 +18,10 @@ public class Map : MonoBehaviour
 
     public EnvironmentType[,] grid;
     public Tilemap map;
+    public Tilemap obstacleMap;
     public Tile floorTile;
     public Tile waterTile;
+    public Tile tree;
     public System.Random ran = new System.Random();
 
     public GameObject diamondPrefab;
@@ -30,6 +32,7 @@ public class Map : MonoBehaviour
     void Awake()
     {
         map = GameObject.Find("Ground").GetComponent<Tilemap>();
+        obstacleMap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
         grid = GenerateNoiseGrid(noise_density);
         Tile[] tiles = { floorTile, waterTile };
 
@@ -37,6 +40,8 @@ public class Map : MonoBehaviour
         DrawTilemap(grid, map, tiles);
         // PlaceObstacles(map);
         PlaceItems(map);
+        PlaceObstacles();
+
     }
 
     public Vector2[] GetSections(int count)
@@ -226,4 +231,21 @@ public class Map : MonoBehaviour
         //     }
         // }
     }
+
+    // TODO: place random obstacles on the obstacle Map
+    public void PlaceObstacles()
+    {
+        obstacleMap.ClearAllTiles();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (ran.Next(0, 100) < 20)
+                {
+                    obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
+                }
+            }
+        }
+    }
+
 }

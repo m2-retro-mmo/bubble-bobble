@@ -125,8 +125,8 @@ public class Shooting : MonoBehaviour
     /// </summary>
     private void ChangeBubbleCount_UI()
     {
-        bubbleCount_text.fontStyle = FontStyles.Normal;
-        bubbleCount_text.text = bubbleCount.ToString();
+        // bubbleCount_text.fontStyle = FontStyles.Normal;
+        // bubbleCount_text.text = bubbleCount.ToString();
     }
 
     /// <summary>

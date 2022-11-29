@@ -1070,7 +1070,11 @@ TextureImporter:
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 50}
       outline: []
-      physicsShape: []
+      physicsShape:
+      - - {x: -16, y: -12.5}
+        - {x: -16, y: -38.5}
+        - {x: 16, y: -38.5}
+        - {x: 16, y: -12.5}
       tessellationDetail: 0
       bones: []
       spriteID: 538b433b960d0524cae73e5731375a47
@@ -1373,6 +1377,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: TX Props_0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 247
+        width: 30
+        height: 41
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e7d566deadf4d3288efd7cd6283e95b
+      internalID: -458302113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -1387,6 +1412,7 @@ TextureImporter:
       TX Props Well: 21300164
       TX Props Chest Opened: 21300040
       TX Props Pot B: 21300092
+      TX Props_0: -458302113
       TX Props Barrel: 21300066
       TX Props Rune Pillar X3: 21300058
       TX Props Altar Rune 3: 21300148
