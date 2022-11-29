@@ -1068,7 +1068,7 @@ TextureImporter:
         height: 77
       alignment: 7
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 0, z: 0, w: 50}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1411,9 +1411,9 @@ TextureImporter:
       TX Props Stone Bench E: 21300100
       TX Props Rune Pillar Broken Glow: 21300064
       TX Props Road Sign E: 21300086
+      TX Props Wooden Gate: 21300158
       TX Props Rune Pillar X2 Glow: 21300044
       TX Props Altar Rune 2: 21300146
-      TX Props Wooden Gate: 21300158
       TX Props Cube: 21300036
       TX Props Stone Coffin V: 21300076
       TX Props Gravestone B: 21300070
