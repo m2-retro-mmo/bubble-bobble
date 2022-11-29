@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-enum EnvironmentType
+public enum EnvironmentType
 {
     Ground,
     Water,
     Shelter,
-    // Bridge,
-    // Obstacle
+    // Bridge
 }
 
 public class Map : MonoBehaviour
@@ -17,16 +16,13 @@ public class Map : MonoBehaviour
     [SerializeField] private int width = 50;
     [SerializeField] private int height = 100;
 
-    public int[,] grid;
+    public EnvironmentType[,] grid;
     public Tilemap map;
     public Tile floorTile;
     public Tile waterTile;
     public System.Random ran = new System.Random();
 
     public GameObject diamondPrefab;
-    public Player playerPrefab;
-    public Camera cam;
-    public Hort hortPrefab;
 
     private float noise_density = 50;
     private int iterations = 3; // low für viele Abschnitt, high für größere Höhlen
@@ -37,25 +33,10 @@ public class Map : MonoBehaviour
         grid = GenerateNoiseGrid(noise_density);
         Tile[] tiles = { floorTile, waterTile };
 
-        apply_cellular_automaton(grid, iterations);
+        ApplyCellularAutomaton(grid, iterations);
         DrawTilemap(grid, map, tiles);
+        // PlaceObstacles(map);
         PlaceItems(map);
-
-        // instanciate Hort (TODO: put thi call into the game manager later!)
-        Hort hort1 = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        hort1.team = 0;
-        PlaceHort(hort1);
-
-        Hort hort2 = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        hort2.team = 1;
-        PlaceHort(hort2);
-
-        // instanciate player (TODO: put this call in the game manager later!)
-        Player player = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
-        player.cam = cam;
-        player.setTeamNumber(1);
-        PlacePlayer(player);
-
     }
 
     public Vector2[] GetSections(int count)
@@ -69,9 +50,9 @@ public class Map : MonoBehaviour
         return sections;
     }
 
-    int[,] GenerateNoiseGrid(float density)
+    EnvironmentType[,] GenerateNoiseGrid(float density)
     {
-        int[,] numbers = new int[width, height];
+        EnvironmentType[,] numbers = new EnvironmentType[width, height];
 
         for (int i = 0; i < height; i++)
         {
@@ -80,25 +61,23 @@ public class Map : MonoBehaviour
                 int random = ran.Next(1, 100);
                 if (random > density)
                 {
-                    numbers[j, i] = 0; // tile.floor
+                    numbers[j, i] = EnvironmentType.Ground;
                 }
                 else
                 {
-                    numbers[j, i] = 1; // tile.water
+                    numbers[j, i] = EnvironmentType.Water;
                 }
             }
         }
         return numbers;
     }
 
-    void apply_cellular_automaton(int[,] cells, int iterations)
+    void ApplyCellularAutomaton(EnvironmentType[,] cells, int iterations)
     {
         int i = 0;
         while (i < iterations)
         {
-            int[,] tempCells = cells.Clone() as int[,];
-            Debug.Log(height);
-            Debug.Log(cells.GetLength(1));
+            EnvironmentType[,] tempCells = cells.Clone() as EnvironmentType[,];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -116,7 +95,7 @@ public class Map : MonoBehaviour
                                 if (!(j == y && k == x))
                                 {
                                     //check if neighbor is a - and if so add neighbor_wall_count
-                                    if (tempCells[k, j] == 1)
+                                    if (tempCells[k, j] == EnvironmentType.Water)
                                     {
                                         neighbor_wall_count++;
                                     }
@@ -131,11 +110,11 @@ public class Map : MonoBehaviour
                     //if there are more than 4 neighbors that are - make the coordinate a - and if not make it +
                     if (neighbor_wall_count > 4)
                     {
-                        cells[x, y] = 1;
+                        cells[x, y] = EnvironmentType.Water;
                     }
                     else
                     {
-                        cells[x, y] = 0;
+                        cells[x, y] = EnvironmentType.Ground;
                     }
                 }
             }
@@ -143,20 +122,21 @@ public class Map : MonoBehaviour
         }
     }
 
-    void DrawTilemap(int[,] map, Tilemap tilemap, Tile[] tiles)
+    void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] tiles)
     {
         tilemap.ClearAllTiles();
-        for (int x = 0; x < map.GetUpperBound(0); x++)
+        for (int x = 0; x < cells.GetUpperBound(0); x++)
         {
-            for (int y = 0; y < map.GetUpperBound(1); y++)
+            for (int y = 0; y < cells.GetUpperBound(1); y++)
             {
-                if (map[x, y] == 0)
+                if (cells[x, y] == EnvironmentType.Ground)
                 {
                     tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
                 }
                 else
                 {
                     tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]); // Water
+                    // TODO set boundary for not walking into water
                 }
             }
         }
@@ -166,8 +146,6 @@ public class Map : MonoBehaviour
     {
         BoundsInt bounds = map.cellBounds;
         TileBase[] allTiles = map.GetTilesBlock(bounds);
-        // TODO: save as global reference 
-        //int[,] mapCopy = new int[tilemap.,];
 
         for (int x = 0; x < bounds.size.x; x++)
         {
@@ -187,7 +165,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    void PlacePlayer(Player player)
+    public void PlacePlayer(Player player)
     {
         byte team = player.getTeamNumber();
         Vector2[] sections = GetSections(2);
@@ -210,22 +188,10 @@ public class Map : MonoBehaviour
         }
 
         player.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
-
-        // TODO draw floor tiles under Hort if necessary
-        // for (int x = 0; x < map.GetUpperBound(0); x++)
-        // {
-        //     for (int y = 0; y < map.GetUpperBound(1); y++)
-        //     {
-        //         if (map[x, y] == 0)
-        //         {
-        //             tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
-        //         }
-        //     }
-        // }
     }
 
 
-    void PlaceHort(Hort hort)
+    public void PlaceHort(Hort hort)
     {
         Vector2[] sections = GetSections(8);
         int randomY = ran.Next(0 + (int)hort.transform.localScale.y, height - (int)hort.transform.localScale.y);
@@ -249,5 +215,15 @@ public class Map : MonoBehaviour
         // TODO: set tiles the hort uses to EnvironmentTiles.Shelter
         // int hortHeight = 
         // int hortWidth = 
+        // for (int x = 0; x < map.GetUpperBound(0); x++)
+        // {
+        //     for (int y = 0; y < map.GetUpperBound(1); y++)
+        //     {
+        //         if (map[x, y] == 0)
+        //         {
+        //             tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
+        //         }
+        //     }
+        // }
     }
 }

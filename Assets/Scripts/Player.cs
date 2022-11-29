@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     public Vector3 mousePosScreen = new Vector3();
 
     // logic
-    private bool holdsDiamond = true;
+    private bool holdsDiamond = false;
     public byte teamNumber = 1;
     public bool isCaptured = false;
 
@@ -180,8 +180,8 @@ public class Player : MonoBehaviour
 
     /**
     * is called when player collides with another Collider2D
-*/
-    private void OnTriggerEnter2D(Collider2D other)
+    */
+    private void OnTriggerStay2D(Collider2D other)
     {
         // check collision of Player with other Game objects
         switch (other.gameObject.tag)
@@ -202,7 +202,9 @@ public class Player : MonoBehaviour
                 // collect Diamond if possible
                 if (!holdsDiamond)
                 {
-                    Diamond diamond = other.GetComponent("Diamond") as Diamond;
+                    Debug.Log("collision");
+                    Debug.Log("HERE IS A DIAMOND");
+                    Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                     diamond.collect();
                     holdsDiamond = true;
                 }
