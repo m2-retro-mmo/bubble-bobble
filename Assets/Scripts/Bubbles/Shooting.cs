@@ -11,30 +11,36 @@ public class Shooting : MonoBehaviour
     [SerializeField]
     [Tooltip("the point where the bubble will be instantiated")]
     private Transform firePoint;
-    
+
     [SerializeField]
     private GameObject bubblePrefab;
 
     [Header("Bubble Settings")]
-    
+
+    [SerializeField]
+    [Tooltip("The Firerate in seconds after which the next bubble could be shot")]
+    private float fireRate = 0.4f;
+
     [SerializeField]
     [Tooltip("The force with which the bubble is shot")]
     private float bubbleForce = 20f;
-    
+
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble count will be incremented")]
     private float bubbleCoolDownTime = 3f;
 
     [Header("UI Text")]
-    
+
     [SerializeField]
     private TextMeshProUGUI bubbleCount_text;
 
     private int maxBubbleCount = 3;
-    
+
     private int bubbleCount = 3;
-    
+
     private float nextIncrementTime = 0;
+
+    private float lastShootTime = 0;
 
     void Start()
     {
@@ -45,7 +51,7 @@ public class Shooting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1"))
         {
             ShootBubble();
         }
@@ -64,23 +70,29 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Shoots the bubble from the fire point and adds force to it
     /// </summary>
-     public void ShootBubble()
+    public void ShootBubble()
     {
         // Check if the bubble count is greater than 0
         if (bubbleCount > 0)
         {
-            // spawn bubble and move to direction 
-            GameObject bullet = Instantiate(bubblePrefab, firePoint.position, firePoint.rotation);
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
+            // check if firerate allows shoting
+            if (Time.time > lastShootTime + fireRate)
+            {
+                // spawn bubble and move to direction 
+                GameObject bullet = Instantiate(bubblePrefab, firePoint.position, firePoint.rotation);
+                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+                rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
 
-            DecrementBubbleCount();
+                DecrementBubbleCount();
+
+                lastShootTime = Time.time;
+            }
         }
-        else 
+        else
         {
             Debug.Log("No more bubbles");
             StartCoroutine(BlinkBubbleCountText());
-        } 
+        }
 
     }
 
@@ -89,7 +101,7 @@ public class Shooting : MonoBehaviour
     /// </summary>
     private void DecrementBubbleCount()
     {
-        if(bubbleCount > 0)
+        if (bubbleCount > 0)
         {
             bubbleCount--;
             ChangeBubbleCount_UI();
@@ -101,7 +113,7 @@ public class Shooting : MonoBehaviour
     /// </summary>
     private void IncrementBubbleCount()
     {
-        if(bubbleCount < maxBubbleCount)
+        if (bubbleCount < maxBubbleCount)
         {
             bubbleCount++;
             ChangeBubbleCount_UI();

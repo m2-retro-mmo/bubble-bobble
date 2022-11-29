@@ -21,25 +21,17 @@ public class Player : MonoBehaviour
 
     // logic
     private bool holdsDiamond = true;
-    private byte teamNumber = 0;
-    private bool isCaptured = false;
+    public byte teamNumber = 1;
+    public bool isCaptured = false;
 
     // bubble settings
     private byte maxBubbleCount = 3;
     private byte bubbleCount = 3;
     public float itemDuration = 0;
+    private float bubbleBreakoutTime = 5f;
 
-    /**
-    * checks if the player already holds a diamond, if not the player now holds one
-    * @return true successfully collected Diamond, false player already holds a diamond 
-    */
-    public bool collectDiamond()
-    {
-        // TODO: change appearance of dragon to dragon holding diamond
-        if (holdsDiamond) return false;
-        else holdsDiamond = true;
-        return true;
-    }
+    // Debug
+    private SpriteRenderer spriteRenderer;
 
     /**
     * removes the diamonds from the users inventory
@@ -57,6 +49,8 @@ public class Player : MonoBehaviour
     {
         // TODO: change appearance to captured player
         isCaptured = true;
+        spriteRenderer.color = Color.red;
+        Invoke("uncapture", bubbleBreakoutTime);
     }
 
     /**
@@ -66,6 +60,7 @@ public class Player : MonoBehaviour
     {
         // TODO: change appearance to uncaptured player
         isCaptured = false;
+        spriteRenderer.color = Color.white;
     }
 
     /**
@@ -103,6 +98,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
@@ -120,8 +116,6 @@ public class Player : MonoBehaviour
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        // Vector2 newPos = rb.position - lookDir.normalized * 3f;
-        // directionIndicator.transform.position = Vector3.Slerp(directionIndicator.transform.position, newPos, Time.deltaTime * 30);
         directionIndicator.transform.position = (Vector2)rb.position - lookDir.normalized * 3f;
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
     }
@@ -158,7 +152,7 @@ public class Player : MonoBehaviour
     /**
     * moves the player to an givn direction
     * @direction direction the player should move to
-*/
+    */
     public bool MovePlayer(Vector2 direction)
     {
         int count = rb.Cast(
@@ -187,33 +181,36 @@ public class Player : MonoBehaviour
     /**
     * is called when player collides with another Collider2D
 */
-    private void OnTriggerEnter2D(Collider2D col)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // check collision of Player with the Hort
-        // TODO: instead of compare name we should use tags here!
-        switch (col.gameObject.tag)
+        // check collision of Player with other Game objects
+        switch (other.gameObject.tag)
         {
-            case "hort":
-                // TODO: check if hort belongs to players Team 
-                Hort hort = col.GetComponent("Hort") as Hort;
+            case "Hort":
+                Hort hort = other.GetComponent("Hort") as Hort;
                 if (hort != null)
                 {
                     // put diamond into hort
-                    if (holdsDiamond)
+                    if (holdsDiamond && teamNumber == hort.team)
                     {
                         hort.AddDiamond();
                         deliverDiamond();
                     }
                 }
                 break;
-            case "item":
-                // TODO: implement Item collision
+            case "Diamond":
+                // collect Diamond if possible
+                if (!holdsDiamond)
+                {
+                    Diamond diamond = other.GetComponent("Diamond") as Diamond;
+                    diamond.collect();
+                    holdsDiamond = true;
+                }
+                else
+                {
+                    Debug.Log("Player already holds a Diamond!");
+                }
                 break;
-
-            case "bubble":
-                // TODO: Bubble collision goes here
-                break;
-
             default:
                 break;
         }
