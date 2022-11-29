@@ -21,7 +21,7 @@ public class Hort : MonoBehaviour
     {
         diamonds++;
         SpawnPlusOne();
-        teamPoints_text.text = diamonds.ToString();
+        // teamPoints_text.text = diamonds.ToString();
     }
 
     private void SpawnPlusOne()
