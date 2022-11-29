@@ -392,3 +392,8 @@ MonoBehaviour:
   waterTile: {fileID: 11400000, guid: 66eed7910fc4b450d81f9fcb0fc95b9f, type: 2}
   diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
     type: 3}
+  playerPrefab: {fileID: 7145253158310846173, guid: 2976d6f155c9715e88592944d2614b65,
+    type: 3}
+  cam: {fileID: 964968711}
+  hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
+    type: 3}
