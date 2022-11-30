@@ -20091,7 +20091,7 @@ PrefabInstance:
     - target: {fileID: 7108714610377426458, guid: a74371c9405716e42bdaf2e7d190ec46,
         type: 3}
       propertyPath: startGameWithBots
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7108714610377426459, guid: a74371c9405716e42bdaf2e7d190ec46,
         type: 3}
@@ -21329,6 +21329,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570426636042546520, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2570426636684766783, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
         type: 3}

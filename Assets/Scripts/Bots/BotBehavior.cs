@@ -114,6 +114,7 @@ public class BotBehavior : MonoBehaviour
 
                     // set goal of bot movement to opponent position
                     botMovement.goal = opponent.transform;
+                    Debug.Log("set goal to opponent");
 
                     // multiply interactionPriority with interactionWeight
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];

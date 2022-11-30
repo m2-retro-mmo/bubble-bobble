@@ -17,25 +17,20 @@ public class BotMovement : MonoBehaviour
 
     private BotBehavior behavior;
 
-    private Tilemap tilemap;
-
     private Pathfinding pathfinding;
 
     private List<GraphNode> path;
 
-    private Graph graph;
-
     private int currentIndex;
 
     private Transform directionIndicator;
+    
+    private Graph graph;
 
     void Start()
     {
         behavior = GetComponent<BotBehavior>();
         directionIndicator = transform.Find("Triangle");
-        
-        tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-        graph = new Graph(tilemap, true);
     }
 
     private void Update()
@@ -55,7 +50,10 @@ public class BotMovement : MonoBehaviour
 
             behavior.SetChangedInteractionID(false);
         }
-        LookAtGoal();
+        if(goal != null)
+        {
+            LookAtGoal();
+        }
     }
 
     /// <summary>
@@ -168,6 +166,11 @@ public class BotMovement : MonoBehaviour
     private Vector3 GetPosition()
     {
         return transform.position;
+    }
+    
+    public void SetGraph(Graph graph)
+    {
+        this.graph = graph;
     }
 
     /// <summary>

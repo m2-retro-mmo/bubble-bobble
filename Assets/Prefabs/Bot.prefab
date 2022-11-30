@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2570426636684766777}
   - component: {fileID: 2570426636684766724}
   - component: {fileID: 2570426636684766779}
-  - component: {fileID: 3226722416489304922}
   - component: {fileID: 2694520938517084979}
   - component: {fileID: 8531025448884678128}
   m_Layer: 0
@@ -138,19 +137,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3226722416489304922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2570426636042546520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 090f2f4b396639b4a8eeffeafec4cabb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goal: {fileID: 0}
 --- !u!114 &2694520938517084979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +164,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df68fca6042420847becea77e3b455f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firePoint: {fileID: 3159056796918937272}
+  bubblePrefab: {fileID: 8163775536198988558, guid: 1dabe89422e7da44dad33391978eaa55,
+    type: 3}
+  bubbleForce: 20
+  bubbleCoolDownTime: 3
 --- !u!1 &3159056796918937159
 GameObject:
   m_ObjectHideFlags: 0
