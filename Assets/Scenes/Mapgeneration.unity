@@ -458,7 +458,11 @@ MonoBehaviour:
   height: 50
   map: {fileID: 1110822628}
   obstacleMap: {fileID: 2040343009}
-  floorTile: {fileID: 11400000, guid: 9c828b88af59947488ba8de09e0970e2, type: 2}
+  floorTiles:
+  - {fileID: 11400000, guid: 7b6e368fc0ee90b4ca09e0f71344589a, type: 2}
+  - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
+  - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
+  - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
   waterTile: {fileID: 11400000, guid: 66eed7910fc4b450d81f9fcb0fc95b9f, type: 2}
   tree: {fileID: 11400000, guid: b392e58d77907894bbb747280028c119, type: 2}
   diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,

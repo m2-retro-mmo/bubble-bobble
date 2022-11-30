@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
 
 public enum EnvironmentType
 {
@@ -19,7 +20,7 @@ public class Map : MonoBehaviour
     public EnvironmentType[,] grid;
     public Tilemap map;
     public Tilemap obstacleMap;
-    public Tile floorTile;
+    public Tile[] floorTiles;
     public Tile waterTile;
     public Tile tree;
     public System.Random ran = new System.Random();
@@ -34,10 +35,9 @@ public class Map : MonoBehaviour
         map = GameObject.Find("Ground").GetComponent<Tilemap>();
         obstacleMap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
         grid = GenerateNoiseGrid(noise_density);
-        Tile[] tiles = { floorTile, waterTile };
 
         ApplyCellularAutomaton(grid, iterations);
-        DrawTilemap(grid, map, tiles);
+        DrawTilemap(grid, map, floorTiles, waterTile);
         // PlaceObstacles(map);
         PlaceItems(map);
         PlaceObstacles();
@@ -127,7 +127,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] tiles)
+    void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] floorTiles, Tile waterTile)
     {
         tilemap.ClearAllTiles();
         for (int x = 0; x < cells.GetUpperBound(0); x++)
@@ -136,11 +136,12 @@ public class Map : MonoBehaviour
             {
                 if (cells[x, y] == EnvironmentType.Ground)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
+                    int random = ran.Next(0, floorTiles.GetLength(0) - 1);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[random]); // Floor
                 }
                 else
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]); // Water
+                    tilemap.SetTile(new Vector3Int(x, y, 0), waterTile); // Water
                     // TODO set boundary for not walking into water
                 }
             }
@@ -157,7 +158,7 @@ public class Map : MonoBehaviour
             for (int y = 0; y < bounds.size.y; y++)
             {
                 TileBase tile = allTiles[x + y * bounds.size.x];
-                if (tile.name == floorTile.name)
+                if (Array.Exists(floorTiles, element => element.name == tile.name))
                 {
                     int random = ran.Next(1, 100);
                     if (random < 20)
