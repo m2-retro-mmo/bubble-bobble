@@ -232,7 +232,7 @@ public class Map : MonoBehaviour
         // }
     }
 
-    // TODO: place random obstacles on the obstacle Map
+    // place random obstacles on the obstacle Map
     public void PlaceObstacles()
     {
         obstacleMap.ClearAllTiles();

@@ -346,8 +346,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -44025399
-  m_SortingLayer: 2
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -460,7 +460,7 @@ MonoBehaviour:
   obstacleMap: {fileID: 2040343009}
   floorTile: {fileID: 11400000, guid: 9c828b88af59947488ba8de09e0970e2, type: 2}
   waterTile: {fileID: 11400000, guid: 66eed7910fc4b450d81f9fcb0fc95b9f, type: 2}
-  tree: {fileID: 11400000, guid: 8be27a7af89a7164283e45689a61753d, type: 2}
+  tree: {fileID: 11400000, guid: b392e58d77907894bbb747280028c119, type: 2}
   diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
     type: 3}
 --- !u!1 &2040343006
@@ -474,6 +474,7 @@ GameObject:
   - component: {fileID: 2040343007}
   - component: {fileID: 2040343009}
   - component: {fileID: 2040343008}
+  - component: {fileID: 2040343010}
   m_Layer: 0
   m_Name: Obstacles
   m_TagString: Untagged
@@ -583,3 +584,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!19719996 &2040343010
+TilemapCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040343006}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
