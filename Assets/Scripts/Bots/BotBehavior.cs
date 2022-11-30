@@ -22,7 +22,7 @@ public enum InteractionID
 /// it checks the area around the bot and sets the Interaction id according to the colliders in the area
 /// the interactionId defines what the bot should do
 /// </summary>
-public class BotBehavior : MonoBehaviour
+public class BotBehavior : Player
 {
     public InteractionID interactionID = InteractionID.None;
 
@@ -51,6 +51,7 @@ public class BotBehavior : MonoBehaviour
         botMovement = GetComponent<BotMovement>();
 
         StartCoroutine(CheckAreaOfInterest());
+        teamNumber = 0; // TODO: später anders lösen, nur zum testen
     }
 
     /// <summary>
@@ -89,7 +90,7 @@ public class BotBehavior : MonoBehaviour
     private void CheckForOpponents()
     {
         // get all opponents in the area
-        Collider2D[] opponentColliders = GetCollidersByTag("Player"); // TODO: search for Tag of opponent Team
+        Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
         // if there are no opponents do nothing
         if (opponentColliders.Length > 0)
@@ -141,6 +142,23 @@ public class BotBehavior : MonoBehaviour
     }
 
     /// <summary>
+    /// Gets the colliders by team number.
+    /// either bots or player
+    /// </summary>
+    /// <param name="teamNumber">The team number.</param>
+    /// <returns>An array of Collider2DS.</returns>
+    private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
+    {
+        colliders = colliders.Where(c => 
+            (c.gameObject.TryGetComponent(out Player player) && player.getTeamNumber() == teamNumber) ||
+            (c.gameObject.TryGetComponent(out BotBehavior bot) && bot.getTeamNumber() == teamNumber)).ToArray();
+        // order by distance
+        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+
+        return colliders;
+    }
+
+    /// <summary>
     /// sets the interactionID to the highest priority value
     /// if no interaction was found, increase the radius of the area
     /// </summary>
@@ -164,6 +182,17 @@ public class BotBehavior : MonoBehaviour
         {
             interactionRadius += 10f;
         }
+    }
+
+    // TODO: in gameManager verschieben?
+    /// <summary>
+    /// Gets the opponent team number.
+    /// </summary>
+    /// <param name="myTeamNumber">The my team number.</param>
+    /// <returns>A byte.</returns>
+    private byte GetOpponentTeamNumber(byte myTeamNumber)
+    {
+        return (byte)(myTeamNumber == 0 ? 1 : 0);
     }
 
     public bool GetChangedInteractionID()
