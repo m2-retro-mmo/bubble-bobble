@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject botPrefab;
     public Map map;
     public Camera cam;
+    public Camera minimapCam;
 
     private byte teamCount = 2;
 
@@ -40,6 +41,10 @@ public class GameManager : MonoBehaviour
         // camera should follow main player
         CameraFollow camFollow = cam.GetComponent<CameraFollow>();
         camFollow.target = player.transform;
+        
+        // minimap camera should follow main player
+        CameraFollow minimapCamFollow = cam.GetComponent<CameraFollow>();
+        minimapCamFollow.target = player.transform;
         // TODO: place some bots random on the map
         // GameObject bot = Instantiate(botPrefab, new Vector3(Random.Range(-39, 10), Random.Range(-4, 23), 0), Quaternion.identity);
         // BotMovement botMovement = bot.GetComponent<BotMovement>() as BotMovement;
