@@ -189,8 +189,8 @@ public class Map : MonoBehaviour
             {
                 randomX = ran.Next((int)sections[1].x, (int)sections[1].y);
             }
-            // while randomX nicht auf einer wasser tile
-            if (grid[randomX, randomY] == (int)EnvironmentType.Ground) break;
+            // while randomX nicht auf einer wasser tile und kein obstacle auf dieser position
+            if (grid[randomX, randomY] == (int)EnvironmentType.Ground && obstacleMap.GetTile(new Vector3Int(randomX, randomY, 0)) == null) break;
         }
 
         player.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
@@ -241,7 +241,8 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                if (ran.Next(0, 100) < 5)
+                // check if position is water 
+                if (grid[x, y] == EnvironmentType.Ground && ran.Next(0, 100) < 4)
                 {
                     obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
                 }

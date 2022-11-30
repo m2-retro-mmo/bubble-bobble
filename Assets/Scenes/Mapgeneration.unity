@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b3f0654c8f853522b50a9c6cbc0a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 7145253158310846173, guid: 2976d6f155c9715e88592944d2614b65,
+  playerPrefab: {fileID: -5874017497146883413, guid: 0120e5089947f3240a353004e1a478d1,
     type: 3}
   hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
     type: 3}
@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 1110822626}
   - component: {fileID: 1110822628}
   - component: {fileID: 1110822627}
+  - component: {fileID: 1110822629}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -395,6 +396,22 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!19719996 &1110822629
+TilemapCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110822625}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1788809224
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +480,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
   - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
-  waterTile: {fileID: 11400000, guid: 66eed7910fc4b450d81f9fcb0fc95b9f, type: 2}
+  waterTile: {fileID: 11400000, guid: 4dfdf77930f6d2b4b986bb91965139a3, type: 2}
   tree: {fileID: 11400000, guid: b392e58d77907894bbb747280028c119, type: 2}
   diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
     type: 3}
