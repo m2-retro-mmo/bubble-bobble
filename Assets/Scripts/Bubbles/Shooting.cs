@@ -94,16 +94,7 @@ public class Shooting : MonoBehaviour
                 Rigidbody2D rb = bubble.GetComponent<Rigidbody2D>();
                 rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
 
-                int myTeam = -1;
-
-                if (character.tag == "Player")
-                {
-                    myTeam = character.GetComponent<Player>().GetTeamNumber();
-                }
-                else if(character.tag == "Bot")
-                {
-                    myTeam = character.GetComponent<Bot>().GetTeamNumber();
-                }
+                int myTeam = character.GetComponent<CharacterBase>().GetTeamNumber();
 
                 bubble.GetComponent<Bubble>().SetTeamNumber(myTeam);
 
