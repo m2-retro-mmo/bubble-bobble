@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
         // instanciate a local player
         Player player = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
         player.cam = cam;
-        player.setTeamNumber(1);
+        player.SetTeamNumber(1);
         map.PlacePlayer(player);
 
         // camera should follow main player

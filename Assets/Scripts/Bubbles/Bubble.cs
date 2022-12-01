@@ -31,9 +31,9 @@ public class Bubble : MonoBehaviour
         {
             // TODO: check Team of player
             Player player = collision.gameObject.GetComponent("Player") as Player;
-            if (!player.isCaptured)
+            if (!player.GetIsCaptured())
             {
-                if (player.getTeamNumber() != team)
+                if (player.GetTeamNumber() != team)
                 {
                     player.capture();
                 }

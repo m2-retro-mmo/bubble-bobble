@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : CharacterBase
 {
     // Movement
     private Vector2 moveInput;
@@ -21,88 +21,14 @@ public class Player : MonoBehaviour
     public Vector3 mousePosScreen = new Vector3();
     public float distanceFactor = 2f;
 
-    // logic
-    private bool holdsDiamond = false;
-    public byte teamNumber = 1;
-    public bool isCaptured = false;
-
-    // bubble settings
-    private byte maxBubbleCount = 3;
-    private byte bubbleCount = 3;
     public float itemDuration = 0;
-    private float bubbleBreakoutTime = 5f;
-
-    // Debug
-    private SpriteRenderer spriteRenderer;
-
-    /**
-    * removes the diamonds from the users inventory
-    */
-    private void deliverDiamond()
-    {
-        // TODO: change appearance of dragon here
-        holdsDiamond = false;
-    }
-
-    /**
-    * is triggered when the player got captured by a bubble
-    */
-    public void capture()
-    {
-        // TODO: change appearance to captured player
-        isCaptured = true;
-        spriteRenderer.color = Color.red;
-        Invoke("uncapture", bubbleBreakoutTime);
-    }
-
-    /**
-    * uncaptures the dragon 
-    */
-    public void uncapture()
-    {
-        // TODO: change appearance to uncaptured player
-        isCaptured = false;
-        spriteRenderer.color = Color.white;
-    }
-
-    /**
-    * set the team number of the player
-    */
-    public void setTeamNumber(byte newTeamNumber)
-    {
-        teamNumber = newTeamNumber;
-    }
-
-    /**
-    * get the players team number
-    */
-    public byte getTeamNumber()
-    {
-        return teamNumber;
-    }
-
-    /**
-    * shoots the bubble in the direction of the mouse cursor
-    */
-    public void shootBubble()
-    {
-        // TODO: implement cooldown for shooting bubbles here
-        if (bubbleCount > 0)
-        {
-            // TODO: spawn bubble and move to direction etc.
-
-
-            bubbleCount -= 1;
-        }
-        // TODO: if bubble cannot be shooted mabye show that in the HUD?
-    }
 
     // Start is called before the first frame update
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<BoxCollider2D>();
+        col = gameObject.GetComponent<BoxCollider2D>();
         directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
 
@@ -218,7 +144,7 @@ public class Player : MonoBehaviour
                     Debug.Log("HERE IS A DIAMOND");
                     Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                     diamond.collect();
-                    holdsDiamond = true;
+                    collectDiamond();
                 }
                 else
                 {
@@ -228,15 +154,5 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
-    }
-
-    public bool GetIsCapture()
-    {
-        return isCaptured;
-    }
-
-    public bool GetHoldsDiamond()
-    {
-        return holdsDiamond;
     }
 }

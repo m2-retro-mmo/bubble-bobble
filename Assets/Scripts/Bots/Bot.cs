@@ -22,7 +22,7 @@ public enum InteractionID
 /// it checks the area around the bot and sets the Interaction id according to the colliders in the area
 /// the interactionId defines what the bot should do
 /// </summary>
-public class BotBehavior : Player
+public class Bot : CharacterBase
 {
     public InteractionID interactionID = InteractionID.None;
 
@@ -101,7 +101,7 @@ public class BotBehavior : Player
                 Player opponent = collider.gameObject.GetComponent<Player>();
 
                 // check if the opponent is not captured
-                if (!opponent.GetIsCapture()) // TODO
+                if (!opponent.GetIsCaptured()) // TODO
                 {
                     // has a higher priority if opponent holds diamond
                     if (opponent.GetHoldsDiamond())
@@ -150,8 +150,8 @@ public class BotBehavior : Player
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
         colliders = colliders.Where(c => 
-            (c.gameObject.TryGetComponent(out Player player) && player.getTeamNumber() == teamNumber) ||
-            (c.gameObject.TryGetComponent(out BotBehavior bot) && bot.getTeamNumber() == teamNumber)).ToArray();
+            (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
+            (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 

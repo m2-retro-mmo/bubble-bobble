@@ -15,7 +15,7 @@ public class BotMovement : MonoBehaviour
     
     private float botSpeed = 3f;
 
-    private BotBehavior behavior;
+    private Bot behavior;
 
     private Pathfinding pathfinding;
 
@@ -29,7 +29,7 @@ public class BotMovement : MonoBehaviour
 
     void Start()
     {
-        behavior = GetComponent<BotBehavior>();
+        behavior = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
     }
 
@@ -99,7 +99,7 @@ public class BotMovement : MonoBehaviour
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
-
+            
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].getX(), path[currentIndex].getY());
