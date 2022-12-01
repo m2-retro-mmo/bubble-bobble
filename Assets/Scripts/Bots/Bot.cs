@@ -50,8 +50,24 @@ public class Bot : CharacterBase
     {
         botMovement = GetComponent<BotMovement>();
 
-        StartCoroutine(CheckAreaOfInterest());
+        StartBot();
         teamNumber = 0; // TODO: später anders lösen, nur zum testen
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void ResetBot()
+    {
+        StopAllCoroutines();
+        SetInteractionID(InteractionID.None);
+        SetChangedInteractionID(false);
+
+        Invoke("StartBot", bubbleBreakoutTime);
+    }
+
+    public void StartBot()
+    {
+        StartCoroutine(CheckAreaOfInterest());
     }
 
     /// <summary>
@@ -61,6 +77,7 @@ public class Bot : CharacterBase
     /// <returns>An IEnumerator.</returns>
     IEnumerator CheckAreaOfInterest()
     {
+        yield return new WaitForSeconds(1f);
         // check area every ten seconds
         while (true)
         {
@@ -208,5 +225,10 @@ public class Bot : CharacterBase
     public InteractionID GetInteractionID()
     {
         return interactionID;
+    }
+
+    public void SetInteractionID(InteractionID newInteractionID)
+    {
+        interactionID = newInteractionID;
     }
 }

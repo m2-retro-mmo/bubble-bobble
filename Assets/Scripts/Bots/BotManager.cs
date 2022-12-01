@@ -10,6 +10,9 @@ public class BotManager : MonoBehaviour
     private bool startGameWithBots;
 
     [SerializeField]
+    private bool DEBUG = false;
+
+    [SerializeField]
     [Tooltip("The number of bots the game should start with")]
     private int botNumber;
 
@@ -31,14 +34,23 @@ public class BotManager : MonoBehaviour
             tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
             graph = new Graph(tilemap, true);
             
-            for (int i = 0; i < botNumber; i++)
+            if (!DEBUG)
             {
-                // spawn a bot
-                // TODO: spawn the bot within the bounds of the map
-                GameObject bot = Instantiate(botPrefab, new Vector3(Random.Range(-39, 10), Random.Range(-4, 23), 0), Quaternion.identity);
-                bot.transform.parent = bots.transform;
+                for (int i = 0; i < botNumber; i++)
+                {
+                    // spawn a bot
+                    // TODO: spawn the bot within the bounds of the map
+                    GameObject bot = Instantiate(botPrefab, new Vector3(Random.Range(-39, 10), Random.Range(-4, 23), 0), Quaternion.identity);
+                    bot.transform.parent = bots.transform;
 
-                bot.AddComponent<BotMovement>();
+                    //TODO SetTeamNumber
+
+                    bot.GetComponent<BotMovement>().SetGraph(graph);
+                }
+            }
+            else
+            {
+                GameObject bot = Instantiate(botPrefab, new Vector3(-21.5f, 19f, 0f), Quaternion.identity);
                 bot.GetComponent<BotMovement>().SetGraph(graph);
             }
         }

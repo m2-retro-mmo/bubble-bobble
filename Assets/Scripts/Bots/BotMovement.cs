@@ -15,7 +15,7 @@ public class BotMovement : MonoBehaviour
     
     private float botSpeed = 3f;
 
-    private Bot behavior;
+    private Bot bot;
 
     private Pathfinding pathfinding;
 
@@ -29,16 +29,16 @@ public class BotMovement : MonoBehaviour
 
     void Start()
     {
-        behavior = GetComponent<Bot>();
+        bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
     }
 
     private void Update()
     {
         // if the Interaction ID was changed stop everything and start new interaction
-        if (behavior.GetChangedInteractionID())
+        if (bot.GetChangedInteractionID())
         {
-            Debug.Log("Interaction changed to " + behavior.GetInteractionID().ToString());
+            Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
 
             // reset everythin for new interaction
             path = null;
@@ -48,11 +48,18 @@ public class BotMovement : MonoBehaviour
 
             StartInteraction();
 
-            behavior.SetChangedInteractionID(false);
+            bot.SetChangedInteractionID(false);
         }
         if(goal != null)
         {
             LookAtGoal();
+        }
+        
+        if (bot.GetIsCaptured())
+        {
+            CancelInvoke();
+            StopAllCoroutines();
+            bot.ResetBot();
         }
     }
 
@@ -61,7 +68,7 @@ public class BotMovement : MonoBehaviour
     /// </summary>
     private void StartInteraction()
     {
-        switch (behavior.GetInteractionID())
+        switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
                 Debug.Log("Start interaction with opponent");
@@ -111,7 +118,7 @@ public class BotMovement : MonoBehaviour
 
                 if (distToPlayer <= shootRange)
                 {
-                    GetComponent<BotShooting>().ShootBubble();
+                    GetComponent<Shooting>().ShootBubble();
                     CancelInvoke();
                     path = null;
                 }

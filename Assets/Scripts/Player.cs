@@ -26,7 +26,7 @@ public class Player : CharacterBase
     // Start is called before the first frame update
     void Start()
     {
-        //spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         col = gameObject.GetComponent<BoxCollider2D>();
         directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
@@ -61,7 +61,12 @@ public class Player : CharacterBase
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButton("Fire1"))
+        {
+            GetComponent<Shooting>().ShootBubble();
+        }
     }
+
     private void FixedUpdate()
     {
         moveInput.x = Input.GetAxis("Horizontal");

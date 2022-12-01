@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class Bubble : MonoBehaviour
     private float bubbleLifeTime = 5f;
 
     [SerializeField]
-    private int team = 1;
+    private int teamNumber = -1;
 
     private void Start()
     {
@@ -27,24 +28,35 @@ public class Bubble : MonoBehaviour
     /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            // TODO: check Team of player
-            Player player = collision.gameObject.GetComponent("Player") as Player;
-            if (!player.GetIsCaptured())
+            bool foundPlayer = collision.gameObject.TryGetComponent(out Player player); // TODO dieser Code muss schöner werden, rettet die Wale, findet Nemo
+            collision.gameObject.TryGetComponent(out Bot bot);
+            if (foundPlayer == true)
             {
-                if (player.GetTeamNumber() != team)
-                {
-                    player.capture();
-                }
-
-                // destroy bubble instant
-                Destroy(gameObject, 0);
+                player.CaptureCharacter(teamNumber);
             }
+            else
+            {
+                bot.CaptureCharacter(teamNumber);
+            }
+
+            // destroy bubble instant
+            Destroy(gameObject, 0);
         }
         else if (collision.gameObject.tag == "Bubble")
         {
             Destroy(gameObject, 0.0f);
         }
+    }
+
+    public int GetTeamNumber()
+    {
+        return this.teamNumber;
+    }
+
+    public void SetTeamNumber(int teamNumber)
+    {
+        this.teamNumber = teamNumber;
     }
 }

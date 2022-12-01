@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CharacterBase : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class CharacterBase : MonoBehaviour
 
     protected SpriteRenderer spriteRenderer;
 
-    private float bubbleBreakoutTime = 5f;
+    protected float bubbleBreakoutTime = 5f;
 
     // Start is called before the first frame update
     void Start()
@@ -38,28 +40,35 @@ public class CharacterBase : MonoBehaviour
         // TODO: change appearance of dragon here
         holdsDiamond = true;
     }
-
+    
     /**
     * is triggered when the player got captured by a bubble
     */
-    public void capture()
+    public void Capture()
     {
         // TODO: change appearance to captured player
         isCaptured = true;
         spriteRenderer.color = Color.red;
-        Invoke("uncapture", bubbleBreakoutTime);
+        Invoke("Uncapture", bubbleBreakoutTime);
     }
 
     /**
     * uncaptures the dragon 
     */
-    public void uncapture()
+    public void Uncapture()
     {
         // TODO: change appearance to uncaptured player
         isCaptured = false;
         spriteRenderer.color = Color.white;
     }
 
+    public void CaptureCharacter(int teamNumber)
+    {
+        if (GetTeamNumber() != teamNumber)
+        {
+            Capture();
+        }
+    }
     /**
     * set the team number of the player
     */
