@@ -22,7 +22,7 @@ public enum InteractionID
 /// it checks the area around the bot and sets the Interaction id according to the colliders in the area
 /// the interactionId defines what the bot should do
 /// </summary>
-public class BotBehavior : MonoBehaviour
+public class Bot : CharacterBase
 {
     public InteractionID interactionID = InteractionID.None;
 
@@ -50,6 +50,23 @@ public class BotBehavior : MonoBehaviour
     {
         botMovement = GetComponent<BotMovement>();
 
+        StartBot();
+        teamNumber = 0; // TODO: später anders lösen, nur zum testen
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void ResetBot()
+    {
+        StopAllCoroutines();
+        SetInteractionID(InteractionID.None);
+        SetChangedInteractionID(false);
+
+        Invoke("StartBot", bubbleBreakoutTime);
+    }
+
+    public void StartBot()
+    {
         StartCoroutine(CheckAreaOfInterest());
     }
 
@@ -60,6 +77,7 @@ public class BotBehavior : MonoBehaviour
     /// <returns>An IEnumerator.</returns>
     IEnumerator CheckAreaOfInterest()
     {
+        yield return new WaitForSeconds(1f);
         // check area every ten seconds
         while (true)
         {
@@ -89,7 +107,7 @@ public class BotBehavior : MonoBehaviour
     private void CheckForOpponents()
     {
         // get all opponents in the area
-        Collider2D[] opponentColliders = GetCollidersByTag("Player"); // TODO: search for Tag of opponent Team
+        Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
         // if there are no opponents do nothing
         if (opponentColliders.Length > 0)
@@ -100,7 +118,7 @@ public class BotBehavior : MonoBehaviour
                 Player opponent = collider.gameObject.GetComponent<Player>();
 
                 // check if the opponent is not captured
-                if (!opponent.GetIsCapture()) // TODO
+                if (!opponent.GetIsCaptured()) // TODO
                 {
                     // has a higher priority if opponent holds diamond
                     if (opponent.GetHoldsDiamond())
@@ -114,6 +132,7 @@ public class BotBehavior : MonoBehaviour
 
                     // set goal of bot movement to opponent position
                     botMovement.goal = opponent.transform;
+                    Debug.Log("set goal to opponent");
 
                     // multiply interactionPriority with interactionWeight
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
@@ -133,6 +152,23 @@ public class BotBehavior : MonoBehaviour
     private Collider2D[] GetCollidersByTag(string tagName)
     {
         colliders = colliders.Where(c => c.gameObject.tag == tagName).ToArray();
+        // order by distance
+        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+
+        return colliders;
+    }
+
+    /// <summary>
+    /// Gets the colliders by team number.
+    /// either bots or player
+    /// </summary>
+    /// <param name="teamNumber">The team number.</param>
+    /// <returns>An array of Collider2DS.</returns>
+    private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
+    {
+        colliders = colliders.Where(c => 
+            (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
+            (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
@@ -165,6 +201,17 @@ public class BotBehavior : MonoBehaviour
         }
     }
 
+    // TODO: in gameManager verschieben?
+    /// <summary>
+    /// Gets the opponent team number.
+    /// </summary>
+    /// <param name="myTeamNumber">The my team number.</param>
+    /// <returns>A byte.</returns>
+    private byte GetOpponentTeamNumber(byte myTeamNumber)
+    {
+        return (byte)(myTeamNumber == 0 ? 1 : 0);
+    }
+
     public bool GetChangedInteractionID()
     {
         return changedInteractionID;
@@ -178,5 +225,10 @@ public class BotBehavior : MonoBehaviour
     public InteractionID GetInteractionID()
     {
         return interactionID;
+    }
+
+    public void SetInteractionID(InteractionID newInteractionID)
+    {
+        interactionID = newInteractionID;
     }
 }

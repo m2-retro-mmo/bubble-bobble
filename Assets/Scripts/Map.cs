@@ -173,7 +173,7 @@ public class Map : MonoBehaviour
 
     public void PlacePlayer(Player player)
     {
-        byte team = player.getTeamNumber();
+        byte team = player.GetTeamNumber();
         Vector2[] sections = GetSections(2);
         int randomX, randomY;
 
