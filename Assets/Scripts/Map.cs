@@ -152,6 +152,7 @@ public class Map : MonoBehaviour
     {
         BoundsInt bounds = map.cellBounds;
         TileBase[] allTiles = map.GetTilesBlock(bounds);
+        GameObject diamondParent = new GameObject("Diamonds");
 
         for (int x = 0; x < bounds.size.x; x++)
         {
@@ -165,15 +166,16 @@ public class Map : MonoBehaviour
                     {
                         // move by 0.5f to center diamond in a tile
                         GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
+                        item.transform.parent = diamondParent.transform;
                     }
                 }
             }
         }
     }
 
-    public void PlacePlayer(Player player)
+    public void PlaceCharacter(CharacterBase character)
     {
-        byte team = player.GetTeamNumber();
+        byte team = character.GetTeamNumber();
         Vector2[] sections = GetSections(2);
         int randomX, randomY;
 
@@ -193,7 +195,7 @@ public class Map : MonoBehaviour
             if (grid[randomX, randomY] == (int)EnvironmentType.Ground && obstacleMap.GetTile(new Vector3Int(randomX, randomY, 0)) == null) break;
         }
 
-        player.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
     }
 
 
