@@ -7,6 +7,8 @@ public class Hort : MonoBehaviour
 {
     public int diamonds = 0;
     public byte team = 1;
+    public byte width = 7;
+    public byte height = 7;
 
     [Header("UI Text")]
 
@@ -16,6 +18,11 @@ public class Hort : MonoBehaviour
     // public TextMeshProUGUI hortPointCounter;
 
     public GameObject plusOnePrefab;
+
+    private void Awake()
+    {
+        gameObject.transform.localScale = new Vector3(width, height, 0);
+    }
 
     public void AddDiamond()
     {

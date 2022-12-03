@@ -34,14 +34,25 @@ public class Map : MonoBehaviour
     {
         map = GameObject.Find("Ground").GetComponent<Tilemap>();
         obstacleMap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-        grid = GenerateNoiseGrid(noise_density);
+    }
 
+    public void GenerateMap(List<Hort> horts)
+    {
+        grid = GenerateNoiseGrid(noise_density);
         ApplyCellularAutomaton(grid, iterations);
         DrawTilemap(grid, map, floorTiles, waterTile);
-        // PlaceObstacles(map);
-        PlaceItems(map);
+        foreach (Hort hort in horts)
+        {
+            PlaceHort(hort);
+        }
         PlaceObstacles();
+        PlaceItems(map);
+    }
 
+    // checks if there is water or an obstacles on the given position
+    private Boolean TileIsFree(int x, int y)
+    {
+        return grid[x, y] == EnvironmentType.Ground && obstacleMap.GetTile(new Vector3Int(x, y, 0)) == null;
     }
 
     public Vector2[] GetSections(int count)
@@ -148,26 +159,21 @@ public class Map : MonoBehaviour
         }
     }
 
+    // TODO: check for obstacles as well! 
     void PlaceItems(Tilemap map)
     {
         BoundsInt bounds = map.cellBounds;
-        TileBase[] allTiles = map.GetTilesBlock(bounds);
         GameObject diamondParent = new GameObject("Diamonds");
 
         for (int x = 0; x < bounds.size.x; x++)
         {
             for (int y = 0; y < bounds.size.y; y++)
             {
-                TileBase tile = allTiles[x + y * bounds.size.x];
-                if (Array.Exists(floorTiles, element => element.name == tile.name))
+                if (TileIsFree(x, y) && ran.Next(1, 100) < 20)
                 {
-                    int random = ran.Next(1, 100);
-                    if (random < 20)
-                    {
-                        // move by 0.5f to center diamond in a tile
-                        GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
-                        item.transform.parent = diamondParent.transform;
-                    }
+                    // move by 0.5f to center diamond in a tile
+                    GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
+                    item.transform.parent = diamondParent.transform;
                 }
             }
         }
@@ -192,7 +198,7 @@ public class Map : MonoBehaviour
                 randomX = ran.Next((int)sections[1].x, (int)sections[1].y);
             }
             // while randomX nicht auf einer wasser tile und kein obstacle auf dieser position
-            if (grid[randomX, randomY] == (int)EnvironmentType.Ground && obstacleMap.GetTile(new Vector3Int(randomX, randomY, 0)) == null) break;
+            if (TileIsFree(randomX, randomY)) break;
         }
 
         character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
@@ -219,20 +225,29 @@ public class Map : MonoBehaviour
         }
 
         hort.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        // Debug.Log(hort.transform.localScale);
 
-        // TODO: set tiles the hort uses to EnvironmentTiles.Shelter
-        // int hortHeight = 
-        // int hortWidth = 
-        // for (int x = 0; x < map.GetUpperBound(0); x++)
-        // {
-        //     for (int y = 0; y < map.GetUpperBound(1); y++)
-        //     {
-        //         if (map[x, y] == 0)
-        //         {
-        //             tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
-        //         }
-        //     }
-        // }
+        int hortX = (int)hort.transform.position.x;
+        int hortY = (int)hort.transform.position.y;
+
+        int hortWidth = (int)hort.transform.localScale.x;
+        int hortHeight = (int)hort.transform.localScale.y;
+
+        int startPositionX = (int)Math.Ceiling(hortX - (hortWidth / 2f));
+        int startPositionY = (int)Math.Ceiling(hortY - (hortHeight / 2f));
+        Debug.Log(startPositionX);
+        int endPositionX = (int)Math.Ceiling(hortX + (hortWidth / 2f));
+        int endPositionY = (int)Math.Ceiling(hortY + (hortHeight / 2f));
+        Debug.Log(endPositionX);
+
+        for (int x = startPositionX; x < endPositionX; x++)
+        {
+            for (int y = startPositionY; y < endPositionY; y++)
+            {
+                grid[x, y] = EnvironmentType.Shelter;
+                // obstacleMap.SetTile(new Vector3Int(x, y), waterTile); //unkomment to visualize hort in th obstacles map
+            }
+        }
     }
 
     // place random obstacles on the obstacle Map
@@ -244,7 +259,7 @@ public class Map : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 // check if position is water 
-                if (grid[x, y] == EnvironmentType.Ground && ran.Next(0, 100) < 4)
+                if (TileIsFree(x, y) && ran.Next(0, 100) < 4)
                 {
                     obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
                 }
