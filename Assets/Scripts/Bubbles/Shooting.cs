@@ -51,6 +51,7 @@ public class Shooting : MonoBehaviour
 
         if (character.tag == "Player")
         {
+            bubbleCount_text = GameObject.Find("bubbleCount_text").GetComponent<TextMeshProUGUI>();
             ChangeBubbleCount_UI();
         }
     }
@@ -95,7 +96,6 @@ public class Shooting : MonoBehaviour
                 rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
 
                 int myTeam = character.GetComponent<CharacterBase>().GetTeamNumber();
-
                 bubble.GetComponent<Bubble>().SetTeamNumber(myTeam);
 
                 DecrementBubbleCount();
@@ -143,8 +143,8 @@ public class Shooting : MonoBehaviour
     /// </summary>
     private void ChangeBubbleCount_UI()
     {
-        // bubbleCount_text.fontStyle = FontStyles.Normal;
-        // bubbleCount_text.text = bubbleCount.ToString();
+        bubbleCount_text.fontStyle = FontStyles.Normal;
+        bubbleCount_text.text = bubbleCount.ToString();
     }
 
     /// <summary>

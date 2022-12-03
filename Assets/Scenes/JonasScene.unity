@@ -156,10 +156,12 @@ MonoBehaviour:
     type: 3}
   hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
     type: 3}
-  botPrefab: {fileID: 2570426636042546520, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
-    type: 3}
   map: {fileID: 1788809227}
   cam: {fileID: 964968711}
+  startGameWithBots: 1
+  botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
+    type: 3}
+  botNumber: 3
 --- !u!4 &943377186
 Transform:
   m_ObjectHideFlags: 0
