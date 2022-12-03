@@ -1066,11 +1066,15 @@ TextureImporter:
         y: 261
         width: 32
         height: 77
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 50}
       outline: []
-      physicsShape: []
+      physicsShape:
+      - - {x: -16, y: -12.5}
+        - {x: -16, y: -38.5}
+        - {x: 16, y: -38.5}
+        - {x: 16, y: -12.5}
       tessellationDetail: 0
       bones: []
       spriteID: 538b433b960d0524cae73e5731375a47
@@ -1373,6 +1377,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: TX Props_0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 247
+        width: 30
+        height: 41
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e7d566deadf4d3288efd7cd6283e95b
+      internalID: -458302113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -1387,6 +1412,7 @@ TextureImporter:
       TX Props Well: 21300164
       TX Props Chest Opened: 21300040
       TX Props Pot B: 21300092
+      TX Props_0: -458302113
       TX Props Barrel: 21300066
       TX Props Rune Pillar X3: 21300058
       TX Props Altar Rune 3: 21300148
@@ -1411,9 +1437,9 @@ TextureImporter:
       TX Props Stone Bench E: 21300100
       TX Props Rune Pillar Broken Glow: 21300064
       TX Props Road Sign E: 21300086
+      TX Props Wooden Gate: 21300158
       TX Props Rune Pillar X2 Glow: 21300044
       TX Props Altar Rune 2: 21300146
-      TX Props Wooden Gate: 21300158
       TX Props Cube: 21300036
       TX Props Stone Coffin V: 21300076
       TX Props Gravestone B: 21300070

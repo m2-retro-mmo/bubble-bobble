@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
 
 public enum EnvironmentType
 {
@@ -18,8 +19,10 @@ public class Map : MonoBehaviour
 
     public EnvironmentType[,] grid;
     public Tilemap map;
-    public Tile floorTile;
+    public Tilemap obstacleMap;
+    public Tile[] floorTiles;
     public Tile waterTile;
+    public Tile tree;
     public System.Random ran = new System.Random();
 
     public GameObject diamondPrefab;
@@ -30,13 +33,26 @@ public class Map : MonoBehaviour
     void Awake()
     {
         map = GameObject.Find("Ground").GetComponent<Tilemap>();
-        grid = GenerateNoiseGrid(noise_density);
-        Tile[] tiles = { floorTile, waterTile };
+        obstacleMap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
+    }
 
+    public void GenerateMap(List<Hort> horts)
+    {
+        grid = GenerateNoiseGrid(noise_density);
         ApplyCellularAutomaton(grid, iterations);
-        DrawTilemap(grid, map, tiles);
-        // PlaceObstacles(map);
+        DrawTilemap(grid, map, floorTiles, waterTile);
+        foreach (Hort hort in horts)
+        {
+            PlaceHort(hort);
+        }
+        PlaceObstacles();
         PlaceItems(map);
+    }
+
+    // checks if there is water or an obstacles on the given position
+    private Boolean TileIsFree(int x, int y)
+    {
+        return grid[x, y] == EnvironmentType.Ground && obstacleMap.GetTile(new Vector3Int(x, y, 0)) == null;
     }
 
     public Vector2[] GetSections(int count)
@@ -122,7 +138,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] tiles)
+    void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] floorTiles, Tile waterTile)
     {
         tilemap.ClearAllTiles();
         for (int x = 0; x < cells.GetUpperBound(0); x++)
@@ -131,43 +147,41 @@ public class Map : MonoBehaviour
             {
                 if (cells[x, y] == EnvironmentType.Ground)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
+                    int random = ran.Next(0, floorTiles.GetLength(0) - 1);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[random]); // Floor
                 }
                 else
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tiles[1]); // Water
+                    tilemap.SetTile(new Vector3Int(x, y, 0), waterTile); // Water
                     // TODO set boundary for not walking into water
                 }
             }
         }
     }
 
+    // TODO: check for obstacles as well! 
     void PlaceItems(Tilemap map)
     {
         BoundsInt bounds = map.cellBounds;
-        TileBase[] allTiles = map.GetTilesBlock(bounds);
+        GameObject diamondParent = new GameObject("Diamonds");
 
         for (int x = 0; x < bounds.size.x; x++)
         {
             for (int y = 0; y < bounds.size.y; y++)
             {
-                TileBase tile = allTiles[x + y * bounds.size.x];
-                if (tile.name == floorTile.name)
+                if (TileIsFree(x, y) && ran.Next(1, 100) < 20)
                 {
-                    int random = ran.Next(1, 100);
-                    if (random < 20)
-                    {
-                        // move by 0.5f to center diamond in a tile
-                        GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
-                    }
+                    // move by 0.5f to center diamond in a tile
+                    GameObject item = Instantiate(diamondPrefab, new Vector3(((float)x) + 0.5f, ((float)y) + 0.5f, 0), Quaternion.identity);
+                    item.transform.parent = diamondParent.transform;
                 }
             }
         }
     }
 
-    public void PlacePlayer(Player player)
+    public void PlaceCharacter(CharacterBase character)
     {
-        byte team = player.getTeamNumber();
+        byte team = character.GetTeamNumber();
         Vector2[] sections = GetSections(2);
         int randomX, randomY;
 
@@ -183,11 +197,11 @@ public class Map : MonoBehaviour
             {
                 randomX = ran.Next((int)sections[1].x, (int)sections[1].y);
             }
-            // while randomX nicht auf einer wasser tile
-            if (grid[randomX, randomY] == (int)EnvironmentType.Ground) break;
+            // while randomX nicht auf einer wasser tile und kein obstacle auf dieser position
+            if (TileIsFree(randomX, randomY)) break;
         }
 
-        player.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
     }
 
 
@@ -211,19 +225,46 @@ public class Map : MonoBehaviour
         }
 
         hort.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        // Debug.Log(hort.transform.localScale);
 
-        // TODO: set tiles the hort uses to EnvironmentTiles.Shelter
-        // int hortHeight = 
-        // int hortWidth = 
-        // for (int x = 0; x < map.GetUpperBound(0); x++)
-        // {
-        //     for (int y = 0; y < map.GetUpperBound(1); y++)
-        //     {
-        //         if (map[x, y] == 0)
-        //         {
-        //             tilemap.SetTile(new Vector3Int(x, y, 0), tiles[0]); // Floor
-        //         }
-        //     }
-        // }
+        int hortX = (int)hort.transform.position.x;
+        int hortY = (int)hort.transform.position.y;
+
+        int hortWidth = (int)hort.transform.localScale.x;
+        int hortHeight = (int)hort.transform.localScale.y;
+
+        int startPositionX = (int)Math.Ceiling(hortX - (hortWidth / 2f));
+        int startPositionY = (int)Math.Ceiling(hortY - (hortHeight / 2f));
+        Debug.Log(startPositionX);
+        int endPositionX = (int)Math.Ceiling(hortX + (hortWidth / 2f));
+        int endPositionY = (int)Math.Ceiling(hortY + (hortHeight / 2f));
+        Debug.Log(endPositionX);
+
+        for (int x = startPositionX; x < endPositionX; x++)
+        {
+            for (int y = startPositionY; y < endPositionY; y++)
+            {
+                grid[x, y] = EnvironmentType.Shelter;
+                // obstacleMap.SetTile(new Vector3Int(x, y), waterTile); //unkomment to visualize hort in th obstacles map
+            }
+        }
     }
+
+    // place random obstacles on the obstacle Map
+    public void PlaceObstacles()
+    {
+        obstacleMap.ClearAllTiles();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                // check if position is water 
+                if (TileIsFree(x, y) && ran.Next(0, 100) < 4)
+                {
+                    obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
+                }
+            }
+        }
+    }
+
 }

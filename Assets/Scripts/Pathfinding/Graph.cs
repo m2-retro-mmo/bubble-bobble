@@ -24,20 +24,20 @@ public class Graph
     /// <summary>
     /// Initializes a new instance of the <see cref="Graph"/> class.
     /// </summary>
-    /// <param name="tilemap">The tilemap that is used to create the graph.</param>
+    /// <param name="obstacle_tilemap">The tilemap that is used to create the graph.</param>
     /// <param name="drawGraph">If true, draw graph.</param>
-    public Graph(Tilemap tilemap, bool drawGraph)
+    public Graph(Tilemap obstacle_tilemap, Tilemap ground_tilemap, bool drawGraph)
     {
-        this.tilemap = tilemap;
+        this.tilemap = obstacle_tilemap;
 
         // Get the bounds of the tilemap
-        bounds = tilemap.cellBounds;
+        bounds = obstacle_tilemap.cellBounds;
         
         // get width and height of the tilemap
         width = bounds.size.x;
         height = bounds.size.y;
         
-        TileBase[] tiles = tilemap.GetTilesBlock(tilemap.cellBounds);
+        TileBase[] tiles = obstacle_tilemap.GetTilesBlock(obstacle_tilemap.cellBounds);
 
         GameObject textParent = new GameObject("TextParent");
 
@@ -56,7 +56,7 @@ public class Graph
                 GraphNode[] neighbours = GetNeighbourList(new GraphNode(x, y));
                 // create a new GraphNode with the current position and the neighbors 
                 // and set the isObstacle node to true if the tile is not null
-                GraphNode node = new GraphNode(x, y, (tile != null), neighbours);
+                GraphNode node = new GraphNode(x, y, (tile != null), neighbours); // TODO get all tiles from obstacleMap and check if tile is in this list //TODO check ground tilemap for water shelter and set obstacle to true
                 // add the GraphNode to the 2D array
                 graphArray[x, y] = node;
                 

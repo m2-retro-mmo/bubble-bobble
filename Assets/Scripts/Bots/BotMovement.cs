@@ -15,35 +15,30 @@ public class BotMovement : MonoBehaviour
     
     private float botSpeed = 3f;
 
-    private BotBehavior behavior;
-
-    private Tilemap tilemap;
+    private Bot bot;
 
     private Pathfinding pathfinding;
 
     private List<GraphNode> path;
 
-    private Graph graph;
-
     private int currentIndex;
 
     private Transform directionIndicator;
+    
+    private Graph graph;
 
     void Start()
     {
-        behavior = GetComponent<BotBehavior>();
+        bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
-        
-        tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-        graph = new Graph(tilemap, true);
     }
 
     private void Update()
     {
         // if the Interaction ID was changed stop everything and start new interaction
-        if (behavior.GetChangedInteractionID())
+        if (bot.GetChangedInteractionID())
         {
-            Debug.Log("Interaction changed to " + behavior.GetInteractionID().ToString());
+            Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
 
             // reset everythin for new interaction
             path = null;
@@ -53,9 +48,19 @@ public class BotMovement : MonoBehaviour
 
             StartInteraction();
 
-            behavior.SetChangedInteractionID(false);
+            bot.SetChangedInteractionID(false);
         }
-        LookAtGoal();
+        if(goal != null)
+        {
+            LookAtGoal();
+        }
+        
+        if (bot.GetIsCaptured())
+        {
+            CancelInvoke();
+            StopAllCoroutines();
+            bot.ResetBot();
+        }
     }
 
     /// <summary>
@@ -63,7 +68,7 @@ public class BotMovement : MonoBehaviour
     /// </summary>
     private void StartInteraction()
     {
-        switch (behavior.GetInteractionID())
+        switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
                 Debug.Log("Start interaction with opponent");
@@ -101,7 +106,7 @@ public class BotMovement : MonoBehaviour
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
-
+            
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].getX(), path[currentIndex].getY());
@@ -113,7 +118,7 @@ public class BotMovement : MonoBehaviour
 
                 if (distToPlayer <= shootRange)
                 {
-                    GetComponent<BotShooting>().ShootBubble();
+                    GetComponent<Shooting>().ShootBubble();
                     CancelInvoke();
                     path = null;
                 }
@@ -168,6 +173,11 @@ public class BotMovement : MonoBehaviour
     private Vector3 GetPosition()
     {
         return transform.position;
+    }
+    
+    public void SetGraph(Graph graph)
+    {
+        this.graph = graph;
     }
 
     /// <summary>

@@ -34,6 +34,8 @@ public class Shooting : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI bubbleCount_text;
 
+    private GameObject character;
+
     private int maxBubbleCount = 3;
 
     private int bubbleCount = 3;
@@ -45,16 +47,22 @@ public class Shooting : MonoBehaviour
     void Start()
     {
         bubbleCount = maxBubbleCount;
-        ChangeBubbleCount_UI();
+        character = this.gameObject;
+
+        if (character.tag == "Player")
+        {
+            bubbleCount_text = GameObject.Find("BubbleCountValue_Text").GetComponent<TextMeshProUGUI>();
+            ChangeBubbleCount_UI();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButton("Fire1"))
-        {
-            ShootBubble();
-        }
+        //if (Input.GetButton("Fire1"))
+        //{
+        //    ShootBubble();
+        //}
     }
 
     private void LateUpdate()
@@ -64,6 +72,10 @@ public class Shooting : MonoBehaviour
         {
             nextIncrementTime = Time.time + bubbleCoolDownTime;
             IncrementBubbleCount();
+            if (character.tag == "Player")
+            {
+                ChangeBubbleCount_UI();
+            }
         }
     }
 
@@ -79,11 +91,19 @@ public class Shooting : MonoBehaviour
             if (Time.time > lastShootTime + fireRate)
             {
                 // spawn bubble and move to direction 
-                GameObject bullet = Instantiate(bubblePrefab, firePoint.position, firePoint.rotation);
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+                GameObject bubble = Instantiate(bubblePrefab, firePoint.position, firePoint.rotation);
+                Rigidbody2D rb = bubble.GetComponent<Rigidbody2D>();
                 rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
 
+                int myTeam = character.GetComponent<CharacterBase>().GetTeamNumber();
+                bubble.GetComponent<Bubble>().SetTeamNumber(myTeam);
+
                 DecrementBubbleCount();
+
+                if (character.tag == "Player")
+                {
+                    ChangeBubbleCount_UI();
+                }
 
                 lastShootTime = Time.time;
             }
@@ -104,7 +124,6 @@ public class Shooting : MonoBehaviour
         if (bubbleCount > 0)
         {
             bubbleCount--;
-            ChangeBubbleCount_UI();
         }
     }
 
@@ -116,7 +135,6 @@ public class Shooting : MonoBehaviour
         if (bubbleCount < maxBubbleCount)
         {
             bubbleCount++;
-            ChangeBubbleCount_UI();
         }
     }
 
