@@ -142,7 +142,6 @@ public class Map : MonoBehaviour
                 else
                 {
                     tilemap.SetTile(new Vector3Int(x, y, 0), waterTile); // Water
-                    // TODO set boundary for not walking into water
                 }
             }
         }
@@ -243,10 +242,12 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                // check if position is water 
                 if (grid[x, y] == EnvironmentType.Ground && ran.Next(0, 100) < 4)
                 {
                     obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
+                } else if (grid[x, y] == EnvironmentType.Water)
+                {
+                    obstacleMap.SetTile(new Vector3Int(x, y, 0), waterTile);
                 }
             }
         }
