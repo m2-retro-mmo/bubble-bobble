@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public Hort hortPrefab;
     public Map map;
     public Camera cam;
-    
+
     [SerializeField]
     [Tooltip("true if the game should run with bots")]
     private bool startGameWithBots;
@@ -35,12 +35,14 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // instanciate a Hort for each Team
+        List<Hort> horts = new List<Hort>();
         for (byte teamNumber = 0; teamNumber < teamCount; teamNumber++)
         {
-            //Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            //hort.team = teamNumber;
-            //map.PlaceHort(hort);
+            Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            hort.team = teamNumber;
+            horts.Add(hort);
         }
+        map.GenerateMap(horts);
 
         // instanciate a local player
         Player player = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
