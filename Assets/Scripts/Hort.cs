@@ -15,20 +15,20 @@ public class Hort : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI teamPoints_text;
 
-    // public TextMeshProUGUI hortPointCounter;
-
     public GameObject plusOnePrefab;
 
-    private void Awake()
+    public void init(byte teamNumber)
     {
+        team = teamNumber;
         gameObject.transform.localScale = new Vector3(width, height, 0);
+        teamPoints_text = GameObject.Find("PointsTeam" + team.ToString() + "Value_Text").GetComponent<TextMeshProUGUI>();
     }
 
     public void AddDiamond()
     {
         diamonds++;
         SpawnPlusOne();
-        // teamPoints_text.text = diamonds.ToString();
+        teamPoints_text.text = diamonds.ToString();
     }
 
     private void SpawnPlusOne()

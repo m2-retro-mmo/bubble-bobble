@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
         for (byte teamNumber = 0; teamNumber < teamCount; teamNumber++)
         {
             Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            hort.team = teamNumber;
+            hort.init(teamNumber);
             horts.Add(hort);
         }
         map.GenerateMap(horts);
