@@ -225,8 +225,6 @@ MonoBehaviour:
   cam: {fileID: 0}
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
-  teamNumber: 1
-  isCaptured: 0
   itemDuration: 0
 --- !u!50 &7145253158310846177
 Rigidbody2D:
@@ -273,7 +271,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!114 &5696774020102402492
 MonoBehaviour:
