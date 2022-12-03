@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public Hort hortPrefab;
     public Map map;
     public Camera cam;
+    public Camera minimapCam;
 
     [SerializeField]
     [Tooltip("true if the game should run with bots")]
@@ -53,6 +54,10 @@ public class GameManager : MonoBehaviour
         // camera should follow main player
         CameraFollow camFollow = cam.GetComponent<CameraFollow>();
         camFollow.target = player.transform;
+
+        // minimap camera should follow main player
+        CameraFollow minimapCamFollow = cam.GetComponent<CameraFollow>();
+        minimapCamFollow.target = player.transform;
 
         if (startGameWithBots)
         {

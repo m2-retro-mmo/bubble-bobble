@@ -51,7 +51,7 @@ public class Shooting : MonoBehaviour
 
         if (character.tag == "Player")
         {
-            bubbleCount_text = GameObject.Find("bubbleCount_text").GetComponent<TextMeshProUGUI>();
+            bubbleCount_text = GameObject.Find("BubbleCountValue_Text").GetComponent<TextMeshProUGUI>();
             ChangeBubbleCount_UI();
         }
     }
