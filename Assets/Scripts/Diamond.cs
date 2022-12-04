@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class Diamond : MonoBehaviour
+public class Diamond : NetworkBehaviour
 {
+    [Server]
     public void collect()
     {
         Debug.Log("Collected");

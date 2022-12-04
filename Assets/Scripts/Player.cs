@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class Player : CharacterBase
 {
@@ -10,7 +10,7 @@ public class Player : CharacterBase
     private BoxCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
-    private GameObject directionIndicator;
+    public GameObject directionIndicator;
     public float collisionOffset = 0.1f;
     public static float baseSpeed = 3f;
     public float moveSpeed = 3f;
@@ -26,10 +26,17 @@ public class Player : CharacterBase
     // Start is called before the first frame update
     void Start()
     {
+        if (isLocalPlayer)
+        {
+            Debug.Log("Player is local player");
+        }
+        else
+        {
+            Debug.Log("Player is not local player");
+        }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         col = gameObject.GetComponent<BoxCollider2D>();
-        directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
 
     private void LookAtMouse()
@@ -63,12 +70,13 @@ public class Player : CharacterBase
     {
         if (Input.GetButton("Fire1"))
         {
-            GetComponent<Shooting>().ShootBubble();
+            GetComponent<Shooting>().CmdShootBubble();
         }
     }
 
     private void FixedUpdate()
     {
+        if (!isLocalPlayer) return;
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
         if (!isCaptured)
@@ -89,6 +97,7 @@ public class Player : CharacterBase
 
     private void LateUpdate()
     {
+        if (!isLocalPlayer) return;
         LookAtMouse();
     }
 
@@ -124,6 +133,7 @@ public class Player : CharacterBase
     /**
     * is called when player collides with another Collider2D
     */
+    [ServerCallback]
     private void OnTriggerStay2D(Collider2D other)
     {
         // check collision of Player with other Game objects

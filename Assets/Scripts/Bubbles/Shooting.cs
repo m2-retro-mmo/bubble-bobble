@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// This class is responsible for the shooting of the bubbles
 /// </summary>
-public class Shooting : MonoBehaviour
+public class Shooting : NetworkBehaviour
 {
     [SerializeField]
     [Tooltip("the point where the bubble will be instantiated")]
@@ -65,6 +66,7 @@ public class Shooting : MonoBehaviour
         //}
     }
 
+    [Server]
     private void LateUpdate()
     {
         // inrecemt buuble count after every 3 seconds
@@ -82,7 +84,8 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Shoots the bubble from the fire point and adds force to it
     /// </summary>
-    public void ShootBubble()
+    [Command]
+    public void CmdShootBubble()
     {
         // Check if the bubble count is greater than 0
         if (bubbleCount > 0)
@@ -99,6 +102,8 @@ public class Shooting : MonoBehaviour
                 bubble.GetComponent<Bubble>().SetTeamNumber(myTeam);
 
                 DecrementBubbleCount();
+
+                NetworkServer.Spawn(bubble);
 
                 if (character.tag == "Player")
                 {
@@ -119,6 +124,7 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Decrements the bubble count and checks if the player has no more bubbles left
     /// </summary>
+    [Server]
     private void DecrementBubbleCount()
     {
         if (bubbleCount > 0)
@@ -130,6 +136,7 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Increments the bubble count if max buuble count is not reached
     /// </summary>
+    [Server]
     private void IncrementBubbleCount()
     {
         if (bubbleCount < maxBubbleCount)
