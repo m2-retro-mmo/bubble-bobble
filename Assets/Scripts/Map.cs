@@ -22,7 +22,16 @@ public class Map : MonoBehaviour
     public Tilemap obstacleMap;
     public Tile[] floorTiles;
     public Tile waterTile;
-    public Tile tree;
+
+    // obstacles
+    public int probabilityObstaclesGeneral = 6;
+    public Tile[] pillars;
+    public int probabilityPillar = 20;
+    public Tile[] bushes;
+    public int probabilityBushes = 30;
+    public Tile[] accessoirs;
+    public int probabilityAccessoirs = 50;
+
     public System.Random ran = new System.Random();
 
     public GameObject diamondPrefab;
@@ -259,9 +268,22 @@ public class Map : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 // check if position is water 
-                if (TileIsFree(x, y) && ran.Next(0, 100) < 4)
+                if (TileIsFree(x, y) && ran.Next(0, 100) < 6)
                 {
-                    obstacleMap.SetTile(new Vector3Int(x, y, 0), tree);
+                    int randomValue = ran.Next(0, probabilityBushes + probabilityPillar + probabilityAccessoirs);
+                    if (randomValue < probabilityPillar)
+                    {
+                        obstacleMap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
+                    }
+                    else if (randomValue < probabilityBushes + probabilityPillar)
+                    {
+                        obstacleMap.SetTile(new Vector3Int(x, y, 0), bushes[ran.Next(0, bushes.Length)]);
+                    }
+                    else if (randomValue < probabilityBushes + probabilityPillar + probabilityAccessoirs)
+                    {
+                        obstacleMap.SetTile(new Vector3Int(x, y, 0), accessoirs[ran.Next(0, accessoirs.Length)]);
+
+                    }
                 }
             }
         }
