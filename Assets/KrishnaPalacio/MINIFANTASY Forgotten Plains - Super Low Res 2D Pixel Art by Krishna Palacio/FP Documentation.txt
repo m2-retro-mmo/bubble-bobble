@@ -1,0 +1,78 @@
+Rule Tiles
+	Rule tiles are included as a convenience to speed up the process of level creation. If you have any questions, refer to the Unity 2D Tilemap Extras package documentation.
+
+	The Scenes labeled with "(RuleTiles)" make use of Rule Tiles.
+	In order to show the scene properly and make use of Rule Tiles, you may need to download and import the 2D Tilemap Extras package.
+	If you are using a Unity Version 2020 or older, you will need to enable preview packages in "Package Manager > Advanced Project Settings > Enable Preview Packages."
+	If you are using a Unity Version 2021 or newer, the package should appear in the Unity Registry as a standard package.
+
+	You can find the Rule Tiles in the Tile Palette Tab. Open the drop down and select: "FP Rule Tiles"
+	Minifantasy Rule Tiles appear red with an X symbol in the Tile Palette. This is because the default sprite is set to this "incomplete" sprite.
+	When using Minifantasy Rule Tiles, an incomplete sprite represents an incomplete grouping of rule tiles. When working properly, you should see no incomplete sprites.
+	
+	You may change these settings by opening the Rule Tile object in the pack directory under: "Tile Palettes > Rule Tiles."
+
+	Rule Tiles Included in Minifantasy Desolate Desert:
+		Row 1 - Dirt Path | Dirt | Grass | Cliff Grass | Vertical Wall
+		Row 2 - empty | empty | empty | empty | Horizontal Wall
+		Row 3 - Water Dirt Transition | Cobblestone Dirt 1 | Cobblestone Grass 1 | Cliff Wall Bare
+		Row 4 - Water Grass Transition | Cobblestone Dirt 2 | Cobblestone Grass 2 | Cliff Wall Dirt | Ramp
+		Row 5 - empty | Cobblestone Dirt 3 | Cobblestone Grass 3 | Cliff Wall Grass
+		Row 6 - empty
+		Row 7 - empty | Cobblestone Dirt Combo | Cobblestone Grass Combo
+
+Tile Shadows
+	When tiles have corresponding shadow tiles, they are placed in the same tile palette.
+	You can find the corresponding shadow tiles on either side of the matching tile or above the matching tile.
+
+Sorting Layer Setup
+	All objects are on the default layer. The objects are grouped as follows:
+	-10	Ground
+	-9	Water	
+	-8	Ground Decoration, Water Decoration
+	-7	Ground Shadow, Prop Shadows												Defined as: shadows that rest on the ground.
+	-6	Walls - Vertical
+	-5	Walls - Horizontal
+	-4	Walls - Cliffs (1)
+	-3	Walls - Cliffs (2)
+	-2	Walls - Cliffs (3)
+	-1	Walls - Above Cliffs, Walls Shadow										Defined as: shadows that rest on walls.
+	 0	Props
+
+	This layer setup is used for demo purposes and may not reflect best practices for using layers or rendering sprites in production.
+
+Placing Objects in the Scene
+	We recommend one of these two options for maintaining crisp pixels while moving objects around the scene:
+		1. Grid Snapping
+			Set Size = 0.125 (1 pixel)
+			You can change this setting in "Edit > Grid and Snap Settings > World Grid > Size."
+		2. Grid and Snap Increment Snap
+			Set Move = 0.125 (1 pixel) or 0.0625 (1/2 pixel)
+			You can change this setting in "Edit > Grid and Snap Settings > Increment Snap > Move."
+			Then hold ctrl while moving objects to increment their position based on the move setting.
+
+Tile Palettes
+	Tile Palettes are notated with FP for Forgotten Plains. 
+	This is to avoid conflicts when multiple Minifantasy packs are imported in a single project.
+
+Prop Variants
+	Props that have multiple variations include a script to switch between variants with ease. 
+	To change between prop variants, find the FP "Prop" Script component on a prop prefab and use the selection dropdown.
+
+Scripts
+	None of the scripts included in this pack are necessary to use the basic pack contents.
+
+	- CameraController: used to control the demo camera
+
+Game Display
+	The demos were created using a 16:9 Aspect Ratio. 
+	If you have issues with the game screen displaying incorrectly, try setting the display to 16:9 Aspect and the Scale to 1x.
+	Also, try toggling the "Run In Edit Mode" button on the Pixel Perfect Camera component located on the Main Camera gameobject for crisp pixels in the game window while editing.
+
+Minifantasy Characters
+	You can find characters to add into the scene in the Free Dungeon Pack or in the Paid Minifantasy Creatures Pack.
+		- Free Characters: https://assetstore.unity.com/packages/2d/environments/minifantasy-dungeon-super-low-res-2d-pixel-art-by-krishna-palaci-206693https://assetstore.unity.com/packages/2d/environments/minifantasy-dungeon-super-low-res-2d-pixel-art-by-krishna-palaci-206693
+		- Paid Characters: https://assetstore.unity.com/packages/2d/characters/minifantasy-creatures-super-low-res-2d-pixel-art-by-krishna-pala-210764
+
+Questions
+	If you have any questions or concerns, contact us at: krishna.palacio@gmail.com

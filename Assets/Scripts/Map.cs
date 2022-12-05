@@ -23,6 +23,9 @@ public class Map : MonoBehaviour
     public Tile[] floorTiles;
     public Tile waterTile;
 
+
+    [Header("Obstacle Settings")]
+
     // obstacles
     public int probabilityObstaclesGeneral = 6;
     public Tile[] pillars;
@@ -31,6 +34,13 @@ public class Map : MonoBehaviour
     public int probabilityBushes = 30;
     public Tile[] accessoirs;
     public int probabilityAccessoirs = 50;
+
+    [Header("Water Tiles")]
+
+    public Tile northTile;
+    public Tile eastTile;
+    public Tile southTile;
+    public Tile westTile;
 
     public System.Random ran = new System.Random();
 
@@ -50,12 +60,12 @@ public class Map : MonoBehaviour
         grid = GenerateNoiseGrid(noise_density);
         ApplyCellularAutomaton(grid, iterations);
         DrawTilemap(grid, map, floorTiles, waterTile);
-        foreach (Hort hort in horts)
-        {
-            PlaceHort(hort);
-        }
-        PlaceObstacles();
-        PlaceItems(map);
+        // foreach (Hort hort in horts)
+        // {
+        //     PlaceHort(hort);
+        // }
+        // PlaceObstacles();
+        // PlaceItems(map);
     }
 
     // checks if there is water or an obstacles on the given position
@@ -161,11 +171,76 @@ public class Map : MonoBehaviour
                 }
                 else
                 {
+
                     tilemap.SetTile(new Vector3Int(x, y, 0), waterTile); // Water
+                    GetWaterTile(x, y, cells);
+
                     // TODO set boundary for not walking into water
                 }
             }
         }
+    }
+
+    int NORTH, EAST = 1;
+    int SOUTH, WEST = -1;
+
+    void GetWaterTile(int x, int y, EnvironmentType[,] cells)
+    {
+        EnvironmentType north, east, south, west;
+
+        int width = cells.GetUpperBound(0);
+        int height = cells.GetUpperBound(1);
+
+        // get tile on the given position, with out of bounds check (alternative is water tile)
+        // noth
+        if (y + NORTH > height)
+        {
+            north = EnvironmentType.Water;
+        }
+        else
+        {
+            north = cells[x, y + NORTH];
+        }
+        // south
+        if (y + SOUTH < 0)
+        {
+            south = EnvironmentType.Water;
+        }
+        else
+        {
+            south = cells[x, y + SOUTH];
+        }
+        // east
+        if (x + EAST > width)
+        {
+            east = EnvironmentType.Water;
+        }
+        else
+        {
+            east = cells[x + EAST, y];
+        }
+        // west
+        if (x + WEST < 0)
+        {
+            west = EnvironmentType.Water;
+        }
+        else
+        {
+            west = cells[x + WEST, y];
+        }
+
+
+
+
+
+        // north = cells[x, y + 1];
+        // northEast = cells[];
+        // East = cells[];
+        // SouthEast = cells[];
+        // South = cells[];
+        // SouthWest = cells[];
+        // West = cells[];
+        // NorthWest = cells[];
     }
 
     // TODO: check for obstacles as well! 
