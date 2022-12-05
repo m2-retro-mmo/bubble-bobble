@@ -15,6 +15,9 @@ public class Player : CharacterBase
     public static float baseSpeed = 3f;
     public float moveSpeed = 3f;
 
+    // animations
+    public Animator animator;
+
     // direction indicator
     public Vector2 mousePosWorld;
     public Camera cam;
@@ -65,12 +68,12 @@ public class Player : CharacterBase
         {
             GetComponent<Shooting>().ShootBubble();
         }
+        moveInput.x = Input.GetAxis("Horizontal");
+        moveInput.y = Input.GetAxis("Vertical");
     }
 
     private void FixedUpdate()
     {
-        moveInput.x = Input.GetAxis("Horizontal");
-        moveInput.y = Input.GetAxis("Vertical");
         if (!isCaptured)
         {
             bool success = MovePlayer(moveInput);
@@ -108,6 +111,11 @@ public class Player : CharacterBase
         if (count == 0)
         {
             Vector2 moveVector = direction * moveSpeed * Time.fixedDeltaTime;
+
+            // set animation trigger
+            animator.SetFloat("Horizontal", direction.x);
+            animator.SetFloat("Vertical", direction.y);
+            animator.SetFloat("Speed", direction.sqrMagnitude);
 
             // no collision
             rb.MovePosition(rb.position + moveVector);
