@@ -78,12 +78,12 @@ public class Map : MonoBehaviour
         RemoveSingleTiles(grid);
         RemoveSingleTiles(grid);
         DrawTilemap(grid, map, floorTiles, waterTile);
-        // foreach (Hort hort in horts)
-        // {
-        //     PlaceHort(hort);
-        // }
-        // PlaceObstacles();
-        // PlaceItems(map);
+        foreach (Hort hort in horts)
+        {
+            PlaceHort(hort);
+        }
+        PlaceObstacles();
+        PlaceItems(map);
     }
 
     // checks if there is water or an obstacles on the given position
