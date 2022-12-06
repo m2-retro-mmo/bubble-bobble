@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
@@ -109,7 +108,7 @@ public class BotMovement : MonoBehaviour
             
             if (path != null)
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].getX(), path[currentIndex].getY());
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].GetX(), path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(transform.position, nextNode);
                 if (distNextNode <= 5f && currentIndex < path.Count - 1)
                 {
