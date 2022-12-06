@@ -14,8 +14,8 @@ public enum EnvironmentType
 
 public class Map : MonoBehaviour
 {
-    [SerializeField] private int width = 50;
-    [SerializeField] private int height = 100;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
 
     public EnvironmentType[,] grid;
     public Tilemap map;
@@ -130,9 +130,9 @@ public class Map : MonoBehaviour
     void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] floorTiles, Tile waterTile)
     {
         tilemap.ClearAllTiles();
-        for (int x = 0; x < cells.GetUpperBound(0); x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < cells.GetUpperBound(1); y++)
+            for (int y = 0; y < height; y++)
             {
                 if (cells[x, y] == EnvironmentType.Ground)
                 {
