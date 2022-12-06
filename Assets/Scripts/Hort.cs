@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Mirror;
 
-public class Hort : MonoBehaviour
+public class Hort : NetworkBehaviour
 {
     public int diamonds = 0;
     public byte team = 1;

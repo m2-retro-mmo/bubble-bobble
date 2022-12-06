@@ -34,6 +34,13 @@ public class GameManager : NetworkBehaviour
     private byte teamCount = 2;
 
     private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message) {
+        foreach (Player player in FindObjectsOfType<Player>()) {
+            if (player.connectionToClient == conn) {
+                Debug.Log("Player already exists");
+                return;
+            }
+        }
+
         Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
         map.PlaceCharacter(p);
         p.SetTeamNumber(1);
@@ -45,9 +52,6 @@ public class GameManager : NetworkBehaviour
     void Start()
     {
 
-        // register connection handler function
-        NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
-
         // instanciate a Hort for each Team
         List<Hort> horts = new List<Hort>();
         for (byte teamNumber = 0; teamNumber < teamCount; teamNumber++)
@@ -55,6 +59,7 @@ public class GameManager : NetworkBehaviour
             Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             hort.init(teamNumber);
             horts.Add(hort);
+            NetworkServer.Spawn(hort.gameObject);
         }
         map.GenerateMap(horts);
 
@@ -93,6 +98,9 @@ public class GameManager : NetworkBehaviour
                 bot.GetComponent<BotMovement>().SetGraph(graph);
             }
         }
+
+        // register connection handler function
+        NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
     }
 
     // Update is called once per frame

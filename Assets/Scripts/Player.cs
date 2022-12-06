@@ -29,10 +29,20 @@ public class Player : CharacterBase
         if (isLocalPlayer)
         {
             Debug.Log("Player is local player");
+            // find all other cameras and disable them
+            foreach (Camera c in FindObjectsOfType<Camera>())
+            {
+                if (c != cam)
+                {
+                    c.enabled = false;
+                }
+            }
         }
         else
         {
             Debug.Log("Player is not local player");
+            // disable camera
+            cam.enabled = false;
         }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
