@@ -23,6 +23,9 @@ public class Map : MonoBehaviour
     public Tile[] floorTiles;
     public Tile waterTile;
 
+
+    [Header("Obstacle Settings")]
+
     // obstacles
     public int probabilityObstaclesGeneral = 6;
     public Tile[] pillars;
@@ -31,6 +34,29 @@ public class Map : MonoBehaviour
     public int probabilityBushes = 30;
     public Tile[] accessoirs;
     public int probabilityAccessoirs = 50;
+
+    [Header("Standard Water Tiles")]
+
+    public Tile northTile;
+    public Tile northEastTile;
+    public Tile eastTile;
+    public Tile southEastTile;
+    public Tile southTile;
+    public Tile southWestTile;
+    public Tile westTile;
+    public Tile northWestTile;
+
+    [Header("Special Water Tiles")]
+
+    public Tile fillerNorthEast;
+    public Tile fillerSoutEast;
+    public Tile fillerSoutWest;
+    public Tile fillerNorthWest;
+
+    public Tile northEastAndSouthWest;
+    public Tile northWestAndSouthEast;
+
+    [Header("Other Map properies")]
 
     public System.Random ran = new System.Random();
 
@@ -49,13 +75,15 @@ public class Map : MonoBehaviour
     {
         grid = GenerateNoiseGrid(noise_density);
         ApplyCellularAutomaton(grid, iterations);
+        RemoveSingleTiles(grid);
+        RemoveSingleTiles(grid);
         DrawTilemap(grid, map, floorTiles, waterTile);
-        foreach (Hort hort in horts)
-        {
-            PlaceHort(hort);
-        }
-        PlaceObstacles();
-        PlaceItems(map);
+        // foreach (Hort hort in horts)
+        // {
+        //     PlaceHort(hort);
+        // }
+        // PlaceObstacles();
+        // PlaceItems(map);
     }
 
     // checks if there is water or an obstacles on the given position
@@ -161,14 +189,169 @@ public class Map : MonoBehaviour
                 }
                 else
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), waterTile); // Water
-                    // TODO set boundary for not walking into water
+                    tilemap.SetTile(new Vector3Int(x, y, 0), GetWaterTile(x, y, cells)); // Water
                 }
             }
         }
     }
 
-    // TODO: check for obstacles as well! 
+    void RemoveSingleTiles(EnvironmentType[,] grid)
+    {
+
+        for (int x = 0; x < grid.GetUpperBound(0); x++)
+        {
+            for (int y = 0; y < grid.GetUpperBound(1); y++)
+            {
+                if (grid[x, y] == EnvironmentType.Water)
+                {
+                    EnvironmentType[] directions = GetNeighbourTypes(x, y, grid);
+                    if (
+                        (directions[(int)Direction.NORTH] == EnvironmentType.Ground && directions[(int)Direction.SOUTH] == EnvironmentType.Ground)
+                        ||
+                        (directions[(int)Direction.EAST] == EnvironmentType.Ground && directions[(int)Direction.WEST] == EnvironmentType.Ground)
+                    )
+                    {
+                        grid[x, y] = EnvironmentType.Ground;
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    public enum Direction : int
+    {
+        NORTH = 0,
+        NORTH_EAST = 1,
+        EAST = 2,
+        SOUTH_EAST = 3,
+        SOUTH = 4,
+        SOUTH_WEST = 5,
+        WEST = 6,
+        NORTH_WEST = 7,
+    }
+
+    int NORTH = 1, EAST = 1;
+    int SOUTH = -1, WEST = -1;
+
+    EnvironmentType[] GetNeighbourTypes(int x, int y, EnvironmentType[,] grid)
+    {
+        EnvironmentType[] directions = new EnvironmentType[8];
+
+        int width = grid.GetUpperBound(0);
+        int height = grid.GetUpperBound(1);
+
+        // get tile on the given position, with out of bounds check (alternative is water tile)
+        // noth
+        if (y + NORTH > height) directions[(int)Direction.NORTH] = EnvironmentType.Water;
+        else directions[(int)Direction.NORTH] = grid[x, y + NORTH];
+
+        // north east
+        if (y + NORTH > height || x + EAST > width) directions[(int)Direction.NORTH_EAST] = EnvironmentType.Water;
+        else directions[(int)Direction.NORTH_EAST] = grid[x + EAST, y + NORTH];
+
+        // east
+        if (x + EAST > width) directions[(int)Direction.EAST] = EnvironmentType.Water;
+        else directions[(int)Direction.EAST] = grid[x + EAST, y];
+
+        // south east 
+        if (y + SOUTH < 0 || x + EAST > width) directions[(int)Direction.SOUTH_EAST] = EnvironmentType.Water;
+        else directions[(int)Direction.SOUTH_EAST] = grid[x + EAST, y + SOUTH];
+
+        // south
+        if (y + SOUTH < 0) directions[(int)Direction.SOUTH] = EnvironmentType.Water;
+        else directions[(int)Direction.SOUTH] = grid[x, y + SOUTH];
+
+        // south west
+        if (x + WEST < 0 || y + SOUTH < 0) directions[(int)Direction.SOUTH_WEST] = EnvironmentType.Water;
+        else directions[(int)Direction.SOUTH_WEST] = grid[x + WEST, y + SOUTH];
+
+        // west
+        if (x + WEST < 0) directions[(int)Direction.WEST] = EnvironmentType.Water;
+        else directions[(int)Direction.WEST] = grid[x + WEST, y];
+
+        // north west
+        if (x + WEST < 0 || y + NORTH > height) directions[(int)Direction.NORTH_WEST] = EnvironmentType.Water;
+        else directions[(int)Direction.NORTH_WEST] = grid[x + WEST, y + NORTH];
+
+        return directions;
+    }
+
+
+    Tile GetWaterTile(int x, int y, EnvironmentType[,] cells)
+    {
+
+        EnvironmentType[] directions = GetNeighbourTypes(x, y, cells);
+
+        // ~~~~~~~~~ return correct tiles ~~~~~~~~ //
+        Boolean hasNorthGroud = directions[(int)Direction.NORTH] == EnvironmentType.Ground,
+                hasNorthEastGroud = directions[(int)Direction.NORTH_EAST] == EnvironmentType.Ground,
+                hasEastGroud = directions[(int)Direction.EAST] == EnvironmentType.Ground,
+                hasSouthEastGroud = directions[(int)Direction.SOUTH_EAST] == EnvironmentType.Ground,
+                hasSouthGroud = directions[(int)Direction.SOUTH] == EnvironmentType.Ground,
+                hasSouthWestGroud = directions[(int)Direction.SOUTH_WEST] == EnvironmentType.Ground,
+                hasWestGroud = directions[(int)Direction.WEST] == EnvironmentType.Ground,
+                hasNorthWestGroud = directions[(int)Direction.NORTH_WEST] == EnvironmentType.Ground;
+
+        // handle edges (G = Ground, # = Water) like this:
+        if (!hasNorthGroud && !hasEastGroud && !hasWestGroud && !hasSouthGroud)
+        {
+            // ###
+            // ###
+            // ###
+            if (!hasNorthEastGroud && !hasSouthEastGroud && !hasNorthWestGroud && !hasSouthWestGroud) return waterTile;
+
+            // ##G
+            // ###
+            // G##
+            // ground only in northwest and southeast
+            if (!hasNorthEastGroud && !hasSouthWestGroud && hasNorthWestGroud && hasSouthEastGroud) return northWestAndSouthEast;
+            // ground only in northeast and southwest
+            if (!hasNorthWestGroud && !hasSouthEastGroud && hasNorthEastGroud && hasSouthWestGroud) return northEastAndSouthWest;
+
+            // ##G
+            // ###
+            // ###
+            // ground only on northeast
+            if (hasNorthEastGroud) return fillerNorthEast;
+            // ground only on southeast
+            if (hasNorthWestGroud) return fillerNorthWest;
+            // ground only on southhwest
+            if (hasSouthEastGroud) return fillerSoutEast;
+            // ground only on northwest
+            if (hasSouthWestGroud) return fillerSoutWest;
+        }
+
+        // Standard cases
+        if (hasNorthGroud)
+        {
+            if (hasEastGroud) return northEastTile;
+            if (hasWestGroud) return northWestTile;
+            return northTile;
+        }
+        if (hasEastGroud)
+        {
+            if (hasNorthGroud) return northEastTile;
+            if (hasSouthGroud) return southEastTile;
+            return eastTile;
+        }
+        if (hasSouthGroud)
+        {
+            if (hasEastGroud) return southEastTile;
+            if (hasWestGroud) return southWestTile;
+            return southTile;
+        }
+        if (hasWestGroud)
+        {
+            if (hasNorthGroud) return northWestTile;
+            if (hasSouthGroud) return southWestTile;
+            return westTile;
+        }
+
+        return waterTile;
+    }
+
     void PlaceItems(Tilemap map)
     {
         BoundsInt bounds = map.cellBounds;
