@@ -380,7 +380,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
   - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
-  waterTile: {fileID: 11400000, guid: 4dfdf77930f6d2b4b986bb91965139a3, type: 2}
+  waterTile: {fileID: 11400000, guid: 179d21ad98546944b89dd263beebdaaf, type: 2}
   probabilityObstaclesGeneral: 6
   pillars:
   - {fileID: 11400000, guid: 3019b47c419fa62288f1ee69c4e08108, type: 2}
@@ -395,5 +395,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 85b889486dc6e58cca85ce014e21fb7b, type: 2}
   - {fileID: 11400000, guid: 22e79aa5efaa1479abffd3f45dbdf160, type: 2}
   probabilityAccessoirs: 50
+  northTile: {fileID: 11400000, guid: 3b63f6f8dc62dd64eb7d907a45c78a9c, type: 2}
+  northEastTile: {fileID: 11400000, guid: 5d79d4facf3014b4ca2ba10be2793398, type: 2}
+  eastTile: {fileID: 11400000, guid: f0d13665152effd4b874de1cf066b417, type: 2}
+  southEastTile: {fileID: 11400000, guid: 06335dd63ff650342bdaf639f34af7f4, type: 2}
+  southTile: {fileID: 11400000, guid: 57fa7e8f7e72f204d8aace3c16685478, type: 2}
+  southWestTile: {fileID: 11400000, guid: ecc72d484493ffa47b2cdc77823b2aa9, type: 2}
+  westTile: {fileID: 11400000, guid: 0c74f30f084d5524b89dddace70dd653, type: 2}
+  northWestTile: {fileID: 11400000, guid: 4e3fc3afe2fbfeb49ae28ff2dd225c88, type: 2}
+  fillerNorthEast: {fileID: 11400000, guid: 393ce498aa6304240a28b810990c5b99, type: 2}
+  fillerSoutEast: {fileID: 11400000, guid: b1221f6734617834bb5058e9514bb375, type: 2}
+  fillerSoutWest: {fileID: 11400000, guid: 62ba591d325684047bd8c458b9647074, type: 2}
+  fillerNorthWest: {fileID: 11400000, guid: 31cb8189fb091294095d09ecc317c6fc, type: 2}
+  northEastAndSouthWest: {fileID: 11400000, guid: 30d80749cc1af464c9395ccf81735ca1,
+    type: 2}
+  northWestAndSouthEast: {fileID: 11400000, guid: fe55a09b470df1c4d9a5186d9135dda6,
+    type: 2}
   diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
     type: 3}
