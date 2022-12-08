@@ -293,6 +293,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0191ad0d87069d5489e5050874b35480, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
   firePoint: {fileID: 1471824574}
   bubblePrefab: {fileID: 8163775536198988558, guid: f64f195c8a0383349bf56cfc1a008509,
     type: 3}
@@ -413,7 +416,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8606153770665087046}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -456,4 +459,4 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8606153770665087046}
-  m_Enabled: 1
+  m_Enabled: 0

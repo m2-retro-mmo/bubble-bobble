@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Mirror;
@@ -31,8 +29,6 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of bots the game should start with")]
     private int botNumber;
 
-    private byte teamCount = 2;
-
     private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message) {
         foreach (Player player in FindObjectsOfType<Player>()) {
             if (player.connectionToClient == conn) {
@@ -51,17 +47,15 @@ public class GameManager : NetworkBehaviour
     [Server]
     void Start()
     {
-
-        // instanciate a Hort for each Team
-        List<Hort> horts = new List<Hort>();
-        for (byte teamNumber = 0; teamNumber < teamCount; teamNumber++)
+        if (isServerOnly)
         {
-            Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            hort.init(teamNumber);
-            horts.Add(hort);
-            NetworkServer.Spawn(hort.gameObject);
+            cam = GameObject.Find("Server Camera").GetComponent<Camera>();
+            cam.enabled = true;
+            cam.GetComponent<Camera>().enabled = true;
+            cam.GetComponent<AudioListener>().enabled = true;
         }
-        map.GenerateMap(horts);
+
+        map.NewMap();
 
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
@@ -80,10 +74,7 @@ public class GameManager : NetworkBehaviour
         {
             GameObject bots = new GameObject("Bots");
 
-            Tilemap obstacle_tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-            Tilemap ground_tilemap = GameObject.Find("Ground").GetComponent<Tilemap>();
-
-            Graph graph = new Graph(obstacle_tilemap, ground_tilemap, true);
+            Graph graph = new Graph(map.obstacleTilemap, map.floorTilemap, true);
 
             for (int i = 0; i < botNumber; i++)
             {
@@ -96,6 +87,7 @@ public class GameManager : NetworkBehaviour
                 map.PlaceCharacter(bot);
 
                 bot.GetComponent<BotMovement>().SetGraph(graph);
+                bot.StartBot();
             }
         }
 

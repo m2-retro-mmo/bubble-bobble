@@ -57,19 +57,13 @@ public class Shooting : NetworkBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //if (Input.GetButton("Fire1"))
-        //{
-        //    ShootBubble();
-        //}
-    }
-
-    [Server]
-    private void LateUpdate()
+    private void Update()
     {
         // inrecemt buuble count after every 3 seconds
+        if (!isServer)
+        {
+            return;
+        }
         if (Time.time >= nextIncrementTime)
         {
             nextIncrementTime = Time.time + bubbleCoolDownTime;

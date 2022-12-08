@@ -28,21 +28,13 @@ public class Player : CharacterBase
     {
         if (isLocalPlayer)
         {
-            Debug.Log("Player is local player");
-            // find all other cameras and disable them
-            foreach (Camera c in FindObjectsOfType<Camera>())
-            {
-                if (c != cam)
-                {
-                    c.enabled = false;
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("Player is not local player");
-            // disable camera
-            cam.enabled = false;
+            cam.enabled = true;
+            cam.GetComponent<Camera>().enabled = true;
+            cam.GetComponent<AudioListener>().enabled = true;
+            GameObject minimapCam = GameObject.Find("MinimapCamera");
+            CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
+            minimapCamFollow.target = transform;
+
         }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
@@ -170,10 +162,6 @@ public class Player : CharacterBase
                     Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                     diamond.collect();
                     collectDiamond();
-                }
-                else
-                {
-                    Debug.Log("Player already holds a Diamond!");
                 }
                 break;
             default:
