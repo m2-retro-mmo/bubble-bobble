@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
         camFollow.target = player.transform;
 
         // minimap camera should follow main player
-        CameraFollow minimapCamFollow = cam.GetComponent<CameraFollow>();
+        CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
         minimapCamFollow.target = player.transform;
 
         if (startGameWithBots)
