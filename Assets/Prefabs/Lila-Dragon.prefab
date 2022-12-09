@@ -2339,6 +2339,7 @@ GameObject:
   - component: {fileID: 6432122158148886418}
   - component: {fileID: 6432122158148886420}
   - component: {fileID: 6432122158148886419}
+  - component: {fileID: 5299440243679250419}
   m_Layer: 0
   m_Name: Lila-Dragon
   m_TagString: Untagged
@@ -2355,7 +2356,7 @@ Transform:
   m_GameObject: {fileID: 7456883569502441937}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -31.86826, y: 4.2667236, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4607051852529822079}
@@ -2404,12 +2405,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collisionOffset: 0.1
   moveSpeed: 3
+  animator: {fileID: 0}
   mousePosWorld: {x: 0, y: 0}
   cam: {fileID: 0}
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
-  teamNumber: 1
-  isCaptured: 0
   itemDuration: 0
 --- !u!50 &6432122158148886418
 Rigidbody2D:
@@ -2477,6 +2477,26 @@ MonoBehaviour:
   bubbleForce: 20
   bubbleCoolDownTime: 3
   bubbleCount_text: {fileID: 0}
+--- !u!95 &5299440243679250419
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7456883569502441937}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4f6ee520d21e2d548a3c18b32b6fe0c3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8710936324999598671
 GameObject:
   m_ObjectHideFlags: 0
