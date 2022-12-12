@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Mirror;
 
-public class CharacterBase : MonoBehaviour
+
+public class CharacterBase : NetworkBehaviour
 {
-    protected bool holdsDiamond = false;
-    protected byte teamNumber = 1;
-    protected bool isCaptured = false;
+    [SyncVar] protected bool holdsDiamond = false;
+    [SyncVar] protected byte teamNumber = 1;
+    [SyncVar] protected bool isCaptured = false;
 
     protected SpriteRenderer spriteRenderer;
 
-    protected float bubbleBreakoutTime = 5f;
+    protected const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +47,7 @@ public class CharacterBase : MonoBehaviour
         // TODO: change appearance to captured player
         isCaptured = true;
         spriteRenderer.color = Color.red;
-        Invoke("Uncapture", bubbleBreakoutTime);
+        Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
     }
 
     /**

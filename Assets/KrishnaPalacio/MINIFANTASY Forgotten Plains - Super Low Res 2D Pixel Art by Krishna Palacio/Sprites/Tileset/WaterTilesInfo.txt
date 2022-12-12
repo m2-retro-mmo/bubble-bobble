@@ -1,0 +1,1 @@
+Water tiles are divided into 2 frames. Use these frames to create animated water bodies, such as lakes and seas.

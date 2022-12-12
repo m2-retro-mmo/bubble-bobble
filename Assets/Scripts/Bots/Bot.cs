@@ -51,7 +51,7 @@ public class Bot : CharacterBase
         botMovement = GetComponent<BotMovement>();
 
         StartBot();
-        teamNumber = 0; // TODO: später anders lösen, nur zum testen
+        teamNumber = 0; // TODO: spï¿½ter anders lï¿½sen, nur zum testen
 
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
@@ -62,7 +62,7 @@ public class Bot : CharacterBase
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
 
-        Invoke("StartBot", bubbleBreakoutTime);
+        Invoke("StartBot", BUBBLE_BREAKOUT_TIME);
     }
 
     public void StartBot()

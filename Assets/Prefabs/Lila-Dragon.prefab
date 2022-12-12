@@ -2341,7 +2341,7 @@ GameObject:
   - component: {fileID: 6432122158148886419}
   m_Layer: 0
   m_Name: Lila-Dragon
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2408,8 +2408,6 @@ MonoBehaviour:
   cam: {fileID: 0}
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
-  teamNumber: 1
-  isCaptured: 0
   itemDuration: 0
 --- !u!50 &6432122158148886418
 Rigidbody2D:
