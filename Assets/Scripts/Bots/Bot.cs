@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// the states of the InteractionID
@@ -46,14 +47,17 @@ public class Bot : CharacterBase
 
     private BotMovement botMovement;
 
+    public void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        botMovement = GetComponent<BotMovement>();
+    }
+
+    [Server]
     void Start()
     {
-        botMovement = GetComponent<BotMovement>();
-
         StartBot();
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void ResetBot()

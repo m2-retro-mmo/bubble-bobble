@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// The class of the Bubble object.
 /// </summary>
-public class Bubble : MonoBehaviour
+public class Bubble : NetworkBehaviour
 {
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble will disappear")]
@@ -28,9 +29,11 @@ public class Bubble : MonoBehaviour
     /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!isServer) return;
+
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            bool foundPlayer = collision.gameObject.TryGetComponent(out Player player); // TODO dieser Code muss schöner werden, rettet die Wale, findet Nemo
+            bool foundPlayer = collision.gameObject.TryGetComponent(out Player player); // TODO dieser Code muss schoener werden, rettet die Wale, findet Nemo
             collision.gameObject.TryGetComponent(out Bot bot);
             if (foundPlayer == true)
             {

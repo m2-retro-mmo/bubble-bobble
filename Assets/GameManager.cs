@@ -89,6 +89,8 @@ public class GameManager : NetworkBehaviour
                 bot.SetTeamNumber(0); // TODO set team number randomly
                 map.PlaceCharacter(bot);
 
+                NetworkServer.Spawn(bot.gameObject);
+
                 bot.GetComponent<BotMovement>().SetGraph(graph);
                 bot.StartBot();
             }

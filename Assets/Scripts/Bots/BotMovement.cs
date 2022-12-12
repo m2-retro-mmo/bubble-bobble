@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
 /// </summary>
-public class BotMovement : MonoBehaviour
+public class BotMovement : NetworkBehaviour
 {
     [HideInInspector]
     public Transform goal;
@@ -34,6 +35,9 @@ public class BotMovement : MonoBehaviour
 
     private void Update()
     {
+        // return if not server
+        if (!isServer) return;
+
         // if the Interaction ID was changed stop everything and start new interaction
         if (bot.GetChangedInteractionID())
         {
