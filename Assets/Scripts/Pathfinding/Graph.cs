@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -52,11 +54,9 @@ public class Graph
             {
                 // get the tile at the current position
                 TileBase tile = tiles[x + y * width];
-                // get the neihbors of the current tile
-                GraphNode[] neighbours = GetNeighbourList(new GraphNode(x, y));
-                // create a new GraphNode with the current position and the neighbors 
+                // create a new GraphNode with the current position and the neighbours 
                 // and set the isObstacle node to true if the tile is not null
-                GraphNode node = new GraphNode(x, y, (tile != null), neighbours); // TODO get all tiles from obstacleMap and check if tile is in this list //TODO check ground tilemap for water shelter and set obstacle to true
+                GraphNode node = new GraphNode(x, y, (tile != null)); // TODO get all tiles from obstacleMap and check if tile is in this list //TODO check ground tilemap for water shelter and set obstacle to true
                 // add the GraphNode to the 2D array
                 graphArray[x, y] = node;
                 
@@ -69,6 +69,7 @@ public class Graph
                 }
             }
         }
+
         if (drawGraph)
         {
             Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
@@ -89,7 +90,7 @@ public class Graph
 
     public Vector3 GetWorldPosition(GraphNode node)
     {
-        return GetWorldPosition(node.getX(), node.getY());
+        return GetWorldPosition(node.GetX(), node.GetY());
     }
 
     /// <summary>
@@ -204,15 +205,25 @@ public class Graph
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns>An array of GraphNodes.</returns>
-    public GraphNode[] GetNeighbourList(GraphNode node) //TODO: get real neighbors!
+    public List<GraphNode> GetNeighboursOfNode(GraphNode currentNode)
     {
-        // get the position of the given GraphNode
-        Vector2Int pos = new Vector2Int(node.getX(), node.getY());
-        GraphNode[] neighbours = new GraphNode[4];
-        neighbours[0] = GetNode(pos.x, pos.y + 1);
-        neighbours[1] = GetNode(pos.x + 1, pos.y);
-        neighbours[2] = GetNode(pos.x, pos.y - 1);
-        neighbours[3] = GetNode(pos.x - 1, pos.y);
+        List<GraphNode> neighbours = new List<GraphNode>();
+
+        for (int x = currentNode.GetX() - 1; x <= currentNode.GetX() + 1; x++)
+        {
+            for (int y = currentNode.GetY() - 1; y <= currentNode.GetY() + 1; y++)
+            {
+                if (x == currentNode.GetX() && y == currentNode.GetY())
+                {
+                    continue;
+                }
+                if (x < 0 || x >= graphArray.GetLength(0) || y < 0 || y >= graphArray.GetLength(1)) // edge cases, node is outside of bounds
+                {
+                    continue;
+                }
+                neighbours.Add(graphArray[x, y]);
+            }
+        }
         return neighbours;
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6831340143348627995}
   - component: {fileID: 6831340143348627997}
   m_Layer: 0
-  m_Name: Ground
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ Tilemap:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 0, y: 0, z: 1}
-  m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
+  m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
@@ -228,7 +228,7 @@ Tilemap:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 50, y: 21, z: 1}
-  m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
+  m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
@@ -323,6 +323,7 @@ GameObject:
   - component: {fileID: 6831340143757223154}
   - component: {fileID: 6831340143757223153}
   - component: {fileID: 6831340143757223155}
+  - component: {fileID: 2229609613089480983}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -371,30 +372,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86e428634c3d41e0bd126825f26dffe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 100
-  height: 50
-  map: {fileID: 6831340143348627996}
-  obstacleMap: {fileID: 6831340143538986265}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  diamondPrefab: {fileID: 8118033987832905193, guid: bf536dfb83da96918b3eed8537a07776,
+    type: 3}
+  hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
+    type: 3}
+  floorTilemap: {fileID: 6831340143348627996}
+  obstacleTilemap: {fileID: 6831340143538986265}
   floorTiles:
   - {fileID: 11400000, guid: 7b6e368fc0ee90b4ca09e0f71344589a, type: 2}
   - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
   - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
   waterTile: {fileID: 11400000, guid: 179d21ad98546944b89dd263beebdaaf, type: 2}
-  probabilityObstaclesGeneral: 6
   pillars:
   - {fileID: 11400000, guid: 3019b47c419fa62288f1ee69c4e08108, type: 2}
   - {fileID: 11400000, guid: b392e58d77907894bbb747280028c119, type: 2}
-  probabilityPillar: 20
   bushes:
   - {fileID: 11400000, guid: bbf669d2b67dcd545a15fe757a0720ee, type: 2}
   - {fileID: 11400000, guid: 3859940d6faecf3479744a35e925043b, type: 2}
-  probabilityBushes: 30
   accessoirs:
   - {fileID: 11400000, guid: 3518e6f6168e1712295befc3f699dfea, type: 2}
   - {fileID: 11400000, guid: 85b889486dc6e58cca85ce014e21fb7b, type: 2}
   - {fileID: 11400000, guid: 22e79aa5efaa1479abffd3f45dbdf160, type: 2}
-  probabilityAccessoirs: 50
   northTile: {fileID: 11400000, guid: 3b63f6f8dc62dd64eb7d907a45c78a9c, type: 2}
   northEastTile: {fileID: 11400000, guid: 5d79d4facf3014b4ca2ba10be2793398, type: 2}
   eastTile: {fileID: 11400000, guid: f0d13665152effd4b874de1cf066b417, type: 2}
@@ -411,5 +413,20 @@ MonoBehaviour:
     type: 2}
   northWestAndSouthEast: {fileID: 11400000, guid: fe55a09b470df1c4d9a5186d9135dda6,
     type: 2}
-  diamondPrefab: {fileID: 8118033987832905192, guid: bf536dfb83da96918b3eed8537a07776,
-    type: 3}
+--- !u!114 &2229609613089480983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6831340143757223152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2018413340
+  serverOnly: 0
+  visible: 0
+  hasSpawned: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// the states of the InteractionID
@@ -46,14 +47,17 @@ public class Bot : CharacterBase
 
     private BotMovement botMovement;
 
+    public void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        botMovement = GetComponent<BotMovement>();
+    }
+
+    [Server]
     void Start()
     {
-        botMovement = GetComponent<BotMovement>();
-
         StartBot();
-        teamNumber = 0; // TODO: später anders lösen, nur zum testen
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        teamNumber = 0; // TODO: spï¿½ter anders lï¿½sen, nur zum testen
     }
 
     public void ResetBot()
@@ -62,7 +66,7 @@ public class Bot : CharacterBase
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
 
-        Invoke("StartBot", bubbleBreakoutTime);
+        Invoke("StartBot", BUBBLE_BREAKOUT_TIME);
     }
 
     public void StartBot()
