@@ -12,9 +12,10 @@ public class Graph
 {
     // the size of the graph consisting of the number of nodes in the x and y direction
     private int width, height;
-    
+
     // the tilemap that is used to create the graph
     private Tilemap tilemap;
+
     // the bounds of the tilemap
     private BoundsInt bounds;
 
@@ -28,18 +29,18 @@ public class Graph
     /// </summary>
     /// <param name="obstacle_tilemap">The tilemap that is used to create the graph.</param>
     /// <param name="drawGraph">If true, draw graph.</param>
-    public Graph(Tilemap obstacle_tilemap, Tilemap ground_tilemap, bool drawGraph)
+    public Graph(Map map, bool drawGraph)
     {
-        this.tilemap = obstacle_tilemap;
+        this.tilemap = map.obstacleTilemap;
 
         // Get the bounds of the tilemap
-        bounds = obstacle_tilemap.cellBounds;
+        bounds = map.obstacleTilemap.cellBounds;
         
         // get width and height of the tilemap
-        width = bounds.size.x;
-        height = bounds.size.y;
-        
-        TileBase[] tiles = obstacle_tilemap.GetTilesBlock(obstacle_tilemap.cellBounds);
+        width = map.GetWidth();
+        height = map.GetHeight();
+
+        Boolean[,] isObstacle = GetNonWalkableFields(map.floorEnvironment);
 
         GameObject textParent = new GameObject("TextParent");
 
@@ -52,11 +53,10 @@ public class Graph
         {
             for (int y = 0; y < height; y++)
             {
-                // get the tile at the current position
-                TileBase tile = tiles[x + y * width];
                 // create a new GraphNode with the current position and the neighbours 
                 // and set the isObstacle node to true if the tile is not null
-                GraphNode node = new GraphNode(x, y, (tile != null)); // TODO get all tiles from obstacleMap and check if tile is in this list //TODO check ground tilemap for water shelter and set obstacle to true
+                GraphNode node = new GraphNode(x, y, isObstacle[x,y]);
+                
                 // add the GraphNode to the 2D array
                 graphArray[x, y] = node;
                 
@@ -135,6 +135,19 @@ public class Graph
         // get the position in the graph of the given world position
         Vector2Int pos = GetXY(worldPosition);
         return GetNode(pos.x, pos.y);
+    }
+
+    public Boolean[,] GetNonWalkableFields(EnvironmentType[,] grid)
+    {
+        Boolean[,] nonWalkables = new Boolean[width, height];
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++) {
+                if (grid[x, y] == EnvironmentType.Water) nonWalkables[x,y] = true;
+                else nonWalkables[x, y] = false;
+            }
+        }
+        return nonWalkables;
     }
 
     /// <summary>

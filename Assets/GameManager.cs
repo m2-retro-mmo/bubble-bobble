@@ -77,7 +77,7 @@ public class GameManager : NetworkBehaviour
         {
             GameObject bots = new GameObject("Bots");
 
-            Graph graph = new Graph(map.obstacleTilemap, map.floorTilemap, true);
+            Graph graph = new Graph(map, true);
 
             for (int i = 0; i < botNumber; i++)
             {

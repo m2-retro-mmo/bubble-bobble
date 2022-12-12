@@ -540,4 +540,14 @@ public class Map : NetworkBehaviour
 
         character.transform.position = new Vector3(randomX, randomY, 0);
     }
+
+    public int GetWidth()
+    {
+        return this.generatorData.width;
+    }
+
+    public int GetHeight()
+    {
+        return this.generatorData.height;
+    }
 }

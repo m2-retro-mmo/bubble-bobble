@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -13,7 +13,7 @@ public class Testing : MonoBehaviour
         Tilemap obstacle_tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
         Tilemap ground_tilemap = GameObject.Find("Ground").GetComponent<Tilemap>();
         // create a new graph with the tilemap
-        graph = new Graph(obstacle_tilemap, ground_tilemap, true);
+        graph = new Graph(map, true);
         Pathfinding pathfinding = new Pathfinding(graph);
         List<GraphNode> path = pathfinding.FindPath(new Vector3(0, 0, 0), new Vector3(5, 5, 0));
         foreach (GraphNode node in path)
@@ -34,3 +34,4 @@ public class Testing : MonoBehaviour
         }
     }
 }
+*/
