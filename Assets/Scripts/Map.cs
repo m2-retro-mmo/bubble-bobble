@@ -171,6 +171,7 @@ public class Map : NetworkBehaviour
         ran = new System.Random(generatorData.seed);
         GenerateNoiseGrid();
         ApplyCellularAutomaton();
+        SetMapBoundries();
         for (int i = 0; i < 2; i++)
         {
             RemoveSingleTiles();
@@ -262,11 +263,25 @@ public class Map : NetworkBehaviour
     }
 
     // Step 3
+    void SetMapBoundries() {
+        for (int x = 0; x < generatorData.width; x++)
+        {
+            for (int y = 0; y < generatorData.height; y++)
+            {
+                if (x == 0 || y == 0 || x == generatorData.width -1 || y == generatorData.height -1)
+                {
+                    floorEnvironment[x, y] = EnvironmentType.Water;
+                }
+            }
+        }
+    }
+
+    // Step 4
     void RemoveSingleTiles()
     {
-        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++)
+        for (int x = 0; x < generatorData.width; x++)
         {
-            for (int y = 0; y < floorEnvironment.GetUpperBound(1); y++)
+            for (int y = 0; y < generatorData.height; y++)
             {
                 if (floorEnvironment[x, y] == EnvironmentType.Water)
                 {
@@ -284,13 +299,13 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 4
+    // Step 5
     void DrawTilemap()
     {
         floorTilemap.ClearAllTiles();
-        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++) //TODO: check width/height
+        for (int x = 0; x < generatorData.width; x++) //TODO: check width/height
         {
-            for (int y = 0; y < floorEnvironment.GetUpperBound(1); y++)
+            for (int y = 0; y < generatorData.height; y++)
             {
                 if (floorEnvironment[x, y] == EnvironmentType.Ground)
                 {
@@ -305,7 +320,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 5
+    // Step 6
     public void UpdateHortEnvironment()
     {
         // iterate over generatorData.hortLocations with index
@@ -333,7 +348,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 6
+    // Step 7
     public void PlaceObstacles()
     {
         obstacleTilemap.ClearAllTiles();
@@ -362,7 +377,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 7 (Server only)
+    // Step 8 (Server only)
     [ServerCallback]
     void PlaceDiamonds()
     {
