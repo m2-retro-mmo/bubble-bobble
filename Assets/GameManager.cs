@@ -29,9 +29,12 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of bots the game should start with")]
     private int botNumber;
 
-    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message) {
-        foreach (Player player in FindObjectsOfType<Player>()) {
-            if (player.connectionToClient == conn) {
+    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
+    {
+        foreach (Player player in FindObjectsOfType<Player>())
+        {
+            if (player.connectionToClient == conn)
+            {
                 Debug.Log("Player already exists");
                 return;
             }
@@ -67,8 +70,8 @@ public class GameManager : NetworkBehaviour
         }
 
         // minimap camera should follow main player
-        // CameraFollow minimapCamFollow = cam.GetComponent<CameraFollow>();
-        // minimapCamFollow.target = player.transform;
+        CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
+        minimapCamFollow.target = player.transform;
 
         if (startGameWithBots)
         {
