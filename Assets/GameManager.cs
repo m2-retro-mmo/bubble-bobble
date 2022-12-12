@@ -70,8 +70,8 @@ public class GameManager : NetworkBehaviour
         }
 
         // minimap camera should follow main player
-        CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
-        minimapCamFollow.target = player.transform;
+        // CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
+        // minimapCamFollow.target = player.transform;
 
         if (startGameWithBots)
         {
