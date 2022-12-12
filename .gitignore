@@ -88,3 +88,8 @@ crashlytics-build.properties
 /[Aa]ssets/MRTK/**
 
 .fake
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride

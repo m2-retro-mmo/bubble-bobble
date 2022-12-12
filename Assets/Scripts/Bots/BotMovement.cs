@@ -118,7 +118,7 @@ public class BotMovement : MonoBehaviour
 
                 if (distToPlayer <= shootRange)
                 {
-                    GetComponent<Shooting>().ShootBubble();
+                    GetComponent<Shooting>().CmdShootBubble();
                     CancelInvoke();
                     path = null;
                 }
