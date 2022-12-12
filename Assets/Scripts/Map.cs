@@ -288,7 +288,7 @@ public class Map : NetworkBehaviour
     void DrawTilemap()
     {
         floorTilemap.ClearAllTiles();
-        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++)
+        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++) //TODO: check width/height
         {
             for (int y = 0; y < floorEnvironment.GetUpperBound(1); y++)
             {

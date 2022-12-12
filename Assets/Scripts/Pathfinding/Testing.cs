@@ -19,7 +19,7 @@ public class Testing : MonoBehaviour
         foreach (GraphNode node in path)
         {
             //graph.HighlightNode(node);
-            graph.SetText(node.getX(), node.getY(), "");
+            graph.SetText(node.GetX(), node.GetY(), "");
             Debug.Log("path - " + node);
         }
     }

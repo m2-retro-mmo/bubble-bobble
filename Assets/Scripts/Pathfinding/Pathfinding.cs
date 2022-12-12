@@ -46,7 +46,7 @@ public class Pathfinding
             // loop through the open list and get the node with the lowest fCost
             for (int i = 1; i < openList.Count; i++)
             {
-                if (openList[i].getFCost() < currentNode.getFCost() || openList[i].getFCost() == currentNode.getFCost() && openList[i].getHCost() < currentNode.getHCost())
+                if (openList[i].GetFCost() < currentNode.GetFCost() || openList[i].GetFCost() == currentNode.GetFCost() && openList[i].GetHCost() < currentNode.GetHCost())
                 {
                     currentNode = openList[i];
                 }
@@ -62,22 +62,22 @@ public class Pathfinding
             }
 
             // loop through the neighbors of the current node
-            foreach (GraphNode neighbourNode in graph.GetNeighbourList(currentNode))
+            foreach (GraphNode neighbourNode in graph.GetNeighboursOfNode(currentNode))
             {
                 // if the neighbor is not walkable or is in the closed list, ignore it
-                if (neighbourNode.isObstacle || closedList.Contains(neighbourNode)) // TODO bounds of tile map
+                if (neighbourNode.GetIsObstacle() || closedList.Contains(neighbourNode)) // TODO bounds of tile map
                 {
                     continue;
                 }
 
                 // calculate the new movement cost to the neighbor
-                int newMovementCostToNeighbour = currentNode.getGCost() + GetDistance(currentNode, neighbourNode);
+                int newMovementCostToNeighbour = currentNode.GetGCost() + GetDistance(currentNode, neighbourNode);
                 // if the new movement cost to the neighbor is lower than the old one or the neighbor is not in the open list
-                if (newMovementCostToNeighbour < neighbourNode.getGCost() || !openList.Contains(neighbourNode))
+                if (newMovementCostToNeighbour < neighbourNode.GetGCost() || !openList.Contains(neighbourNode))
                 {
                     // set the cost values for the neighbor
-                    neighbourNode.setGCost(newMovementCostToNeighbour);
-                    neighbourNode.setHCost(GetDistance(neighbourNode, endNode));
+                    neighbourNode.SetGCost(newMovementCostToNeighbour);
+                    neighbourNode.SetHCost(GetDistance(neighbourNode, endNode));
                     // set the current node as the neighbor's previous node for reconstructing the path
                     neighbourNode.cameFromNode = currentNode;
 
@@ -128,8 +128,8 @@ public class Pathfinding
     /// <returns>An int.</returns>
     private int GetDistance(GraphNode nodeA, GraphNode nodeB)
     {
-        int dstX = Mathf.Abs(nodeA.getX() - nodeB.getX());
-        int dstY = Mathf.Abs(nodeA.getY() - nodeB.getY());
+        int dstX = Mathf.Abs(nodeA.GetX() - nodeB.GetX());
+        int dstY = Mathf.Abs(nodeA.GetY() - nodeB.GetY());
         
         if (dstX > dstY)
         {
