@@ -77,6 +77,7 @@ public class Map : MonoBehaviour
         ApplyCellularAutomaton(grid, iterations);
         RemoveSingleTiles(grid);
         RemoveSingleTiles(grid);
+        SetMapBoundries(grid);
         DrawTilemap(grid, map, floorTiles, waterTile);
         foreach (Hort hort in horts)
         {
@@ -175,12 +176,25 @@ public class Map : MonoBehaviour
         }
     }
 
+    void SetMapBoundries(EnvironmentType[,] cells) {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (x == 0 || y == 0 || x == width -1 || y == height -1)
+                {
+                    cells[x, y] = EnvironmentType.Water;
+                }
+            }
+        }
+    }
+
     void DrawTilemap(EnvironmentType[,] cells, Tilemap tilemap, Tile[] floorTiles, Tile waterTile)
     {
         tilemap.ClearAllTiles();
-        for (int x = 0; x < cells.GetUpperBound(0); x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < cells.GetUpperBound(1); y++)
+            for (int y = 0; y < height; y++)
             {
                 if (cells[x, y] == EnvironmentType.Ground)
                 {
@@ -197,7 +211,6 @@ public class Map : MonoBehaviour
 
     void RemoveSingleTiles(EnvironmentType[,] grid)
     {
-
         for (int x = 0; x < grid.GetUpperBound(0); x++)
         {
             for (int y = 0; y < grid.GetUpperBound(1); y++)
@@ -216,7 +229,6 @@ public class Map : MonoBehaviour
                 }
             }
         }
-
     }
 
 

@@ -1236,6 +1236,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MiniMapWrapper
       objectReference: {fileID: 0}
+    - target: {fileID: 1744665208234916673, guid: 23a5f15a3049af002956091eeaa6d6cc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1744665208234916677, guid: 23a5f15a3049af002956091eeaa6d6cc,
         type: 3}
       propertyPath: m_Pivot.x
