@@ -413,6 +413,16 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1108362006
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_TileAnchor.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_TileAnchor.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Name
