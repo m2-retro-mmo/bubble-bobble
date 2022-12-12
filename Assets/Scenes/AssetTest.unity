@@ -14746,6 +14746,26 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 441564935}
+    - target: {fileID: 8755906794819694821, guid: ce39a882ea9c34d438b9fee8dbe27a39,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755906794819694822, guid: ce39a882ea9c34d438b9fee8dbe27a39,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 7.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755906794819694822, guid: ce39a882ea9c34d438b9fee8dbe27a39,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755906794819694822, guid: ce39a882ea9c34d438b9fee8dbe27a39,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8755906794819694823, guid: ce39a882ea9c34d438b9fee8dbe27a39,
         type: 3}
       propertyPath: m_RootOrder
