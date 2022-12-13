@@ -151,7 +151,7 @@ public class Bot : CharacterBase
                 CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
-                if (!opponent.GetIsCaptured()) // TODO
+                if (!opponent.GetIsCaptured()) 
                 {
                     // set the priority for the opponent interaction
                     interactionPriorities[(int)InteractionID.Opponent] += opponentPriority;
@@ -203,10 +203,30 @@ public class Bot : CharacterBase
         }
     }
 
+    /// <summary>
+    /// Checks for bubbles of opponents in the area around the player.
+    /// </summary>
     private void CheckForOpponentBubbles()
     {
         // get all opponent bubbles in the area 
-        Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble");
+        Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble").Where(b => b.GetComponent<Bubble>().GetTeamNumber() == GetOpponentTeamNumber(teamNumber)).ToArray();
+
+        if(opponentBubbleColliders.Length > 0)
+        {
+            foreach(Collider2D bubble in opponentBubbleColliders)
+            {
+                interactionPriorities[(int)InteractionID.OpponentBubble] += 1f;
+
+                // multiply interactionPriority with interactionWeight
+                interactionPriorities[(int)InteractionID.OpponentBubble] *= interactionWeights[(int)InteractionID.OpponentBubble];
+
+                // set the interactionGoal to the opponent bubble
+                interactionGoals[(int)InteractionID.OpponentBubble] = bubble.transform;
+
+                foundInteraction = true;
+                break;
+            }
+        }
     }
 
     /// <summary>
