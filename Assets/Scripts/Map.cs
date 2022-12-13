@@ -421,7 +421,7 @@ public class Map : NetworkBehaviour
             {
                 if (TileIsFree(x, y) && ran.Next(1, 100) < 20)
                 {
-                    Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x), ((float)y), 0), Quaternion.identity);
+                    Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                     item.transform.parent = diamondParent.transform;
                     NetworkServer.Spawn(item.gameObject);
                 }
@@ -584,7 +584,7 @@ public class Map : NetworkBehaviour
             if (TileIsFree(randomX, randomY)) break;
         }
 
-        character.transform.position = new Vector3(randomX, randomY, 0);
+        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
     }
 
     public int GetWidth()
