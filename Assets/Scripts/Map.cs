@@ -157,7 +157,7 @@ public class Map : NetworkBehaviour
             hort.init(teamNumber);
             horts.Add(hort);
             var hortLocation = generatorData.hortLocations[teamNumber];
-            hort.transform.position = new Vector3(hortLocation.x, hortLocation.y, 0);
+            hort.transform.position = new Vector3(hortLocation.x + 0.5f, hortLocation.y + 0.5f, 0);
             NetworkServer.Spawn(hort.gameObject);
         }
         BuildMap();
@@ -350,6 +350,7 @@ public class Map : NetworkBehaviour
                 for (int y = startPositionY; y < endPositionY; y++)
                 {
                     floorEnvironment[x, y] = EnvironmentType.Shelter;
+                    isWalkable[x, y] = false;
                 }
             }
         }
