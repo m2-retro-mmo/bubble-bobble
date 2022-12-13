@@ -75,22 +75,27 @@ public class BotMovement : NetworkBehaviour
         {
             case InteractionID.Opponent:
                 Debug.Log("Start interaction with opponent");
-                StartCoroutine(FollowOpponent());
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Teammate:
                 Debug.Log("Start interaction with teammate");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.OpponentBubble:
                 Debug.Log("Start interaction with opponent bubble");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Diamond:
                 Debug.Log("Start interaction with diamond");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
                 Debug.Log("Start interaction with hort");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Item:
                 Debug.Log("Start interaction with item");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.None:
                 Debug.Log("Start interaction with nothing");
@@ -103,7 +108,7 @@ public class BotMovement : NetworkBehaviour
     /// if opponent is in shooting range, shoot opponent.
     /// </summary>
     /// <returns>An IEnumerator.</returns>
-    IEnumerator FollowOpponent()
+    IEnumerator FollowGoal()
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
         while (true)
@@ -180,6 +185,11 @@ public class BotMovement : NetworkBehaviour
     public void SetGraph(Graph graph)
     {
         this.graph = graph;
+    }
+
+    public void SetGoal(Transform goal)
+    {
+        this.goal = goal;
     }
 
     /// <summary>

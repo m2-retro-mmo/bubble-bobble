@@ -49,4 +49,9 @@ public class Hort : NetworkBehaviour
         GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position, gameObject.transform.rotation);
         NetworkServer.Spawn(plusOne);
     }
+
+    public byte GetTeamNumber() 
+    {
+        return team;
+    }
 }

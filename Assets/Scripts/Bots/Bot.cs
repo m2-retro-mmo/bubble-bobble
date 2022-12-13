@@ -42,11 +42,11 @@ public class Bot : CharacterBase
     private Transform[] interactionGoals;
 
     // area radius around the bot
-    private float interactionRadius = 10f;
+    private float interactionRadius = 10;
 
     private Vector3 botPosition;
 
-    private Collider2D[] colliders;
+    private Collider2D[] interactionColliders;
 
     private BotMovement botMovement;
 
@@ -61,6 +61,7 @@ public class Bot : CharacterBase
     void Start()
     {
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
+        Debug.Log("bot diamond: " + GetHoldsDiamond().ToString());
     }
 
     public void ResetBot()
@@ -97,19 +98,13 @@ public class Bot : CharacterBase
 
             botPosition = transform.position;
             // get all colliders in a radius around the bot
-            colliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
+            interactionColliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
 
             CheckForOpponents();
             CheckForTeammates();
-
-            if(GetHoldsDiamond())
-            {
-                CheckForDiamond();
-            } else
-            {
-                interactionPriorities[(int)InteractionID.Hort] += 1f;
-                CheckForHort();
-            }
+            CheckForOpponentBubbles();
+            CheckForDiamond();
+            CheckForHort();
 
             CalculateInteractionID();
 
@@ -240,6 +235,12 @@ public class Bot : CharacterBase
         // are there diamonds near by
         if (diamondColliders.Length > 0)
         {
+            if (GetHoldsDiamond())
+            {
+                interactionPriorities[(int)InteractionID.Hort] += 1f;
+                return;
+            }
+
             // loop through all opponents 
             foreach (Collider2D collider in diamondColliders)
             {
@@ -254,6 +255,7 @@ public class Bot : CharacterBase
                 interactionGoals[(int)InteractionID.Diamond] = diamond.transform;
 
                 foundInteraction = true;
+                break;
             }
         }
     }
@@ -263,12 +265,12 @@ public class Bot : CharacterBase
     /// </summary>
     private void CheckForHort()
     {
-        if(!GetHoldsDiamond())
-        {
-            return;
-        }
+        //if(!GetHoldsDiamond())
+        //{
+        //    return;
+        //}
         // get all diamonds in the area
-        Collider2D[] hortColliders = GetCollidersByTag("Collider");
+        Collider2D[] hortColliders = GetCollidersByTag("Hort");
 
         // are there diamonds near by
         if (hortColliders.Length > 0)
@@ -277,16 +279,21 @@ public class Bot : CharacterBase
             foreach (Collider2D collider in hortColliders)
             {
                 Hort hort = collider.gameObject.GetComponent<Hort>();
-                // has a higher priority to drop diamond
-                interactionPriorities[(int)InteractionID.Hort] += 1f;
 
-                // multiply interactionPriority with interactionWeight
-                interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
+                if(hort.GetTeamNumber() == GetTeamNumber())
+                {
+                    // has a higher priority to drop diamond
+                    interactionPriorities[(int)InteractionID.Hort] += 1f;
 
-                // set the interactionGoal to hort
-                interactionGoals[(int)InteractionID.Hort] = hort.transform;
+                    // multiply interactionPriority with interactionWeight
+                    interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
 
-                foundInteraction = true;
+                    // set the interactionGoal to hort
+                    interactionGoals[(int)InteractionID.Hort] = hort.transform;
+
+                    foundInteraction = true;
+                    break;
+                }
             }
         }
     }
@@ -298,7 +305,7 @@ public class Bot : CharacterBase
     /// <returns>An array of Collider2DS.</returns>
     private Collider2D[] GetCollidersByTag(string tagName)
     {
-        colliders = colliders.Where(c => c.gameObject.tag == tagName).ToArray();
+        Collider2D[] colliders = interactionColliders.Where(c => c.gameObject.tag == tagName).ToArray();
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
@@ -313,7 +320,7 @@ public class Bot : CharacterBase
     /// <returns>An array of Collider2DS.</returns>
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
-        colliders = colliders.Where(c => 
+        Collider2D[] colliders = interactionColliders.Where(c => 
             (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
             (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
         // order by distance
@@ -344,7 +351,7 @@ public class Bot : CharacterBase
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
-                botMovement.goal = interactionGoals[highestPriorityIndex];
+                botMovement.SetGoal(interactionGoals[highestPriorityIndex]);
             }
         }
         else // if no interaction was found, increase the radius
