@@ -57,7 +57,7 @@ public class BotMovement : NetworkBehaviour
         {
             LookAtGoal();
         }
-        
+
         if (bot.GetIsCaptured())
         {
             CancelInvoke();

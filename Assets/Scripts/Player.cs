@@ -129,43 +129,4 @@ public class Player : CharacterBase
             return false;
         }
     }
-
-
-
-    /**
-    * is called when player collides with another Collider2D
-    */
-    [ServerCallback]
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // check collision of Player with other Game objects
-        switch (other.gameObject.tag)
-        {
-            case "Hort":
-                Hort hort = other.GetComponent("Hort") as Hort;
-                if (hort != null)
-                {
-                    // put diamond into hort
-                    if (holdsDiamond && teamNumber == hort.team)
-                    {
-                        hort.AddDiamond();
-                        deliverDiamond();
-                    }
-                }
-                break;
-            case "Diamond":
-                // collect Diamond if possible
-                if (!holdsDiamond)
-                {
-                    Debug.Log("collision");
-                    Debug.Log("HERE IS A DIAMOND");
-                    Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                    diamond.collect();
-                    collectDiamond();
-                }
-                break;
-            default:
-                break;
-        }
-    }
 }

@@ -65,6 +65,7 @@ public class Bot : CharacterBase
 
     public void ResetBot()
     {
+        prevPriorityIndex = -1;
         StopAllCoroutines();
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
@@ -74,7 +75,6 @@ public class Bot : CharacterBase
 
     public void StartBot()
     {
-        Debug.Log("Start Bot");
         StartCoroutine(CheckAreaOfInterest());
     }
 

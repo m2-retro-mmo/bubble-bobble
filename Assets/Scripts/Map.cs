@@ -399,7 +399,6 @@ public class Map : NetworkBehaviour
                 }
             }
         }
-        Debug.Log("counter: " + counter);
     }
 
 
