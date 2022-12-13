@@ -129,6 +129,19 @@ public class Bot : CharacterBase
         // get all opponents in the area
         Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
+        // get all opponents who are holding a diamond
+        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
+        
+        float opponentPriority = 1f;
+
+        // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
+        if (opponentWithDiamondColliders.Length > 0)
+        {
+            opponentColliders = opponentWithDiamondColliders;
+            // priority for opponents who are holding a diamond is higher
+            opponentPriority = 2f;
+        }
+
         // if there are no opponents do nothing
         if (opponentColliders.Length > 0)
         {
@@ -140,16 +153,9 @@ public class Bot : CharacterBase
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured()) // TODO
                 {
-                    // has a higher priority if opponent holds diamond
-                    if (opponent.GetHoldsDiamond())
-                    {
-                        interactionPriorities[(int)InteractionID.Opponent] += 2f;
-                    }
-                    else
-                    {
-                        interactionPriorities[(int)InteractionID.Opponent] += 1f;
-                    }
-                    
+                    // set the priority for the opponent interaction
+                    interactionPriorities[(int)InteractionID.Opponent] += opponentPriority;
+
                     // multiply interactionPriority with interactionWeight
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
 
@@ -157,11 +163,15 @@ public class Bot : CharacterBase
                     interactionGoals[(int)InteractionID.Opponent] = opponent.transform;
 
                     foundInteraction = true;
+                    break;
                 }
             }
         }
     }
 
+    /// <summary>
+    /// Checks the for teammates in the area around the bot and sets the interaction priorities
+    /// </summary>
     private void CheckForTeammates()
     {
         // get all teammates in the area
@@ -187,9 +197,16 @@ public class Bot : CharacterBase
                     interactionGoals[(int)InteractionID.Teammate] = teammate.transform;
 
                     foundInteraction = true;
+                    break;
                 }
             }
         }
+    }
+
+    private void CheckForOpponentBubbles()
+    {
+        // get all opponent bubbles in the area 
+        Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble");
     }
 
     /// <summary>
