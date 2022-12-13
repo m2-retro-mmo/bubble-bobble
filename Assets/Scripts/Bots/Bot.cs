@@ -52,11 +52,9 @@ public class Bot : CharacterBase
         spriteRenderer = GetComponent<SpriteRenderer>();
         botMovement = GetComponent<BotMovement>();
     }
-
     [Server]
     void Start()
     {
-        StartBot();
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
     }
 
@@ -71,6 +69,7 @@ public class Bot : CharacterBase
 
     public void StartBot()
     {
+        Debug.Log("Start Bot");
         StartCoroutine(CheckAreaOfInterest());
     }
 
@@ -85,6 +84,7 @@ public class Bot : CharacterBase
         // check area every ten seconds
         while (true)
         {
+            Debug.Log("start searching for interaction...");
             foundInteraction = false;
             // reset all priority values
             interactionPriorities = new float[6];

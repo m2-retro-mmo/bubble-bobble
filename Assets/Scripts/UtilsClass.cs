@@ -40,7 +40,9 @@ public class UtilsClass
         textMesh.text = text;
         textMesh.fontSize = fontSize;
         textMesh.color = color;
-        textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
+        MeshRenderer renderer = textMesh.GetComponent<MeshRenderer>();
+        renderer.sortingOrder = sortingOrder;
+        renderer.sortingLayerName = "UI";
         return textMesh;
     }
 

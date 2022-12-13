@@ -12,9 +12,10 @@ public class Graph
 {
     // the size of the graph consisting of the number of nodes in the x and y direction
     private int width, height;
-    
+
     // the tilemap that is used to create the graph
     private Tilemap tilemap;
+
     // the bounds of the tilemap
     private BoundsInt bounds;
 
@@ -28,18 +29,18 @@ public class Graph
     /// </summary>
     /// <param name="obstacle_tilemap">The tilemap that is used to create the graph.</param>
     /// <param name="drawGraph">If true, draw graph.</param>
-    public Graph(Tilemap obstacle_tilemap, Tilemap ground_tilemap, bool drawGraph)
+    public Graph(Map map, bool drawGraph)
     {
-        this.tilemap = obstacle_tilemap;
+        this.tilemap = map.floorTilemap;
 
         // Get the bounds of the tilemap
-        bounds = obstacle_tilemap.cellBounds;
+        bounds = map.floorTilemap.cellBounds;
         
         // get width and height of the tilemap
-        width = bounds.size.x;
-        height = bounds.size.y;
-        
-        TileBase[] tiles = obstacle_tilemap.GetTilesBlock(obstacle_tilemap.cellBounds);
+        width = map.GetWidth();
+        height = map.GetHeight();
+
+        //Boolean[,] isObstacle = GetNonWalkableFields(map);
 
         GameObject textParent = new GameObject("TextParent");
 
@@ -52,28 +53,27 @@ public class Graph
         {
             for (int y = 0; y < height; y++)
             {
-                // get the tile at the current position
-                TileBase tile = tiles[x + y * width];
                 // create a new GraphNode with the current position and the neighbours 
                 // and set the isObstacle node to true if the tile is not null
-                GraphNode node = new GraphNode(x, y, (tile != null)); // TODO get all tiles from obstacleMap and check if tile is in this list //TODO check ground tilemap for water shelter and set obstacle to true
+                GraphNode node = new GraphNode(x, y, !map.GetIsWalkable()[x, y]);
+                
                 // add the GraphNode to the 2D array
                 graphArray[x, y] = node;
                 
                 if (drawGraph)
                 {
                     // create a new TextMesh object with the current position
-                    debugTextArray[x, y] = UtilsClass.CreateWorldText(graphArray[x, y].ToString(), textParent.transform, GetWorldPosition(x, y) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
+                    debugTextArray[x, y] = UtilsClass.CreateWorldText(graphArray[x,y].GetIsObstacle().ToString(), textParent.transform, GetWorldPosition(x - 0.5f, y - 0.5f) + new Vector3(0.5f, 0.5f), 50, Color.white, TextAnchor.MiddleCenter);
+                    Debug.DrawLine(GetWorldPosition(x - 0.5f, y - 0.5f), GetWorldPosition(x - 0.5f, y + 0.5f), Color.white, 100f); // vertikal
+                    Debug.DrawLine(GetWorldPosition(x - 0.5f, y - 0.5f), GetWorldPosition(x + 0.5f, y - 0.5f), Color.white, 100f); // horizontal
                 }
             }
         }
 
         if (drawGraph)
         {
-            Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
-            Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+            Debug.DrawLine(GetWorldPosition(0 - 0.5f, height - 0.5f), GetWorldPosition(width - 0.5f, height - 0.5f), Color.white, 100f); // horizontal
+            Debug.DrawLine(GetWorldPosition(width - 0.5f, 0 - 0.5f), GetWorldPosition(width - 0.5f, height - 0.5f), Color.white, 100f); // vertikal
         }
     }
 
@@ -83,14 +83,14 @@ public class Graph
     /// <param name="x">The x.</param>
     /// <param name="y">The y.</param>
     /// <returns>A Vector3.</returns>
-    public Vector3 GetWorldPosition(int x, int y)
+    public Vector3 GetWorldPosition(float x, float y)
     {
-        return new Vector3(x, y) + bounds.min + tilemap.transform.position;
+        return new Vector3(x + 0.5f, y + 0.5f) + bounds.min + tilemap.transform.position;
     }
 
     public Vector3 GetWorldPosition(GraphNode node)
     {
-        return GetWorldPosition(node.GetX(), node.GetY());
+        return GetWorldPosition((int) node.GetX(), (int) node.GetY());
     }
 
     /// <summary>
@@ -136,6 +136,46 @@ public class Graph
         Vector2Int pos = GetXY(worldPosition);
         return GetNode(pos.x, pos.y);
     }
+
+    /*public Boolean[,] GetNonWalkableFields(Map map)
+    {
+        EnvironmentType[,] grid = map.floorEnvironment;
+        BoundsInt bounds = map.obstacleTilemap.cellBounds; //bounds Position: (0, 0, 0), Size: (99, 50, 1)
+        BoundsInt myBounds = new BoundsInt(Vector3Int.zero, new Vector3Int(width, height, 1));
+        Debug.Log("myBounds " + myBounds);
+        Debug.Log("bounds " + bounds);
+        TileBase[] tiles = map.obstacleTilemap.GetTilesBlock(myBounds);
+        Debug.Log("width: " + tiles.Length); // 4950
+        Debug.Log("product: " + width * height); // 5000
+
+        Boolean[,] nonWalkables = new Boolean[width, height];
+        int counter = 0;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++) {
+                
+                if (grid[x, y] == EnvironmentType.Ground)
+                {
+                    nonWalkables[x, y] = false; // TODO EnvironmentType.Bridge
+                } 
+                else
+                {
+                   nonWalkables[x, y] = true;
+                }
+
+                // get the tile at the current position
+                TileBase obstacleTile = tiles[counter];
+                counter++;
+                if (obstacleTile != null)
+                {
+                    nonWalkables[x, y] = true; // komme hier nicht hin - Hilfe
+                    Debug.Log("ich setze ein obstacle");
+                }
+            }
+        }
+        Debug.Log("hello");
+        return nonWalkables;
+    }*/
 
     /// <summary>
     /// Gets the text  of the <param name="debugArray</param> at the given position.
@@ -209,11 +249,16 @@ public class Graph
     {
         List<GraphNode> neighbours = new List<GraphNode>();
 
-        for (int x = currentNode.GetX() - 1; x <= currentNode.GetX() + 1; x++)
+        for (int x = (int) currentNode.GetX() - 1; x <= currentNode.GetX() + 1; x++)
         {
-            for (int y = currentNode.GetY() - 1; y <= currentNode.GetY() + 1; y++)
+            for (int y = (int) currentNode.GetY() - 1; y <= currentNode.GetY() + 1; y++) // x=-1,y=0 | x=+1,y0 | x=0,y-1 | x=0,y=+1
             {
-                if (x == currentNode.GetX() && y == currentNode.GetY())
+                if ((x == currentNode.GetX() && y == currentNode.GetY()) 
+                    || (x == currentNode.GetX() - 1 && y == currentNode.GetY() + 1)
+                    || (x == currentNode.GetX() - 1 && y == currentNode.GetY() - 1)
+                    || (x == currentNode.GetX() + 1 && y == currentNode.GetY() + 1)
+                    || (x == currentNode.GetX() + 1 && y == currentNode.GetY() - 1)
+                    )
                 {
                     continue;
                 }
@@ -224,6 +269,18 @@ public class Graph
                 neighbours.Add(graphArray[x, y]);
             }
         }
+        return neighbours;
+    }
+
+    public GraphNode[] GetNeighbourList1(GraphNode node) //TODO: get real neighbors!
+    {
+        // get the position of the given GraphNode
+        Vector2Int pos = new Vector2Int(node.GetX(), node.GetY());
+        GraphNode[] neighbours = new GraphNode[4];
+        neighbours[0] = GetNode(pos.x, pos.y + 1);
+        neighbours[1] = GetNode(pos.x + 1, pos.y);
+        neighbours[2] = GetNode(pos.x, pos.y - 1);
+        neighbours[3] = GetNode(pos.x - 1, pos.y);
         return neighbours;
     }
 }
