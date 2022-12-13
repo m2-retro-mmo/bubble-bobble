@@ -38,6 +38,8 @@ public class Bot : CharacterBase
 
     private float[] interactionPriorities;
 
+    private Transform[] interactionGoals;
+
     // area radius around the bot
     private float interactionRadius = 10f;
 
@@ -88,12 +90,14 @@ public class Bot : CharacterBase
             foundInteraction = false;
             // reset all priority values
             interactionPriorities = new float[6];
+            interactionGoals = new Transform[6];
 
             botPosition = transform.position;
             // get all colliders in a radius around the bot
             colliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
 
             CheckForOpponents();
+            CheckForTeammates();
 
             CalculateInteractionID();
 
@@ -119,7 +123,7 @@ public class Bot : CharacterBase
             // loop through all opponents 
             foreach (Collider2D collider in opponentColliders)
             {
-                Player opponent = collider.gameObject.GetComponent<Player>();
+                CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured()) // TODO
@@ -133,13 +137,42 @@ public class Bot : CharacterBase
                     {
                         interactionPriorities[(int)InteractionID.Opponent] += 1f;
                     }
-
-                    // set goal of bot movement to opponent position
-                    botMovement.goal = opponent.transform;
-                    Debug.Log("set goal to opponent");
-
+                    
                     // multiply interactionPriority with interactionWeight
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
+
+                    // set the interactionGoal to the opponent
+                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform;
+
+                    foundInteraction = true;
+                }
+            }
+        }
+    }
+
+    private void CheckForTeammates()
+    {
+        // get all teammates in the area
+        Collider2D[] teammateColliders = GetCollidersByTeamNumber(teamNumber);
+
+        // if there are no teammates do nothing
+        if(teammateColliders.Length > 0)
+        {
+            // loop through all teammates
+            foreach (Collider2D collider in teammateColliders)
+            {
+                CharacterBase teammate = collider.gameObject.GetComponent<CharacterBase>();
+
+                // check if the teammate is captured - if he is, free teammate
+                if (teammate.GetIsCaptured())
+                {
+                    interactionPriorities[(int)InteractionID.Teammate] += 1f;
+
+                    // multiply interactionPriority with interactionWeight
+                    interactionPriorities[(int)InteractionID.Teammate] *= interactionWeights[(int)InteractionID.Teammate];
+
+                    // set the interactionGoal to teammate
+                    interactionGoals[(int)InteractionID.Teammate] = teammate.transform;
 
                     foundInteraction = true;
                 }
@@ -197,6 +230,8 @@ public class Bot : CharacterBase
             {
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
+                // set goal of bot movement to goal position
+                botMovement.goal = interactionGoals[highestPriorityIndex];
             }
         }
         else // if no interaction was found, increase the radius
