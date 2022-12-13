@@ -459,9 +459,10 @@ MonoBehaviour:
   cam: {fileID: 0}
   minimapCam: {fileID: 541593368}
   startGameWithBots: 1
+  DEBUG_BOTS: 1
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
-  botNumber: 1
+  botNumber: 5
 --- !u!4 &861318931
 Transform:
   m_ObjectHideFlags: 0
@@ -698,6 +699,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NetworkManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1190517968536407030, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1190517968536407034, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}

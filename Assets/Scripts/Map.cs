@@ -325,10 +325,10 @@ public class Map : NetworkBehaviour
 
             int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f));
             int startPositionY = (int)Math.Ceiling(hortY - (generatorData.hortScale / 2f));
-            Debug.Log(startPositionX);
+            //Debug.Log(startPositionX);
             int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f));
             int endPositionY = (int)Math.Ceiling(hortY + (generatorData.hortScale / 2f));
-            Debug.Log(endPositionX);
+            //Debug.Log(endPositionX);
 
             for (int x = startPositionX; x < endPositionX; x++)
             {

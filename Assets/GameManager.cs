@@ -22,6 +22,10 @@ public class GameManager : NetworkBehaviour
     private bool startGameWithBots;
 
     [SerializeField]
+    [Tooltip("true if the bot should be spawned in the area of the player")]
+    private bool DEBUG_BOTS = false;
+
+    [SerializeField]
     [Tooltip("The prefab of the bot")]
     private Bot botPrefab;
 
@@ -57,7 +61,6 @@ public class GameManager : NetworkBehaviour
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
         }
-
         map.NewMap();
 
         // get all connections and instanciate a player for each connection
@@ -79,6 +82,12 @@ public class GameManager : NetworkBehaviour
 
             Graph graph = new Graph(map, true);
 
+            // spawn only one bot in debug mode
+            if (DEBUG_BOTS)
+            {
+                botNumber = 1;
+            }
+
             for (int i = 0; i < botNumber; i++)
             {
                 // spawn a bot
@@ -87,7 +96,16 @@ public class GameManager : NetworkBehaviour
                 bot.transform.parent = bots.transform;
 
                 bot.SetTeamNumber(0); // TODO set team number randomly
-                map.PlaceCharacter(bot);
+
+                if (DEBUG_BOTS)
+                {
+                    Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+                    bot.transform.position = playerPos + new Vector3(5, 5, 0);
+                }
+                else
+                {
+                    map.PlaceCharacter(bot);
+                }
 
                 bot.GetComponent<BotMovement>().SetGraph(graph);
                 bot.StartBot();

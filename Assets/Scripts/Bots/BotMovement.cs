@@ -26,13 +26,10 @@ public class BotMovement : MonoBehaviour
     
     private Graph graph;
 
-    private Rigidbody2D rb;
-
     void Start()
     {
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
-        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -124,8 +121,6 @@ public class BotMovement : MonoBehaviour
                     CancelInvoke();
                     path = null;
                 }
-                //Vector3 speed = new Vector3 (10f, 0, 0);
-                //rb.MovePosition(nextNode + speed * Time.deltaTime);
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
             else if (distToPlayer >= (shootRange + 5f))
