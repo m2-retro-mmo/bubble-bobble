@@ -275,7 +275,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 336956543}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -461,7 +461,7 @@ MonoBehaviour:
   startGameWithBots: 1
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
-  botNumber: 5
+  botNumber: 1
 --- !u!4 &861318931
 Transform:
   m_ObjectHideFlags: 0
@@ -692,7 +692,7 @@ PrefabInstance:
     - target: {fileID: 1190517968536407029, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}
       propertyPath: Port
-      value: 7778
+      value: 7779
       objectReference: {fileID: 0}
     - target: {fileID: 1190517968536407030, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}

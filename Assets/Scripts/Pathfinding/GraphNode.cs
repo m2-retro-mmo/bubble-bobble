@@ -25,7 +25,7 @@ public class GraphNode
         this.y = y;
         this.isObstacle = isObstacle;
     }
-    
+
     public GraphNode(int x, int y)
     {
         this.x = x;

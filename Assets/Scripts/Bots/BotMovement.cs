@@ -26,10 +26,13 @@ public class BotMovement : MonoBehaviour
     
     private Graph graph;
 
+    private Rigidbody2D rb;
+
     void Start()
     {
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -108,9 +111,9 @@ public class BotMovement : MonoBehaviour
             
             if (path != null)
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].GetX(), path[currentIndex].GetY());
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int) path[currentIndex].GetX(), (int) path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 5f && currentIndex < path.Count - 1)
+                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -121,7 +124,8 @@ public class BotMovement : MonoBehaviour
                     CancelInvoke();
                     path = null;
                 }
-
+                //Vector3 speed = new Vector3 (10f, 0, 0);
+                //rb.MovePosition(nextNode + speed * Time.deltaTime);
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
             else if (distToPlayer >= (shootRange + 5f))

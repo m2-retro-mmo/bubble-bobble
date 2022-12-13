@@ -140,6 +140,8 @@ public class Map : NetworkBehaviour
     public Tile northEastAndSouthWest;
     public Tile northWestAndSouthEast;
 
+    public Boolean[,] isWalkable;
+
     [SyncVar(hook = nameof(OnNewMap))]
     private GeneratorData generatorData;
     private System.Random ran;
@@ -179,6 +181,7 @@ public class Map : NetworkBehaviour
         UpdateHortEnvironment();
         PlaceObstacles();
         PlaceDiamonds();
+        //SetIsWalkableForObstacles();
     }
 
     // checks if there is water or an obstacles on the given position
@@ -264,9 +267,9 @@ public class Map : NetworkBehaviour
     // Step 3
     void RemoveSingleTiles()
     {
-        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++)
+        for (int x = 0; x < generatorData.width; x++)
         {
-            for (int y = 0; y < floorEnvironment.GetUpperBound(1); y++)
+            for (int y = 0; y < generatorData.height; y++)
             {
                 if (floorEnvironment[x, y] == EnvironmentType.Water)
                 {
@@ -287,19 +290,23 @@ public class Map : NetworkBehaviour
     // Step 4
     void DrawTilemap()
     {
+        isWalkable = new Boolean[generatorData.width, generatorData.height];
         floorTilemap.ClearAllTiles();
-        for (int x = 0; x < floorEnvironment.GetUpperBound(0); x++) //TODO: check width/height
+        for (int x = 0; x < generatorData.width; x++)
         {
-            for (int y = 0; y < floorEnvironment.GetUpperBound(1); y++)
+            for (int y = 0; y < generatorData.height; y++)
             {
                 if (floorEnvironment[x, y] == EnvironmentType.Ground)
                 {
                     int random = ran.Next(0, floorTiles.GetLength(0) - 1);
                     floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[random]); // Floor
+                    floorTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                    isWalkable[x, y] = true;
                 }
                 else
                 {
                     floorTilemap.SetTile(new Vector3Int(x, y, 0), GetWaterTile(x, y, floorEnvironment)); // Water
+                    floorTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                 }
             }
         }
@@ -334,9 +341,10 @@ public class Map : NetworkBehaviour
     }
 
     // Step 6
-    public void PlaceObstacles()
+    public void PlaceObstacles() // TODO this function sometimes returns cellBounds -1||-2 smaller than width and height
     {
         obstacleTilemap.ClearAllTiles();
+        int counter = 0;
         for (int x = 0; x < generatorData.width; x++)
         {
             for (int y = 0; y < generatorData.height; y++)
@@ -348,19 +356,57 @@ public class Map : NetworkBehaviour
                     if (randomValue < generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
+                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        counter++;
+                        isWalkable[x, y] = false;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), bushes[ran.Next(0, bushes.Length)]);
+                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        counter++;
+                        isWalkable[x, y] = false;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), accessoirs[ran.Next(0, accessoirs.Length)]);
+                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        counter++;
+                        isWalkable[x, y] = false;
+
+                    }
+                    else
+                    {
+                        Debug.Log("h");                     
                     }
                 }
             }
         }
+        Debug.Log("counter: " + counter);
     }
+
+    /*public void SetIsWalkableForObstacles()
+    {
+        BoundsInt myBounds = new BoundsInt(Vector3Int.zero, new Vector3Int(generatorData.width, generatorData.height, 1));
+        TileBase[] tiles = obstacleTilemap.GetTilesBlock(myBounds);
+        int counter = 0;
+        int c = 0;
+        for (int x = 0; x < generatorData.width; x++)
+        {
+            for (int y = 0; y < generatorData.height; y++)
+            {
+                TileBase obstacleTile = tiles[counter];
+                counter++;
+                if (obstacleTile != null)
+                {
+                    isWalkable[x, y] = false;
+                    c++;
+                }
+            }
+        }
+        Debug.Log("c: " + c);
+    }*/
+
 
     // Step 7 (Server only)
     [ServerCallback]
@@ -549,5 +595,10 @@ public class Map : NetworkBehaviour
     public int GetHeight()
     {
         return this.generatorData.height;
+    }
+
+    public Boolean[,] GetIsWalkable()
+    {
+        return this.isWalkable;
     }
 }
