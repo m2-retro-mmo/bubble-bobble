@@ -173,6 +173,7 @@ public class Map : NetworkBehaviour
         ran = new System.Random(generatorData.seed);
         GenerateNoiseGrid();
         ApplyCellularAutomaton();
+        SetMapBoundries();
         for (int i = 0; i < 2; i++)
         {
             RemoveSingleTiles();
@@ -265,6 +266,20 @@ public class Map : NetworkBehaviour
     }
 
     // Step 3
+    void SetMapBoundries() {
+        for (int x = 0; x < generatorData.width; x++)
+        {
+            for (int y = 0; y < generatorData.height; y++)
+            {
+                if (x == 0 || y == 0 || x == generatorData.width -1 || y == generatorData.height -1)
+                {
+                    floorEnvironment[x, y] = EnvironmentType.Water;
+                }
+            }
+        }
+    }
+
+    // Step 4
     void RemoveSingleTiles()
     {
         for (int x = 0; x < generatorData.width; x++)
@@ -287,7 +302,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 4
+    // Step 5
     void DrawTilemap()
     {
         isWalkable = new Boolean[generatorData.width, generatorData.height];
@@ -312,7 +327,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 5
+    // Step 6
     public void UpdateHortEnvironment()
     {
         // iterate over generatorData.hortLocations with index
@@ -340,8 +355,9 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 6
+    // Step 7
     public void PlaceObstacles() // TODO this function sometimes returns cellBounds -1||-2 smaller than width and height
+
     {
         obstacleTilemap.ClearAllTiles();
         int counter = 0;
@@ -385,30 +401,8 @@ public class Map : NetworkBehaviour
         Debug.Log("counter: " + counter);
     }
 
-    /*public void SetIsWalkableForObstacles()
-    {
-        BoundsInt myBounds = new BoundsInt(Vector3Int.zero, new Vector3Int(generatorData.width, generatorData.height, 1));
-        TileBase[] tiles = obstacleTilemap.GetTilesBlock(myBounds);
-        int counter = 0;
-        int c = 0;
-        for (int x = 0; x < generatorData.width; x++)
-        {
-            for (int y = 0; y < generatorData.height; y++)
-            {
-                TileBase obstacleTile = tiles[counter];
-                counter++;
-                if (obstacleTile != null)
-                {
-                    isWalkable[x, y] = false;
-                    c++;
-                }
-            }
-        }
-        Debug.Log("c: " + c);
-    }*/
 
-
-    // Step 7 (Server only)
+    // Step 8 (Server only)
     [ServerCallback]
     void PlaceDiamonds()
     {

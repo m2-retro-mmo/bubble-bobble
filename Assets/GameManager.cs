@@ -107,6 +107,8 @@ public class GameManager : NetworkBehaviour
                     map.PlaceCharacter(bot);
                 }
 
+                NetworkServer.Spawn(bot.gameObject);
+
                 bot.GetComponent<BotMovement>().SetGraph(graph);
                 bot.StartBot();
             }

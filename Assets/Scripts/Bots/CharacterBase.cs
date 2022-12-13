@@ -6,7 +6,7 @@ public class CharacterBase : NetworkBehaviour
 {
     [SyncVar] protected bool holdsDiamond = false;
     [SyncVar] protected byte teamNumber = 1;
-    [SyncVar] protected bool isCaptured = false;
+    [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     protected SpriteRenderer spriteRenderer;
 
@@ -58,6 +58,21 @@ public class CharacterBase : NetworkBehaviour
         // TODO: change appearance to uncaptured player
         isCaptured = false;
         spriteRenderer.color = Color.white;
+    }
+
+    /**
+    * is called when the syncvar isCaptured is changed
+    */
+    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
+    {
+        if (newIsCaptured)
+        {
+             spriteRenderer.color = Color.white;
+        }
+        else
+        {
+            spriteRenderer.color = Color.red;
+        }
     }
 
     public void CaptureCharacter(int teamNumber)
