@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using UnityEditor.Compilation;
 
 /// <summary>
 /// the states of the InteractionID
@@ -48,6 +49,8 @@ public class Bot : CharacterBase
     private Collider2D[] colliders;
 
     private BotMovement botMovement;
+
+    private int prevPriorityIndex = -1;
 
     public void Awake()
     {
@@ -293,11 +296,14 @@ public class Bot : CharacterBase
         {
             // get index of highest value in priority array
             int highestPriorityIndex = interactionPriorities.ToList().IndexOf(interactionPriorities.Max());
-            // cast this index zo an InteractionID
+            // cast this index to an InteractionID
             InteractionID foundInteractionID = (InteractionID)highestPriorityIndex;
-            
-            if (foundInteractionID != interactionID) // TODO: only change id if according priority is a given amount higher than priority of old id
+
+            // check: did we find a new interactionId that is higher prioritized the old interaction
+            if (foundInteractionID != interactionID && highestPriorityIndex > prevPriorityIndex) // TODO: only change id if according priority is a given amount higher than priority of old id
             {
+                Debug.Log("set goal to: " + foundInteractionID);
+                prevPriorityIndex = highestPriorityIndex;
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
