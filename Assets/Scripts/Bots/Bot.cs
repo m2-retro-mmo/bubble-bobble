@@ -99,6 +99,15 @@ public class Bot : CharacterBase
             CheckForOpponents();
             CheckForTeammates();
 
+            if(GetHoldsDiamond())
+            {
+                CheckForDiamond();
+            } else
+            {
+                interactionPriorities[(int)InteractionID.Hort] += 1f;
+                CheckForHort();
+            }
+
             CalculateInteractionID();
 
             //Debug.Log("found Interaction " + foundInteraction);
@@ -180,6 +189,67 @@ public class Bot : CharacterBase
         }
     }
 
+    /// <summary>
+    /// Checks for diamonds in the area around the bot if the bot does not hold a diamond and sets the interaction priorities accordingly
+    /// </summary>
+    private void CheckForDiamond()
+    {
+        // get all diamonds in the area
+        Collider2D[] diamondColliders = GetCollidersByTag("Diamond");
+
+        // are there diamonds near by
+        if (diamondColliders.Length > 0)
+        {
+            // loop through all opponents 
+            foreach (Collider2D collider in diamondColliders)
+            {
+                Diamond diamond = collider.gameObject.GetComponent<Diamond>();
+                // has a higher priority to collect a diamond
+                interactionPriorities[(int)InteractionID.Diamond] += 1f;
+
+                // multiply interactionPriority with interactionWeight
+                interactionPriorities[(int)InteractionID.Diamond] *= interactionWeights[(int)InteractionID.Diamond];
+
+                // set the interactionGoal to diamond
+                interactionGoals[(int)InteractionID.Diamond] = diamond.transform;
+
+                foundInteraction = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks for bot's hort if the bot holds a diamond and ets the interaction priorities
+    /// </summary>
+    private void CheckForHort()
+    {
+        if(!GetHoldsDiamond())
+        {
+            return;
+        }
+        // get all diamonds in the area
+        Collider2D[] hortColliders = GetCollidersByTag("Collider");
+
+        // are there diamonds near by
+        if (hortColliders.Length > 0)
+        {
+            // loop through all opponents 
+            foreach (Collider2D collider in hortColliders)
+            {
+                Hort hort = collider.gameObject.GetComponent<Hort>();
+                // has a higher priority to drop diamond
+                interactionPriorities[(int)InteractionID.Hort] += 1f;
+
+                // multiply interactionPriority with interactionWeight
+                interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
+
+                // set the interactionGoal to hort
+                interactionGoals[(int)InteractionID.Hort] = hort.transform;
+
+                foundInteraction = true;
+            }
+        }
+    }
     /// <summary>
     /// Gets the colliders around the bot by tag.
     /// orders by distance from the bot 
