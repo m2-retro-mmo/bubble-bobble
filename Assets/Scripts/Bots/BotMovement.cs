@@ -75,7 +75,7 @@ public class BotMovement : NetworkBehaviour
         {
             case InteractionID.Opponent:
                 Debug.Log("Start interaction with opponent");
-                StartCoroutine(FollowGoal());
+                StartCoroutine(FollowOpponent());
                 break;
             case InteractionID.Teammate:
                 Debug.Log("Start interaction with teammate");
@@ -83,7 +83,7 @@ public class BotMovement : NetworkBehaviour
                 break;
             case InteractionID.OpponentBubble:
                 Debug.Log("Start interaction with opponent bubble");
-                StartCoroutine(FollowGoal());
+                // TODO: implement
                 break;
             case InteractionID.Diamond:
                 Debug.Log("Start interaction with diamond");
@@ -103,12 +103,41 @@ public class BotMovement : NetworkBehaviour
         }
     }
 
+    IEnumerator FollowGoal()
+    {
+        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
+        while (goal != null)
+        {
+            float distToGoal = GetEuclideanDistance(transform.position, goal.position);
+
+            if (path != null)
+            {
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
+                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                {
+                    currentIndex++;
+                }
+
+                if (distToGoal <= 0.01f)
+                {
+                    CancelInvoke();
+                    bot.ResetBot();
+                    path = null;
+                }
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+            }
+
+            yield return new WaitForSeconds(0.001f);
+        }
+    }
+
     /// <summary>
     /// Follows the opponent.
     /// if opponent is in shooting range, shoot opponent.
     /// </summary>
     /// <returns>An IEnumerator.</returns>
-    IEnumerator FollowGoal()
+    IEnumerator FollowOpponent()
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
         while (true)

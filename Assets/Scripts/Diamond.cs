@@ -8,6 +8,6 @@ public class Diamond : NetworkBehaviour
     {
         Debug.Log("Collected");
         // TODO: maybe play an animation here
-        Destroy(gameObject, 0);
+        Destroy(gameObject, 1f);
     }
 }
