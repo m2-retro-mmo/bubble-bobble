@@ -52,6 +52,8 @@ public class Bot : CharacterBase
 
     private int prevPriorityIndex = -1;
 
+    private Transform hort;
+
     public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -62,16 +64,18 @@ public class Bot : CharacterBase
     {
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
         Debug.Log("bot diamond: " + GetHoldsDiamond().ToString());
+
+        hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
     }
 
-    public void ResetBot()
+    public void ResetBot(float restartTime)
     {
         prevPriorityIndex = -1;
         StopAllCoroutines();
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
 
-        Invoke("StartBot", BUBBLE_BREAKOUT_TIME);
+        Invoke("StartBot", restartTime);
     }
 
     public void StartBot()
@@ -132,6 +136,7 @@ public class Bot : CharacterBase
         // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
         if (opponentWithDiamondColliders.Length > 0)
         {
+            Debug.Log("opponent with diamond found");
             opponentColliders = opponentWithDiamondColliders;
             // priority for opponents who are holding a diamond is higher
             opponentPriority = 2f;
@@ -265,36 +270,24 @@ public class Bot : CharacterBase
     /// </summary>
     private void CheckForHort()
     {
-        //if(!GetHoldsDiamond())
-        //{
-        //    return;
-        //}
-        // get all diamonds in the area
-        Collider2D[] hortColliders = GetCollidersByTag("Hort");
-
-        // are there diamonds near by
-        if (hortColliders.Length > 0)
+        // only check for hort if the bot holds a diamond
+        if (!GetHoldsDiamond())
         {
-            // loop through all opponents 
-            foreach (Collider2D collider in hortColliders)
-            {
-                Hort hort = collider.gameObject.GetComponent<Hort>();
+            return;
+        }
+        // are there diamonds near by
+        if (hort != null)
+        {
+            // has a higher priority to drop diamond
+            interactionPriorities[(int)InteractionID.Hort] += 1f;
 
-                if(hort.GetTeamNumber() == GetTeamNumber())
-                {
-                    // has a higher priority to drop diamond
-                    interactionPriorities[(int)InteractionID.Hort] += 1f;
+            // multiply interactionPriority with interactionWeight
+            interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
 
-                    // multiply interactionPriority with interactionWeight
-                    interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
+            // set the interactionGoal to hort
+            interactionGoals[(int)InteractionID.Hort] = hort;
 
-                    // set the interactionGoal to hort
-                    interactionGoals[(int)InteractionID.Hort] = hort.transform;
-
-                    foundInteraction = true;
-                    break;
-                }
-            }
+            foundInteraction = true;
         }
     }
     /// <summary>
@@ -346,6 +339,14 @@ public class Bot : CharacterBase
             // check: did we find a new interactionId that is higher prioritized the old interaction
             if (foundInteractionID != interactionID && highestPriorityIndex > prevPriorityIndex) // TODO: only change id if according priority is a given amount higher than priority of old id
             {
+                Debug.Log("all interaction priorities: \n" + 
+                    "Opponent: " + interactionPriorities[0] + " \n" +
+                    "Teammate: " + interactionPriorities[1] + " \n" +
+                    "OpponentBubble: " + interactionPriorities[2] + " \n" +
+                    "Diamond: " + interactionPriorities[3] + " \n" +
+                    "Hort: " + interactionPriorities[4] + " \n" +
+                    "Item: " + interactionPriorities[5]);
+
                 Debug.Log("set goal to: " + foundInteractionID);
                 prevPriorityIndex = highestPriorityIndex;
                 changedInteractionID = true;

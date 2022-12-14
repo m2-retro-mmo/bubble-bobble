@@ -62,7 +62,7 @@ public class BotMovement : NetworkBehaviour
         {
             CancelInvoke();
             StopAllCoroutines();
-            bot.ResetBot();
+            bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
         }
     }
 
@@ -74,31 +74,31 @@ public class BotMovement : NetworkBehaviour
         switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
-                Debug.Log("Start interaction with opponent");
+                Debug.Log("Start follow opponent");
                 StartCoroutine(FollowOpponent());
                 break;
             case InteractionID.Teammate:
-                Debug.Log("Start interaction with teammate");
+                Debug.Log("Start follow teammate");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.OpponentBubble:
-                Debug.Log("Start interaction with opponent bubble");
+                Debug.Log("Start follow opponent bubble");
                 // TODO: implement
                 break;
             case InteractionID.Diamond:
-                Debug.Log("Start interaction with diamond");
+                Debug.Log("Start follow diamond");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
-                Debug.Log("Start interaction with hort");
-                StartCoroutine(FollowGoal());
+                Debug.Log("Start follow hort");
+                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht für hort geklappt
                 break;
             case InteractionID.Item:
-                Debug.Log("Start interaction with item");
+                Debug.Log("Start follow item");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.None:
-                Debug.Log("Start interaction with nothing");
+                Debug.Log("Start follow with nothing");
                 break;
         }
     }
@@ -122,8 +122,9 @@ public class BotMovement : NetworkBehaviour
                 if (distToGoal <= 0.01f)
                 {
                     CancelInvoke();
-                    bot.ResetBot();
+                    bot.ResetBot(0f);
                     path = null;
+                    Debug.Log("Bot Reached goal");
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
@@ -153,11 +154,13 @@ public class BotMovement : NetworkBehaviour
                     currentIndex++;
                 }
 
-                if (distToPlayer <= shootRange)
+                if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
                     GetComponent<Shooting>().ShootBubble();
                     CancelInvoke();
+                    bot.ResetBot(0f);
                     path = null;
+                    Debug.Log("Bot Shoot opponent");
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }

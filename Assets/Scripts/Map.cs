@@ -595,4 +595,9 @@ public class Map : NetworkBehaviour
     {
         return this.isWalkable;
     }
+
+    public IntVec2 GetHortPosition(byte teamNumber)
+    {
+        return generatorData.hortLocations[teamNumber];
+    }
 }

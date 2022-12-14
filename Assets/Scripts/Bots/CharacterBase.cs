@@ -10,7 +10,7 @@ public class CharacterBase : NetworkBehaviour
 
     protected SpriteRenderer spriteRenderer;
 
-    protected const float BUBBLE_BREAKOUT_TIME = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
     void Start()
