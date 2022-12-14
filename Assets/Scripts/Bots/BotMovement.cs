@@ -125,6 +125,7 @@ public class BotMovement : NetworkBehaviour
                     bot.ResetBot(0f);
                     path = null;
                     Debug.Log("Bot Reached goal");
+                    break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
@@ -141,6 +142,9 @@ public class BotMovement : NetworkBehaviour
     IEnumerator FollowOpponent()
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
+
+        CharacterBase opponent = goal.gameObject.GetComponent<CharacterBase>();
+        
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
@@ -157,16 +161,22 @@ public class BotMovement : NetworkBehaviour
                 if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
                     GetComponent<Shooting>().ShootBubble();
-                    CancelInvoke();
-                    bot.ResetBot(0f);
-                    path = null;
-                    Debug.Log("Bot Shoot opponent");
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
                 InvokeRepeating("CalculatePathToGoal", 0.1f, 0.5f);
+            }
+
+            if (opponent.GetIsCaptured())
+            {
+                CancelInvoke();
+                StopAllCoroutines();
+                bot.ResetBot(0f);
+                path = null;
+                Debug.Log("Opponent captured");
+                break;
             }
 
             yield return new WaitForSeconds(0.001f);

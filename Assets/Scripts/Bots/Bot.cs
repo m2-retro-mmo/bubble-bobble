@@ -35,7 +35,7 @@ public class Bot : CharacterBase
     public bool changedInteractionID = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 3, 1 };
+    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 0, 1 };
 
     private float[] interactionPriorities;
 
@@ -50,7 +50,9 @@ public class Bot : CharacterBase
 
     private BotMovement botMovement;
 
-    private int prevPriorityIndex = -1;
+    private float prevPriorityValue = 0;
+
+    private const float PRIORITY_THRESHOLD = 1f;
 
     private Transform hort;
 
@@ -70,7 +72,7 @@ public class Bot : CharacterBase
 
     public void ResetBot(float restartTime)
     {
-        prevPriorityIndex = -1;
+        prevPriorityValue = 0;
         StopAllCoroutines();
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
@@ -287,7 +289,10 @@ public class Bot : CharacterBase
             // set the interactionGoal to hort
             interactionGoals[(int)InteractionID.Hort] = hort;
 
-            foundInteraction = true;
+            if (interactionPriorities[(int)InteractionID.Hort] > 0)
+            {
+                foundInteraction = true;
+            }
         }
     }
     /// <summary>
@@ -331,13 +336,19 @@ public class Bot : CharacterBase
         // if an interaction was found, set the interactionID to highest priority
         if (foundInteraction)
         {
+            // get highest value in interactionPriorities
+            float priorityValue = interactionPriorities.Max();
+            // get positive difference between priorityValue and prevPriorityValue
+            float priorityDifference = Mathf.Abs(priorityValue - prevPriorityValue);
+            prevPriorityValue = priorityValue;
+
             // get index of highest value in priority array
             int highestPriorityIndex = interactionPriorities.ToList().IndexOf(interactionPriorities.Max());
             // cast this index to an InteractionID
             InteractionID foundInteractionID = (InteractionID)highestPriorityIndex;
 
             // check: did we find a new interactionId that is higher prioritized the old interaction
-            if (foundInteractionID != interactionID && highestPriorityIndex > prevPriorityIndex) // TODO: only change id if according priority is a given amount higher than priority of old id
+            if (foundInteractionID != interactionID && priorityDifference >= PRIORITY_THRESHOLD) // only change id if according priority is a given amount higher than priority of old id
             {
                 Debug.Log("all interaction priorities: \n" + 
                     "Opponent: " + interactionPriorities[0] + " \n" +
@@ -348,7 +359,6 @@ public class Bot : CharacterBase
                     "Item: " + interactionPriorities[5]);
 
                 Debug.Log("set goal to: " + foundInteractionID);
-                prevPriorityIndex = highestPriorityIndex;
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
