@@ -183,8 +183,13 @@ public class Map : NetworkBehaviour
         PlaceObstacles();
         PlaceDiamonds();
         //SetIsWalkableForObstacles();
-        // TODO: set PolynomCollider / CompositeCollider on map size
-        //map.GetComponent<PolygonCollider>().SetPath();
+        Vector2[] path = {
+            new Vector2(0, 0),
+            new Vector2(0, generatorData.height),
+            new Vector2(generatorData.width, generatorData.height),
+            new Vector2(generatorData.width, 0)
+        };
+        gameObject.GetComponent<PolygonCollider2D>().SetPath(0, path);
     }
 
     // checks if there is water or an obstacles on the given position
@@ -268,12 +273,13 @@ public class Map : NetworkBehaviour
     }
 
     // Step 3
-    void SetMapBoundries() {
+    void SetMapBoundries()
+    {
         for (int x = 0; x < generatorData.width; x++)
         {
             for (int y = 0; y < generatorData.height; y++)
             {
-                if (x == 0 || y == 0 || x == generatorData.width -1 || y == generatorData.height -1)
+                if (x == 0 || y == 0 || x == generatorData.width - 1 || y == generatorData.height - 1)
                 {
                     floorEnvironment[x, y] = EnvironmentType.Water;
                 }
@@ -396,7 +402,7 @@ public class Map : NetworkBehaviour
                     }
                     else
                     {
-                        Debug.Log("h");                     
+                        Debug.Log("h");
                     }
                 }
             }

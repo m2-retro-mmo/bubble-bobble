@@ -60,8 +60,6 @@ public class GameManager : NetworkBehaviour
             cam.enabled = true;
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
-            // TOOD: set follow auf Player
-            
         }
         map.NewMap();
 
@@ -73,10 +71,6 @@ public class GameManager : NetworkBehaviour
                 CreatePlayer(conn, new CreatePlayerMessage());
             }
         }
-
-        // minimap camera should follow main player
-        // CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
-        // minimapCamFollow.target = player.transform;
 
         if (startGameWithBots)
         {

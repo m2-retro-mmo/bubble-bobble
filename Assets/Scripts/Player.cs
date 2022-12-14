@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Cinemachine;
 
 public class Player : CharacterBase
 {
@@ -31,7 +32,9 @@ public class Player : CharacterBase
             cam.enabled = true;
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
-            // TODO: give Camera Component CinemachineBrain (as MinimapCam)
+
+            Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+            cm.Follow = gameObject.transform;
         }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
