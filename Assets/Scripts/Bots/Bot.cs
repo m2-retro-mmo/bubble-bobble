@@ -35,7 +35,7 @@ public class Bot : CharacterBase
     public bool changedInteractionID = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 0, 1 };
+    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 3, 1 };
 
     private float[] interactionPriorities;
 
@@ -273,19 +273,14 @@ public class Bot : CharacterBase
     private void CheckForHort()
     {
         // only check for hort if the bot holds a diamond
-        if (!GetHoldsDiamond())
-        {
-            return;
-        }
-        // are there diamonds near by
-        if (hort != null)
+        if (GetHoldsDiamond() && hort != null)
         {
             // has a higher priority to drop diamond
             interactionPriorities[(int)InteractionID.Hort] += 1f;
 
             // multiply interactionPriority with interactionWeight
             interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
-
+            
             // set the interactionGoal to hort
             interactionGoals[(int)InteractionID.Hort] = hort;
 
@@ -295,6 +290,7 @@ public class Bot : CharacterBase
             }
         }
     }
+    
     /// <summary>
     /// Gets the colliders around the bot by tag.
     /// orders by distance from the bot 
@@ -400,5 +396,10 @@ public class Bot : CharacterBase
     public void SetInteractionID(InteractionID newInteractionID)
     {
         interactionID = newInteractionID;
+    }
+
+    public Transform GetHort()
+    {
+        return hort;
     }
 }

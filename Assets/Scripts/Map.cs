@@ -186,7 +186,7 @@ public class Map : NetworkBehaviour
     }
 
     // checks if there is water or an obstacles on the given position
-    private bool TileIsFree(int x, int y)
+    public bool TileIsFree(int x, int y)
     {
         return floorEnvironment[x, y] == EnvironmentType.Ground && obstacleTilemap.GetTile(new Vector3Int(x, y, 0)) == null;
     }

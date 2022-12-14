@@ -10,7 +10,7 @@ public class Hort : NetworkBehaviour
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
-    static private byte scale = 7;
+    public static byte scale = 7;
 
     [Header("UI Text")]
 

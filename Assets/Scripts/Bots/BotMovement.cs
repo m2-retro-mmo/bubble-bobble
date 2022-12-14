@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System.Linq;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
@@ -27,10 +28,16 @@ public class BotMovement : NetworkBehaviour
     
     private Graph graph;
 
+    private GameObject freeTileAroundHort;
+
     void Start()
     {
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
+
+        // object holder for the transform of the goal if the interactionId is hort
+        freeTileAroundHort = new GameObject();
+        freeTileAroundHort.hideFlags = HideFlags.HideInHierarchy;
     }
 
     private void Update()
@@ -91,6 +98,8 @@ public class BotMovement : NetworkBehaviour
                 break;
             case InteractionID.Hort:
                 Debug.Log("Start follow hort");
+                Transform hortGoal = GetFreeTileAroundHort(goal.position);
+                SetGoal(hortGoal);
                 StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht für hort geklappt
                 break;
             case InteractionID.Item:
@@ -219,6 +228,43 @@ public class BotMovement : NetworkBehaviour
         directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
+    private Transform GetFreeTileAroundHort(Vector2 hortCenter)
+    {
+        Hort hort = bot.GetHort().GetComponent<Hort>();
+        Map map = GameObject.Find("Map").GetComponent<Map>();
+        
+        int x = (int)hortCenter.x;
+        int y = (int)hortCenter.y;
+        int xMin = x - (Hort.scale / 2 + 1);
+        int xMax = x + (Hort.scale / 2 + 1);
+        int yMin = y - (Hort.scale / 2 + 1);
+        int yMax = y + (Hort.scale / 2 + 1);
+
+        List<GraphNode> nodesAroundHort = new List<GraphNode>();
+        for (int i = xMin; i <= xMax; i++)
+        {
+            for (int j = yMin; j <= yMax; j++)
+            {
+                nodesAroundHort.Add(graph.GetNode(i, j));
+            }
+        }
+
+        // order nodes by distance to bot
+        nodesAroundHort = nodesAroundHort.OrderBy(node => Vector3.Distance(transform.position, graph.GetWorldPosition(node.GetX(), node.GetY()))).ToList();
+
+        // find closest node to bot that is free
+        foreach (GraphNode node in nodesAroundHort)
+        {
+            if (map.TileIsFree(node.GetX(), node.GetY()))
+            {
+                freeTileAroundHort.transform.position = graph.GetWorldPosition(node.GetX(), node.GetY());
+                break;
+            }
+        }
+        
+        return freeTileAroundHort.transform;
+    }
+    
     private Vector3 GetPosition()
     {
         return transform.position;
