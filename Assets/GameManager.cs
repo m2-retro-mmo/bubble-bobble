@@ -60,6 +60,8 @@ public class GameManager : NetworkBehaviour
             cam.enabled = true;
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
+            // TOOD: set follow auf Player
+            
         }
         map.NewMap();
 

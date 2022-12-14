@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2952005194902861937}
   - component: {fileID: 2952005194902861936}
-  - component: {fileID: 2952005194902861950}
+  - component: {fileID: -7570014726716158702}
   m_Layer: 0
   m_Name: MinimapCamera
   m_TagString: Untagged
@@ -76,7 +76,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &2952005194902861950
+--- !u!114 &-7570014726716158702
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,9 +85,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 2952005194902861938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81a445b0479cce36e8bc681c5e96f9b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followSpeed: 2
-  target: {fileID: 0}
-  z: -15
+  m_ShowDebugText: 0
+  m_ShowCameraFrustum: 1
+  m_IgnoreTimeScale: 0
+  m_WorldUpOverride: {fileID: 0}
+  m_UpdateMethod: 2
+  m_BlendUpdateMethod: 1
+  m_DefaultBlend:
+    m_Style: 1
+    m_Time: 2
+    m_CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_CustomBlends: {fileID: 0}
+  m_CameraCutEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_CameraActivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []

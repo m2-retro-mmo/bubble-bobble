@@ -183,6 +183,8 @@ public class Map : NetworkBehaviour
         PlaceObstacles();
         PlaceDiamonds();
         //SetIsWalkableForObstacles();
+        // TODO: set PolynomCollider / CompositeCollider on map size
+        //map.GetComponent<PolygonCollider>().SetPath();
     }
 
     // checks if there is water or an obstacles on the given position

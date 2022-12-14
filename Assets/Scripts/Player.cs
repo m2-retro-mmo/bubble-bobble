@@ -31,10 +31,7 @@ public class Player : CharacterBase
             cam.enabled = true;
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
-            GameObject minimapCam = GameObject.Find("MinimapCamera");
-            CameraFollow minimapCamFollow = minimapCam.GetComponent<CameraFollow>();
-            minimapCamFollow.target = transform;
-
+            // TODO: give Camera Component CinemachineBrain (as MinimapCam)
         }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
