@@ -159,6 +159,7 @@ MonoBehaviour:
   interactionID: 6
   foundInteraction: 0
   changedInteractionID: 0
+  detectedBubble: 0
 --- !u!114 &1796464555622411223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +172,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 090f2f4b396639b4a8eeffeafec4cabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
   goal: {fileID: 0}
 --- !u!114 &-4140943716889173308
 MonoBehaviour:
@@ -369,8 +373,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1869315837
-  m_SortingLayer: 1
+  m_SortingLayerID: -105541197
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224,
     type: 3}
