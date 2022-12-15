@@ -28,16 +28,18 @@ public class BotMovement : NetworkBehaviour
     
     private Graph graph;
 
-    private GameObject freeTileAroundHort;
+    private GameObject goalHolder;
+
+    private bool startedAvoidBubble = false;
 
     void Start()
     {
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
-
+        
         // object holder for the transform of the goal if the interactionId is hort
-        freeTileAroundHort = new GameObject();
-        freeTileAroundHort.hideFlags = HideFlags.HideInHierarchy;
+        goalHolder = new GameObject();
+        goalHolder.hideFlags = HideFlags.HideInHierarchy;
     }
 
     private void Update()
@@ -45,8 +47,22 @@ public class BotMovement : NetworkBehaviour
         // return if not server
         if (!isServer) return;
 
+        if (bot.GetDetectedBubble() && !startedAvoidBubble)
+        {
+            Debug.Log("Bubble was detected - start avoiding");
+
+            path = null;
+            graph.ResetGraph();
+            pathfinding = new Pathfinding(graph);
+            CancelInvoke();
+            StopAllCoroutines();
+
+            StartCoroutine(AvoidOpponentBubble());
+
+            bot.SetDetectedBubble(false);
+        }
         // if the Interaction ID was changed stop everything and start new interaction
-        if (bot.GetChangedInteractionID())
+        else if (bot.GetChangedInteractionID())
         {
             Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
 
@@ -70,6 +86,7 @@ public class BotMovement : NetworkBehaviour
             CancelInvoke();
             StopAllCoroutines();
             bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
+            startedAvoidBubble = false;
         }
     }
 
@@ -90,7 +107,6 @@ public class BotMovement : NetworkBehaviour
                 break;
             case InteractionID.OpponentBubble:
                 Debug.Log("Start follow opponent bubble");
-                // TODO: implement
                 break;
             case InteractionID.Diamond:
                 Debug.Log("Start follow diamond");
@@ -130,9 +146,7 @@ public class BotMovement : NetworkBehaviour
 
                 if (distToGoal <= 0.01f)
                 {
-                    CancelInvoke();
-                    bot.ResetBot(0f);
-                    path = null;
+                    StopEverything();
                     Debug.Log("Bot Reached goal");
                     break;
                 }
@@ -180,10 +194,7 @@ public class BotMovement : NetworkBehaviour
 
             if (opponent.GetIsCaptured())
             {
-                CancelInvoke();
-                StopAllCoroutines();
-                bot.ResetBot(0f);
-                path = null;
+                StopEverything();
                 Debug.Log("Opponent captured");
                 break;
             }
@@ -191,9 +202,85 @@ public class BotMovement : NetworkBehaviour
             yield return new WaitForSeconds(0.001f);
         }
     }
+    
+    IEnumerator AvoidOpponentBubble()
+    {
+        Debug.Log("---Avoid opponent bubble");
+        startedAvoidBubble = true;
+        
+        if(goal == null)
+        {
+            Debug.Log("Goal is null");
+            yield break;
+        }
+        
+        float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
+        // if the bubble is closer than shootRange move away from it 
+        if (distToBubble < (shootRange - 0f)) // TODO: evtl hier den Bereich kleiner machen
+        {
+            Debug.Log("---Bubble is closer than shoot range");
+
+            float rangeOffset = 2f;
+            int xMin = (int)(transform.position.x - rangeOffset);
+            int xMax = (int)(transform.position.x + rangeOffset);
+            int yMin = (int)(transform.position.y - rangeOffset);
+            int yMax = (int)(transform.position.y + rangeOffset);
+
+            var random = new System.Random();
+            // get random x in range xMin to xMax
+            float x = random.Next(xMin, xMax);
+            float y = random.Next(yMin, yMax);
+
+            Vector3 avoidPosition = new Vector3(x, y, 0);
+
+            Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
+
+            CalculatePathToGoal(avoidPosition);
+
+            while (true)
+            {
+                float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
+
+                if (path != null)
+                {
+                    Debug.Log("dist to goal: " + distToGoal);
+                    Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
+                    if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                    {
+                        currentIndex++;
+                    }
+
+                    if (distToGoal <= 0.25f)
+                    {
+                        startedAvoidBubble = false;
+                        Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
+                        StopEverything();
+                        break;
+                    }
+                    transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+                }
+
+                yield return new WaitForSeconds(0.001f);
+            }
+        }
+        // if the bubble is further away than shootRange shoot it 
+        else
+        {
+            Debug.Log("---Bubble is further away than shoot range");
+            GetComponent<Shooting>().ShootBubble();
+            
+            startedAvoidBubble = false;
+            Debug.Log("Shot Bubble");
+            StopEverything();
+        }
+    }
+        
+    
     /// <summary>
     /// Calculates the path to goal and resets the path index.
+    /// gets invoked
     /// </summary>
     private void CalculatePathToGoal()
     {
@@ -201,6 +288,20 @@ public class BotMovement : NetworkBehaviour
         currentIndex = 0;
     }
 
+    private void CalculatePathToGoal(Vector3 goalPos)
+    {
+        path = pathfinding.FindPath(transform.position, goalPos);
+        currentIndex = 0;
+    }
+
+    private void StopEverything()
+    {
+        CancelInvoke();
+        StopAllCoroutines();
+        bot.ResetBot(0f);
+        path = null;
+    }
+        
 
     /// <summary>
     /// Gets the euclidean distance.
@@ -257,12 +358,12 @@ public class BotMovement : NetworkBehaviour
         {
             if (map.TileIsFree(node.GetX(), node.GetY()))
             {
-                freeTileAroundHort.transform.position = graph.GetWorldPosition(node.GetX(), node.GetY());
+                goalHolder.transform.position = graph.GetWorldPosition(node.GetX(), node.GetY());
                 break;
             }
         }
         
-        return freeTileAroundHort.transform;
+        return goalHolder.transform;
     }
     
     private Vector3 GetPosition()

@@ -24,7 +24,7 @@ public class Shooting : NetworkBehaviour
 
     [SerializeField]
     [Tooltip("The force with which the bubble is shot")]
-    private float bubbleForce = 20f;
+    private float bubbleForce = 10f;
 
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble count will be incremented")]
@@ -108,6 +108,7 @@ public class Shooting : NetworkBehaviour
                 if (character.tag == "Player")
                 {
                     ChangeBubbleCount_UI();
+                    Debug.Log("Player shot bubble");
                 }
 
                 lastShootTime = Time.time;
@@ -116,7 +117,8 @@ public class Shooting : NetworkBehaviour
         else
         {
             Debug.Log("No more bubbles");
-            StartCoroutine(BlinkBubbleCountText());
+            if (character.tag == "Player")
+                StartCoroutine(BlinkBubbleCountText());
         }
     }
 

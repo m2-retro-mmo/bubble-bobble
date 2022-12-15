@@ -34,8 +34,11 @@ public class Bot : CharacterBase
     [HideInInspector]
     public bool changedInteractionID = false;
 
+    [HideInInspector]
+    public bool detectedBubble = false;
+
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 6, 4, 3, 1 };
+    private float[] interactionWeights = new float[] { 0, 0, 0, 0, 0, 0 }; //{ 2, 5, 6, 4, 3, 1 };
 
     private float[] interactionPriorities;
 
@@ -51,11 +54,15 @@ public class Bot : CharacterBase
     private BotMovement botMovement;
 
     private float prevPriorityValue = 0;
-
+    
+    private Transform hort;
+    
     private const float PRIORITY_THRESHOLD = 1f;
 
-    private Transform hort;
+    private const float REFRESH_RATE_GOAL = 10f;
 
+    private const float REFRESH_RATE_BUBBLE = 0.5f;
+    
     public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -83,6 +90,21 @@ public class Bot : CharacterBase
     public void StartBot()
     {
         StartCoroutine(CheckAreaOfInterest());
+        StartCoroutine(CheckForBubbles());
+    }
+
+    IEnumerator CheckForBubbles()
+    {
+        while (true)
+        {
+            botPosition = transform.position;
+            // get all colliders in a radius around the bot
+            interactionColliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
+
+            CheckForOpponentBubbles();
+
+            yield return new WaitForSeconds(REFRESH_RATE_BUBBLE);
+        }
     }
 
     /// <summary>
@@ -96,7 +118,7 @@ public class Bot : CharacterBase
         // check area every ten seconds
         while (true)
         {
-            Debug.Log("start searching for interaction...");
+            //Debug.Log("start searching for interaction...");
             foundInteraction = false;
             // reset all priority values
             interactionPriorities = new float[6];
@@ -108,7 +130,6 @@ public class Bot : CharacterBase
 
             CheckForOpponents();
             CheckForTeammates();
-            CheckForOpponentBubbles();
             CheckForDiamond();
             CheckForHort();
 
@@ -118,7 +139,7 @@ public class Bot : CharacterBase
             //Debug.Log("changedInteraction " + changedInteractionID);
             //Debug.Log("interactionID: " + interactionID);
 
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(REFRESH_RATE_GOAL);
         }
     }
 
@@ -138,7 +159,7 @@ public class Bot : CharacterBase
         // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
         if (opponentWithDiamondColliders.Length > 0)
         {
-            Debug.Log("opponent with diamond found");
+            //Debug.Log("opponent with diamond found");
             opponentColliders = opponentWithDiamondColliders;
             // priority for opponents who are holding a diamond is higher
             opponentPriority = 2f;
@@ -217,16 +238,8 @@ public class Bot : CharacterBase
         {
             foreach(Collider2D bubble in opponentBubbleColliders)
             {
-                interactionPriorities[(int)InteractionID.OpponentBubble] += 1f;
-
-                // multiply interactionPriority with interactionWeight
-                interactionPriorities[(int)InteractionID.OpponentBubble] *= interactionWeights[(int)InteractionID.OpponentBubble];
-
-                // set the interactionGoal to the opponent bubble
-                interactionGoals[(int)InteractionID.OpponentBubble] = bubble.transform;
-
-                foundInteraction = true;
-                break;
+                detectedBubble = true;
+                botMovement.SetGoal(bubble.transform);
             }
         }
     }
@@ -401,5 +414,15 @@ public class Bot : CharacterBase
     public Transform GetHort()
     {
         return hort;
+    }
+
+    public bool GetDetectedBubble()
+    {
+        return detectedBubble;
+    }
+
+    public void SetDetectedBubble(bool value)
+    {
+        detectedBubble = value;
     }
 }
