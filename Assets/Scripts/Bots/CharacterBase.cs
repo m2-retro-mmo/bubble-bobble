@@ -15,13 +15,13 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     /**
@@ -48,12 +48,12 @@ public class CharacterBase : NetworkBehaviour
                 break;
             case "Diamond":
                 // collect Diamond if possible
-                if (!GetHoldsDiamond())
+                Diamond diamond = other.GetComponent<Diamond>() as Diamond;
+                if (!GetHoldsDiamond() && !diamond.GetCollected())
                 {
-                    Debug.Log("bot collided with diamond");
-                    Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                     diamond.collect();
                     collectDiamond();
+                    Debug.Log("bot collided with diamond");
                 }
                 break;
             default:
@@ -75,7 +75,7 @@ public class CharacterBase : NetworkBehaviour
         // TODO: change appearance of dragon here
         holdsDiamond = true;
     }
-    
+
     /**
     * is triggered when the player got captured by a bubble
     */
@@ -104,7 +104,7 @@ public class CharacterBase : NetworkBehaviour
     {
         if (newIsCaptured)
         {
-             spriteRenderer.color = Color.white;
+            spriteRenderer.color = Color.white;
         }
         else
         {
