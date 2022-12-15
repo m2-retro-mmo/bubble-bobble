@@ -229,6 +229,7 @@ MonoBehaviour:
   directionIndicator: {fileID: 588744072}
   collisionOffset: 0.1
   moveSpeed: 3
+  animator: {fileID: 0}
   mousePosWorld: {x: 0, y: 0}
   cam: {fileID: 532243311394761586}
   mousePosScreen: {x: 0, y: 0, z: 0}
