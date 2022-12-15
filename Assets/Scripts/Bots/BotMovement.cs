@@ -113,7 +113,7 @@ public class BotMovement : NetworkBehaviour
                 Debug.Log("Start follow hort");
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
-                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht für hort geklappt
+                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht fï¿½r hort geklappt
                 break;
             case InteractionID.Item:
                 Debug.Log("Start follow item");
