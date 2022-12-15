@@ -140,6 +140,8 @@ public class Map : NetworkBehaviour
     public Tile northEastAndSouthWest;
     public Tile northWestAndSouthEast;
 
+    private GameObject diamondParent;
+
     public Boolean[,] isWalkable;
 
     [SyncVar(hook = nameof(OnNewMap))]
@@ -170,6 +172,13 @@ public class Map : NetworkBehaviour
 
     public void BuildMap()
     {
+        // create fresh diamond parent array
+        if (diamondParent != null)
+        {
+            Destroy(diamondParent);
+        }
+        diamondParent = new GameObject("Diamonds");
+
         ran = new System.Random(generatorData.seed);
         GenerateNoiseGrid();
         ApplyCellularAutomaton();
@@ -416,7 +425,6 @@ public class Map : NetworkBehaviour
     void PlaceDiamonds()
     {
         BoundsInt bounds = floorTilemap.cellBounds;
-        GameObject diamondParent = new GameObject("Diamonds");
 
         for (int x = 0; x < bounds.size.x; x++)
         {
