@@ -10,7 +10,7 @@ public class CharacterBase : NetworkBehaviour
 
     protected SpriteRenderer spriteRenderer;
 
-    protected const float BUBBLE_BREAKOUT_TIME = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +22,43 @@ public class CharacterBase : NetworkBehaviour
     void Update()
     {
         
+    }
+
+    /**
+   * is called when player | bot collides with another Collider2D
+   */
+    [ServerCallback]
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        // check collision of Player with other Game objects
+        switch (other.gameObject.tag)
+        {
+            case "Hort":
+                Hort hort = other.GetComponent("Hort") as Hort;
+                if (hort != null)
+                {
+                    Debug.Log("bot collided with hort");
+                    // put diamond into hort
+                    if (holdsDiamond && teamNumber == hort.team)
+                    {
+                        hort.AddDiamond();
+                        deliverDiamond();
+                    }
+                }
+                break;
+            case "Diamond":
+                // collect Diamond if possible
+                if (!GetHoldsDiamond())
+                {
+                    Debug.Log("bot collided with diamond");
+                    Diamond diamond = other.GetComponent<Diamond>() as Diamond;
+                    diamond.collect();
+                    collectDiamond();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
