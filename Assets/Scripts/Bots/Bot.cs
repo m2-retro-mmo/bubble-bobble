@@ -12,11 +12,10 @@ public enum InteractionID
 {
     Opponent = 0,
     Teammate = 1,
-    OpponentBubble = 2,
-    Diamond = 3,
-    Hort = 4,
-    Item = 5,
-    None = 6
+    Diamond = 2,
+    Hort = 3,
+    Item = 4,
+    None = 5
 }
 
 /// <summary>
@@ -38,7 +37,7 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 0, 0, 0, 0, 0, 0 }; //{ 2, 5, 6, 4, 3, 1 };
+    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; // TODO: opponent bubble rausnehmen
 
     private float[] interactionPriorities;
 
@@ -121,8 +120,8 @@ public class Bot : CharacterBase
             //Debug.Log("start searching for interaction...");
             foundInteraction = false;
             // reset all priority values
-            interactionPriorities = new float[6];
-            interactionGoals = new Transform[6];
+            interactionPriorities = new float[5];
+            interactionGoals = new Transform[5];
 
             botPosition = transform.position;
             // get all colliders in a radius around the bot
@@ -362,10 +361,9 @@ public class Bot : CharacterBase
                 Debug.Log("all interaction priorities: \n" + 
                     "Opponent: " + interactionPriorities[0] + " \n" +
                     "Teammate: " + interactionPriorities[1] + " \n" +
-                    "OpponentBubble: " + interactionPriorities[2] + " \n" +
-                    "Diamond: " + interactionPriorities[3] + " \n" +
-                    "Hort: " + interactionPriorities[4] + " \n" +
-                    "Item: " + interactionPriorities[5]);
+                    "Diamond: " + interactionPriorities[2] + " \n" +
+                    "Hort: " + interactionPriorities[3] + " \n" +
+                    "Item: " + interactionPriorities[4]);
 
                 Debug.Log("set goal to: " + foundInteractionID);
                 changedInteractionID = true;

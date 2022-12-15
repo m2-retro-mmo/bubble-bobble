@@ -83,10 +83,10 @@ public class BotMovement : NetworkBehaviour
 
         if (bot.GetIsCaptured())
         {
+            startedAvoidBubble = false;
             CancelInvoke();
             StopAllCoroutines();
             bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
-            startedAvoidBubble = false;
         }
     }
 
@@ -104,9 +104,6 @@ public class BotMovement : NetworkBehaviour
             case InteractionID.Teammate:
                 Debug.Log("Start follow teammate");
                 StartCoroutine(FollowGoal());
-                break;
-            case InteractionID.OpponentBubble:
-                Debug.Log("Start follow opponent bubble");
                 break;
             case InteractionID.Diamond:
                 Debug.Log("Start follow diamond");
@@ -211,13 +208,14 @@ public class BotMovement : NetworkBehaviour
         if(goal == null)
         {
             Debug.Log("Goal is null");
+            startedAvoidBubble = false;
             yield break;
         }
         
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange - 0f)) // TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 0f)) // TODO: evtl hier den Bereich kleiner machen
         {
             Debug.Log("---Bubble is closer than shoot range");
 
