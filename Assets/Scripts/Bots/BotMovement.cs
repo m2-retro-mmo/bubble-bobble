@@ -215,22 +215,11 @@ public class BotMovement : NetworkBehaviour
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 0f)) // TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 20000f)) // TODO: evtl hier den Bereich kleiner machen
         {
             Debug.Log("---Bubble is closer than shoot range");
 
-            float rangeOffset = 2f;
-            int xMin = (int)(transform.position.x - rangeOffset);
-            int xMax = (int)(transform.position.x + rangeOffset);
-            int yMin = (int)(transform.position.y - rangeOffset);
-            int yMax = (int)(transform.position.y + rangeOffset);
-
-            var random = new System.Random();
-            // get random x in range xMin to xMax
-            float x = random.Next(xMin, xMax);
-            float y = random.Next(yMin, yMax);
-
-            Vector3 avoidPosition = new Vector3(x, y, 0);
+            Vector3 avoidPosition = CalculateAvoidPosition();
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
@@ -274,8 +263,23 @@ public class BotMovement : NetworkBehaviour
             StopEverything();
         }
     }
-        
-    
+
+    private Vector3 CalculateAvoidPosition()
+    {
+        float rangeOffset = 2f;
+        int xMin = (int)(transform.position.x - rangeOffset);
+        int xMax = (int)(transform.position.x + rangeOffset);
+        int yMin = (int)(transform.position.y - rangeOffset);
+        int yMax = (int)(transform.position.y + rangeOffset);
+
+        var random = new System.Random();
+        // get random x in range xMin to xMax
+        float x = random.Next(xMin, xMax);
+        float y = random.Next(yMin, yMax);
+
+        return new Vector3(x, y, 0);
+    }
+
     /// <summary>
     /// Calculates the path to goal and resets the path index.
     /// gets invoked
