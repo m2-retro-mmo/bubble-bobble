@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Mirror;
 
 /**
 This class handles:
@@ -9,17 +8,22 @@ This class handles:
 - Hort creation
 - Bot initialzation 
 */
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
 
     public Player playerPrefab;
     public Hort hortPrefab;
     public Map map;
     public Camera cam;
-    
+    public Camera minimapCam;
+
     [SerializeField]
     [Tooltip("true if the game should run with bots")]
     private bool startGameWithBots;
+
+    [SerializeField]
+    [Tooltip("true if the bot should be spawned in the area of the player")]
+    private bool DEBUG_BOTS = false;
 
     [SerializeField]
     [Tooltip("The prefab of the bot")]
@@ -29,37 +33,56 @@ public class GameManager : MonoBehaviour
     [Tooltip("The number of bots the game should start with")]
     private int botNumber;
 
-    private byte teamCount = 2;
-
-    // Start is called before the first frame update
-    void Start()
+    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
     {
-        // instanciate a Hort for each Team
-        for (byte teamNumber = 0; teamNumber < teamCount; teamNumber++)
+        foreach (Player player in FindObjectsOfType<Player>())
         {
-            //Hort hort = Instantiate(hortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            //hort.team = teamNumber;
-            //map.PlaceHort(hort);
+            if (player.connectionToClient == conn)
+            {
+                Debug.Log("Player already exists");
+                return;
+            }
         }
 
-        // instanciate a local player
-        Player player = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
-        player.cam = cam;
-        player.SetTeamNumber(1);
-        map.PlaceCharacter(player);
+        Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+        map.PlaceCharacter(p);
+        p.SetTeamNumber(1);
+        NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+    }
 
-        // camera should follow main player
-        CameraFollow camFollow = cam.GetComponent<CameraFollow>();
-        camFollow.target = player.transform;
+    // Start is called before the first frame update
+    [Server]
+    void Start()
+    {
+        if (isServerOnly)
+        {
+            cam = GameObject.Find("Server Camera").GetComponent<Camera>();
+            cam.enabled = true;
+            cam.GetComponent<Camera>().enabled = true;
+            cam.GetComponent<AudioListener>().enabled = true;
+        }
+        map.NewMap();
+
+        // get all connections and instanciate a player for each connection
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn != null)
+            {
+                CreatePlayer(conn, new CreatePlayerMessage());
+            }
+        }
 
         if (startGameWithBots)
         {
             GameObject bots = new GameObject("Bots");
 
-            Tilemap obstacle_tilemap = GameObject.Find("Obstacles").GetComponent<Tilemap>();
-            Tilemap ground_tilemap = GameObject.Find("Ground").GetComponent<Tilemap>();
+            Graph graph = new Graph(map, true);
 
-            Graph graph = new Graph(obstacle_tilemap, ground_tilemap, true);
+            // spawn only one bot in debug mode
+            if (DEBUG_BOTS)
+            {
+                botNumber = 1;
+            }
 
             for (int i = 0; i < botNumber; i++)
             {
@@ -69,11 +92,26 @@ public class GameManager : MonoBehaviour
                 bot.transform.parent = bots.transform;
 
                 bot.SetTeamNumber(0); // TODO set team number randomly
-                map.PlaceCharacter(bot);
+
+                if (DEBUG_BOTS)
+                {
+                    Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+                    bot.transform.position = playerPos + new Vector3(5, 5, 0);
+                }
+                else
+                {
+                    map.PlaceCharacter(bot);
+                }
+
+                NetworkServer.Spawn(bot.gameObject);
 
                 bot.GetComponent<BotMovement>().SetGraph(graph);
+                bot.StartBot();
             }
         }
+
+        // register connection handler function
+        NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
     }
 
     // Update is called once per frame

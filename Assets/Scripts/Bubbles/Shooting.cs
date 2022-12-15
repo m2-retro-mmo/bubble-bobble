@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// This class is responsible for the shooting of the bubbles
 /// </summary>
-public class Shooting : MonoBehaviour
+public class Shooting : NetworkBehaviour
 {
     [SerializeField]
     [Tooltip("the point where the bubble will be instantiated")]
@@ -23,7 +24,7 @@ public class Shooting : MonoBehaviour
 
     [SerializeField]
     [Tooltip("The force with which the bubble is shot")]
-    private float bubbleForce = 20f;
+    private float bubbleForce = 10f;
 
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble count will be incremented")]
@@ -51,22 +52,18 @@ public class Shooting : MonoBehaviour
 
         if (character.tag == "Player")
         {
+            bubbleCount_text = GameObject.Find("BubbleCountValue_Text").GetComponent<TextMeshProUGUI>();
             ChangeBubbleCount_UI();
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //if (Input.GetButton("Fire1"))
-        //{
-        //    ShootBubble();
-        //}
-    }
-
-    private void LateUpdate()
+    private void Update()
     {
         // inrecemt buuble count after every 3 seconds
+        if (!isServer)
+        {
+            return;
+        }
         if (Time.time >= nextIncrementTime)
         {
             nextIncrementTime = Time.time + bubbleCoolDownTime;
@@ -78,9 +75,16 @@ public class Shooting : MonoBehaviour
         }
     }
 
+    [Command]
+    public void CmdShootBubble()
+    {
+        ShootBubble();
+    }
+
     /// <summary>
     /// Shoots the bubble from the fire point and adds force to it
     /// </summary>
+    [Server]
     public void ShootBubble()
     {
         // Check if the bubble count is greater than 0
@@ -95,14 +99,16 @@ public class Shooting : MonoBehaviour
                 rb.AddForce(firePoint.up * bubbleForce, ForceMode2D.Impulse);
 
                 int myTeam = character.GetComponent<CharacterBase>().GetTeamNumber();
-
                 bubble.GetComponent<Bubble>().SetTeamNumber(myTeam);
 
                 DecrementBubbleCount();
 
+                NetworkServer.Spawn(bubble);
+
                 if (character.tag == "Player")
                 {
                     ChangeBubbleCount_UI();
+                    Debug.Log("Player shot bubble");
                 }
 
                 lastShootTime = Time.time;
@@ -111,14 +117,15 @@ public class Shooting : MonoBehaviour
         else
         {
             Debug.Log("No more bubbles");
-            StartCoroutine(BlinkBubbleCountText());
+            if (character.tag == "Player")
+                StartCoroutine(BlinkBubbleCountText());
         }
-
     }
 
     /// <summary>
     /// Decrements the bubble count and checks if the player has no more bubbles left
     /// </summary>
+    [Server]
     private void DecrementBubbleCount()
     {
         if (bubbleCount > 0)
@@ -130,6 +137,7 @@ public class Shooting : MonoBehaviour
     /// <summary>
     /// Increments the bubble count if max buuble count is not reached
     /// </summary>
+    [Server]
     private void IncrementBubbleCount()
     {
         if (bubbleCount < maxBubbleCount)
@@ -143,8 +151,8 @@ public class Shooting : MonoBehaviour
     /// </summary>
     private void ChangeBubbleCount_UI()
     {
-        // bubbleCount_text.fontStyle = FontStyles.Normal;
-        // bubbleCount_text.text = bubbleCount.ToString();
+        bubbleCount_text.fontStyle = FontStyles.Normal;
+        bubbleCount_text.text = bubbleCount.ToString();
     }
 
     /// <summary>

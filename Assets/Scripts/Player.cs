@@ -1,6 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
+using Cinemachine;
 
 public class Player : CharacterBase
 {
@@ -10,7 +11,7 @@ public class Player : CharacterBase
     private BoxCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
-    private GameObject directionIndicator;
+    public GameObject directionIndicator;
     public float collisionOffset = 0.1f;
     public static float baseSpeed = 3f;
     public float moveSpeed = 3f;
@@ -29,10 +30,18 @@ public class Player : CharacterBase
     // Start is called before the first frame update
     void Start()
     {
+        if (isLocalPlayer)
+        {
+            cam.enabled = true;
+            cam.GetComponent<Camera>().enabled = true;
+            cam.GetComponent<AudioListener>().enabled = true;
+
+            Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+            cm.Follow = gameObject.transform;
+        }
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         col = gameObject.GetComponent<BoxCollider2D>();
-        directionIndicator = GameObject.FindGameObjectWithTag("directionIndicator");
     }
 
     private void LookAtMouse()
@@ -66,7 +75,7 @@ public class Player : CharacterBase
     {
         if (Input.GetButton("Fire1"))
         {
-            GetComponent<Shooting>().ShootBubble();
+            GetComponent<Shooting>().CmdShootBubble();
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
@@ -74,6 +83,7 @@ public class Player : CharacterBase
 
     private void FixedUpdate()
     {
+        if (!isLocalPlayer) return;
         if (!isCaptured)
         {
             bool success = MovePlayer(moveInput);
@@ -92,6 +102,7 @@ public class Player : CharacterBase
 
     private void LateUpdate()
     {
+        if (!isLocalPlayer) return;
         LookAtMouse();
     }
 
@@ -124,48 +135,6 @@ public class Player : CharacterBase
         else
         {
             return false;
-        }
-    }
-
-
-
-    /**
-    * is called when player collides with another Collider2D
-    */
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // check collision of Player with other Game objects
-        switch (other.gameObject.tag)
-        {
-            case "Hort":
-                Hort hort = other.GetComponent("Hort") as Hort;
-                if (hort != null)
-                {
-                    // put diamond into hort
-                    if (holdsDiamond && teamNumber == hort.team)
-                    {
-                        hort.AddDiamond();
-                        deliverDiamond();
-                    }
-                }
-                break;
-            case "Diamond":
-                // collect Diamond if possible
-                if (!holdsDiamond)
-                {
-                    Debug.Log("collision");
-                    Debug.Log("HERE IS A DIAMOND");
-                    Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                    diamond.collect();
-                    collectDiamond();
-                }
-                else
-                {
-                    Debug.Log("Player already holds a Diamond!");
-                }
-                break;
-            default:
-                break;
         }
     }
 }

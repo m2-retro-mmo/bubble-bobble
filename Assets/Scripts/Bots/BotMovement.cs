@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using Mirror;
+using System.Linq;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
 /// </summary>
-public class BotMovement : MonoBehaviour
+public class BotMovement : NetworkBehaviour
 {
     [HideInInspector]
     public Transform goal;
@@ -27,16 +28,41 @@ public class BotMovement : MonoBehaviour
     
     private Graph graph;
 
+    private GameObject goalHolder;
+
+    private bool startedAvoidBubble = false;
+
     void Start()
     {
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
+        
+        // object holder for the transform of the goal if the interactionId is hort
+        goalHolder = new GameObject();
+        goalHolder.hideFlags = HideFlags.HideInHierarchy;
     }
 
     private void Update()
     {
+        // return if not server
+        if (!isServer) return;
+
+        if (bot.GetDetectedBubble() && !startedAvoidBubble)
+        {
+            Debug.Log("Bubble was detected - start avoiding");
+
+            path = null;
+            graph.ResetGraph();
+            pathfinding = new Pathfinding(graph);
+            CancelInvoke();
+            StopAllCoroutines();
+
+            StartCoroutine(AvoidOpponentBubble());
+
+            bot.SetDetectedBubble(false);
+        }
         // if the Interaction ID was changed stop everything and start new interaction
-        if (bot.GetChangedInteractionID())
+        else if (bot.GetChangedInteractionID())
         {
             Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
 
@@ -54,12 +80,13 @@ public class BotMovement : MonoBehaviour
         {
             LookAtGoal();
         }
-        
+
         if (bot.GetIsCaptured())
         {
+            startedAvoidBubble = false;
             CancelInvoke();
             StopAllCoroutines();
-            bot.ResetBot();
+            bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
         }
     }
 
@@ -71,27 +98,59 @@ public class BotMovement : MonoBehaviour
         switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
-                Debug.Log("Start interaction with opponent");
+                Debug.Log("Start follow opponent");
                 StartCoroutine(FollowOpponent());
                 break;
             case InteractionID.Teammate:
-                Debug.Log("Start interaction with teammate");
-                break;
-            case InteractionID.OpponentBubble:
-                Debug.Log("Start interaction with opponent bubble");
+                Debug.Log("Start follow teammate");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Diamond:
-                Debug.Log("Start interaction with diamond");
+                Debug.Log("Start follow diamond");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
-                Debug.Log("Start interaction with hort");
+                Debug.Log("Start follow hort");
+                Transform hortGoal = GetFreeTileAroundHort(goal.position);
+                SetGoal(hortGoal);
+                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht f�r hort geklappt
                 break;
             case InteractionID.Item:
-                Debug.Log("Start interaction with item");
+                Debug.Log("Start follow item");
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.None:
-                Debug.Log("Start interaction with nothing");
+                Debug.Log("Start follow with nothing");
                 break;
+        }
+    }
+
+    IEnumerator FollowGoal()
+    {
+        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
+        while (goal != null)
+        {
+            float distToGoal = GetEuclideanDistance(transform.position, goal.position);
+
+            if (path != null)
+            {
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
+                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                {
+                    currentIndex++;
+                }
+
+                if (distToGoal <= 0.01f)
+                {
+                    StopEverything();
+                    Debug.Log("Bot Reached goal");
+                    break;
+                }
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+            }
+
+            yield return new WaitForSeconds(0.001f);
         }
     }
 
@@ -103,26 +162,26 @@ public class BotMovement : MonoBehaviour
     IEnumerator FollowOpponent()
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
+
+        CharacterBase opponent = goal.gameObject.GetComponent<CharacterBase>();
+        
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
             
             if (path != null)
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition(path[currentIndex].getX(), path[currentIndex].getY());
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int) path[currentIndex].GetX(), (int) path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 5f && currentIndex < path.Count - 1)
+                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
 
-                if (distToPlayer <= shootRange)
+                if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
                     GetComponent<Shooting>().ShootBubble();
-                    CancelInvoke();
-                    path = null;
                 }
-
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
             else if (distToPlayer >= (shootRange + 5f))
@@ -130,12 +189,100 @@ public class BotMovement : MonoBehaviour
                 InvokeRepeating("CalculatePathToGoal", 0.1f, 0.5f);
             }
 
+            if (opponent.GetIsCaptured())
+            {
+                StopEverything();
+                Debug.Log("Opponent captured");
+                break;
+            }
+
             yield return new WaitForSeconds(0.001f);
         }
+    }
+    
+    IEnumerator AvoidOpponentBubble()
+    {
+        Debug.Log("---Avoid opponent bubble");
+        startedAvoidBubble = true;
+        
+        if(goal == null)
+        {
+            Debug.Log("Goal is null");
+            startedAvoidBubble = false;
+            yield break;
+        }
+        
+        float distToBubble = GetEuclideanDistance(transform.position, goal.position);
+
+        // if the bubble is closer than shootRange move away from it 
+        if (distToBubble < (shootRange + 20000f)) // TODO: evtl hier den Bereich kleiner machen
+        {
+            Debug.Log("---Bubble is closer than shoot range");
+
+            Vector3 avoidPosition = CalculateAvoidPosition();
+
+            Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
+
+            CalculatePathToGoal(avoidPosition);
+
+            while (true)
+            {
+                float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
+
+                if (path != null)
+                {
+                    Debug.Log("dist to goal: " + distToGoal);
+                    Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
+                    if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                    {
+                        currentIndex++;
+                    }
+
+                    if (distToGoal <= 0.25f)
+                    {
+                        startedAvoidBubble = false;
+                        Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
+                        StopEverything();
+                        break;
+                    }
+                    transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+                }
+
+                yield return new WaitForSeconds(0.001f);
+            }
+        }
+        // if the bubble is further away than shootRange shoot it 
+        else
+        {
+            Debug.Log("---Bubble is further away than shoot range");
+            GetComponent<Shooting>().ShootBubble();
+            
+            startedAvoidBubble = false;
+            Debug.Log("Shot Bubble");
+            StopEverything();
+        }
+    }
+
+    private Vector3 CalculateAvoidPosition()
+    {
+        float rangeOffset = 2f;
+        int xMin = (int)(transform.position.x - rangeOffset);
+        int xMax = (int)(transform.position.x + rangeOffset);
+        int yMin = (int)(transform.position.y - rangeOffset);
+        int yMax = (int)(transform.position.y + rangeOffset);
+
+        var random = new System.Random();
+        // get random x in range xMin to xMax
+        float x = random.Next(xMin, xMax);
+        float y = random.Next(yMin, yMax);
+
+        return new Vector3(x, y, 0);
     }
 
     /// <summary>
     /// Calculates the path to goal and resets the path index.
+    /// gets invoked
     /// </summary>
     private void CalculatePathToGoal()
     {
@@ -143,6 +290,20 @@ public class BotMovement : MonoBehaviour
         currentIndex = 0;
     }
 
+    private void CalculatePathToGoal(Vector3 goalPos)
+    {
+        path = pathfinding.FindPath(transform.position, goalPos);
+        currentIndex = 0;
+    }
+
+    private void StopEverything()
+    {
+        CancelInvoke();
+        StopAllCoroutines();
+        bot.ResetBot(0f);
+        path = null;
+    }
+        
 
     /// <summary>
     /// Gets the euclidean distance.
@@ -170,6 +331,43 @@ public class BotMovement : MonoBehaviour
         directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
+    private Transform GetFreeTileAroundHort(Vector2 hortCenter)
+    {
+        Hort hort = bot.GetHort().GetComponent<Hort>();
+        Map map = GameObject.Find("Map").GetComponent<Map>();
+        
+        int x = (int)hortCenter.x;
+        int y = (int)hortCenter.y;
+        int xMin = x - (Hort.scale / 2 + 1);
+        int xMax = x + (Hort.scale / 2 + 1);
+        int yMin = y - (Hort.scale / 2 + 1);
+        int yMax = y + (Hort.scale / 2 + 1);
+
+        List<GraphNode> nodesAroundHort = new List<GraphNode>();
+        for (int i = xMin; i <= xMax; i++)
+        {
+            for (int j = yMin; j <= yMax; j++)
+            {
+                nodesAroundHort.Add(graph.GetNode(i, j));
+            }
+        }
+
+        // order nodes by distance to bot
+        nodesAroundHort = nodesAroundHort.OrderBy(node => Vector3.Distance(transform.position, graph.GetWorldPosition(node.GetX(), node.GetY()))).ToList();
+
+        // find closest node to bot that is free
+        foreach (GraphNode node in nodesAroundHort)
+        {
+            if (map.TileIsFree(node.GetX(), node.GetY()))
+            {
+                goalHolder.transform.position = graph.GetWorldPosition(node.GetX(), node.GetY());
+                break;
+            }
+        }
+        
+        return goalHolder.transform;
+    }
+    
     private Vector3 GetPosition()
     {
         return transform.position;
@@ -178,6 +376,11 @@ public class BotMovement : MonoBehaviour
     public void SetGraph(Graph graph)
     {
         this.graph = graph;
+    }
+
+    public void SetGoal(Transform goal)
+    {
+        this.goal = goal;
     }
 
     /// <summary>

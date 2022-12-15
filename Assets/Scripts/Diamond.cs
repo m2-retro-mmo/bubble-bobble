@@ -1,13 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class Diamond : MonoBehaviour
+public class Diamond : NetworkBehaviour
 {
+    private bool collected = false;
+
+    public bool GetCollected()
+    {
+        return collected;
+    }
+
+    public void drop()
+    {
+        collected = false;
+    }
+
+    [Server]
     public void collect()
     {
         Debug.Log("Collected");
-        // TODO: maybe play an animation here
-        Destroy(gameObject, 0);
+        // Destroy(gameObject, 1f);
+        // TODO: should take the diamond, instead of destroying itas
+        if (!collected)
+        {
+            Destroy(gameObject, 1f);
+            collected = true;
+        }
     }
 }

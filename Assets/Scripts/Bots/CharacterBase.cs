@@ -1,29 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Mirror;
 
-public class CharacterBase : MonoBehaviour
+
+public class CharacterBase : NetworkBehaviour
 {
-    protected bool holdsDiamond = false;
-    protected byte teamNumber = 1;
-    protected bool isCaptured = false;
+    [SyncVar] protected bool holdsDiamond = false;
+    [SyncVar] protected byte teamNumber = 1;
+    [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     protected SpriteRenderer spriteRenderer;
 
-    protected float bubbleBreakoutTime = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    /**
+   * is called when player | bot collides with another Collider2D
+   */
+    [ServerCallback]
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        // check collision of Player with other Game objects
+        switch (other.gameObject.tag)
+        {
+            case "Hort":
+                Hort hort = other.GetComponent("Hort") as Hort;
+                if (hort != null)
+                {
+                    Debug.Log("bot collided with hort");
+                    // put diamond into hort
+                    if (holdsDiamond && teamNumber == hort.team)
+                    {
+                        hort.AddDiamond();
+                        deliverDiamond();
+                    }
+                }
+                break;
+            case "Diamond":
+                // collect Diamond if possible
+                Diamond diamond = other.GetComponent<Diamond>() as Diamond;
+                if (!GetHoldsDiamond() && !diamond.GetCollected())
+                {
+                    diamond.collect();
+                    collectDiamond();
+                    Debug.Log("bot collided with diamond");
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -40,7 +75,7 @@ public class CharacterBase : MonoBehaviour
         // TODO: change appearance of dragon here
         holdsDiamond = true;
     }
-    
+
     /**
     * is triggered when the player got captured by a bubble
     */
@@ -49,7 +84,7 @@ public class CharacterBase : MonoBehaviour
         // TODO: change appearance to captured player
         isCaptured = true;
         spriteRenderer.color = Color.red;
-        Invoke("Uncapture", bubbleBreakoutTime);
+        Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
     }
 
     /**
@@ -60,6 +95,21 @@ public class CharacterBase : MonoBehaviour
         // TODO: change appearance to uncaptured player
         isCaptured = false;
         spriteRenderer.color = Color.white;
+    }
+
+    /**
+    * is called when the syncvar isCaptured is changed
+    */
+    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
+    {
+        if (newIsCaptured)
+        {
+            spriteRenderer.color = Color.white;
+        }
+        else
+        {
+            spriteRenderer.color = Color.red;
+        }
     }
 
     public void CaptureCharacter(int teamNumber)
