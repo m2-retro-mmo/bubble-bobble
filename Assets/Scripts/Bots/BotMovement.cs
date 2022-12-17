@@ -149,6 +149,7 @@ public class BotMovement : NetworkBehaviour
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
             }
+            // hier noch zusätzlich stopEverything falls goal weg
 
             yield return new WaitForSeconds(0.001f);
         }
@@ -219,7 +220,13 @@ public class BotMovement : NetworkBehaviour
         {
             Debug.Log("---Bubble is closer than shoot range");
 
-            Vector3 avoidPosition = CalculateAvoidPosition();
+            //Vector3 avoidPosition = CalculateAvoidPosition();
+
+            Vector3 oldBubblePos = goal.position;
+            yield return new WaitForSeconds(0.1f);
+            Vector3 newBubblePos = goal.position;
+
+            Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
@@ -264,8 +271,10 @@ public class BotMovement : NetworkBehaviour
         }
     }
 
-    private Vector3 CalculateAvoidPosition()
+    private Vector3 CalculateAvoidPosition(Vector3 oldBubblePos, Vector3 newBubblePos)
     {
+        Vector3 direction = newBubblePos - oldBubblePos;
+
         float rangeOffset = 2f;
         int xMin = (int)(transform.position.x - rangeOffset);
         int xMax = (int)(transform.position.x + rangeOffset);
