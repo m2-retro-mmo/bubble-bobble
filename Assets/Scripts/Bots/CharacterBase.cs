@@ -13,7 +13,6 @@ public class CharacterBase : NetworkBehaviour
 
     // Movement
     protected Rigidbody2D rb;
-    protected SpriteRenderer spriteRenderer;
     [SerializeField] protected float speed = 5f;
 
     // Animations
@@ -114,9 +113,7 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Capture()
     {
-        // TODO: change appearance to captured player
-        isCaptured = true;
-        spriteRenderer.color = Color.red;
+        SetIsCaptured(true);
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
     }
 
@@ -125,9 +122,7 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Uncapture()
     {
-        // TODO: change appearance to uncaptured player
-        isCaptured = false;
-        spriteRenderer.color = Color.white;
+        SetIsCaptured(false);
     }
 
     /**
@@ -135,14 +130,7 @@ public class CharacterBase : NetworkBehaviour
     */
     public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
     {
-        if (newIsCaptured)
-        {
-            spriteRenderer.color = Color.white;
-        }
-        else
-        {
-            spriteRenderer.color = Color.red;
-        }
+        SetIsCaptured(newIsCaptured);
     }
 
     public void CaptureCharacter(int teamNumber)

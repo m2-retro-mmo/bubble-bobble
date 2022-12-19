@@ -64,7 +64,6 @@ public class Bot : CharacterBase
 
     public void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         botMovement = GetComponent<BotMovement>();
     }
     [Server]

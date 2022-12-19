@@ -12,7 +12,6 @@ public class TestCharacterBase : MonoBehaviour
 
     // Movement
     protected Rigidbody2D rb;
-    protected SpriteRenderer spriteRenderer;
     [SerializeField] protected float speed = 5f;
 
     // Animations
@@ -112,9 +111,7 @@ public class TestCharacterBase : MonoBehaviour
     */
     public void Capture()
     {
-        // TODO: change appearance to captured player
-        isCaptured = true;
-        spriteRenderer.color = Color.red;
+        SetIsCaptured(true);
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
     }
 
@@ -123,24 +120,7 @@ public class TestCharacterBase : MonoBehaviour
     */
     public void Uncapture()
     {
-        // TODO: change appearance to uncaptured player
-        isCaptured = false;
-        spriteRenderer.color = Color.white;
-    }
-
-    /**
-    * is called when the syncvar isCaptured is changed
-    */
-    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
-    {
-        if (newIsCaptured)
-        {
-            spriteRenderer.color = Color.white;
-        }
-        else
-        {
-            spriteRenderer.color = Color.red;
-        }
+        SetIsCaptured(false);
     }
 
     public void CaptureCharacter(int teamNumber)
@@ -169,6 +149,7 @@ public class TestCharacterBase : MonoBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()

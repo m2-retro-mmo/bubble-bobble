@@ -33,24 +33,10 @@ public class Bubble : NetworkBehaviour
 
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            bool foundPlayer = collision.gameObject.TryGetComponent(out Player player); // TODO dieser Code muss schoener werden, rettet die Wale, findet Nemo
-            collision.gameObject.TryGetComponent(out Bot bot);
-            if (foundPlayer == true)
-            {
-                player.CaptureCharacter(teamNumber);
-            }
-            else
-            {
-                bot.CaptureCharacter(teamNumber);
-            }
-
-            // destroy bubble instant
-            Destroy(gameObject, 0);
+            collision.gameObject.SendMessage("CaptureCharacter", teamNumber);
         }
-        else if (collision.gameObject.tag == "Bubble")
-        {
-            Destroy(gameObject, 0.0f);
-        }
+        // destroy bubble instantly no matter which collision was detected
+        Destroy(gameObject, 0);
     }
 
     public int GetTeamNumber()
