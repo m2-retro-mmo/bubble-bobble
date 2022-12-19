@@ -7,17 +7,11 @@ public class Player : CharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private Rigidbody2D rb;
     private BoxCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
     public float collisionOffset = 0.1f;
-    public static float baseSpeed = 3f;
-    public float moveSpeed = 3f;
-
-    // animations
-    public Animator animator;
 
     // direction indicator
     public Vector2 mousePosWorld;
@@ -39,8 +33,6 @@ public class Player : CharacterBase
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
             cm.Follow = gameObject.transform;
         }
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        rb = GetComponent<Rigidbody2D>();
         col = gameObject.GetComponent<BoxCollider2D>();
     }
 
@@ -112,29 +104,21 @@ public class Player : CharacterBase
     */
     public bool MovePlayer(Vector2 direction)
     {
+        // Cast returns the number of collisions that would accour when moving n the dsired direction
         int count = rb.Cast(
             direction,
             movementFilter,
             castCollisions,
-            moveSpeed * Time.fixedDeltaTime + collisionOffset
+            speed * Time.fixedDeltaTime + collisionOffset
         );
 
-        if (count == 0)
+        if (count > 0)
         {
-            Vector2 moveVector = direction * moveSpeed * Time.fixedDeltaTime;
-
-            // set animation trigger
-            animator.SetFloat("Horizontal", direction.x);
-            animator.SetFloat("Vertical", direction.y);
-            animator.SetFloat("Speed", direction.sqrMagnitude);
-
-            // no collision
-            rb.MovePosition(rb.position + moveVector);
-            return true;
-        }
-        else
-        {
+            // Player can't move in the disired direction without collisions
             return false;
         }
+
+        Move(direction);
+        return true;
     }
 }

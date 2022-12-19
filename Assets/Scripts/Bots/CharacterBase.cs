@@ -4,24 +4,57 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
+    // States
     [SyncVar] protected bool holdsDiamond = false;
-    [SyncVar] protected byte teamNumber = 1;
     [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
-    protected SpriteRenderer spriteRenderer;
+    // Team
+    [SyncVar] protected byte teamNumber = 1;
 
+    // Movement
+    protected Rigidbody2D rb;
+    protected SpriteRenderer spriteRenderer;
+    protected float speed = 3f;
+
+    // Animations
+    protected Animator animator;
+
+    // Constants
     public const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
+    {
+        Vector2 target = targetNode;
+        Vector2 moveDirection = (target - rb.position);
+        moveDirection.Normalize();  // or maybe Normalize(moveDirection);
+        return moveDirection;
+    }
+
+    protected void Move(Vector2 direction)
+    {
+        Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
+        //SetAnimatorMovement(direction);
+        rb.MovePosition(rb.position + moveVector);
+    }
+
+    private void SetAnimatorMovement(Vector2 direction)
+    {
+        animator.SetFloat("Horizontal", direction.x);
+        animator.SetFloat("Vertical", direction.y);
+        animator.SetFloat("Speed", direction.sqrMagnitude);
     }
 
     /**
