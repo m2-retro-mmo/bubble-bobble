@@ -53,23 +53,24 @@ public class Bot : CharacterBase
     private BotMovement botMovement;
 
     private float prevPriorityValue = 0;
-    
+
     private Transform hort;
-    
+
     private const float PRIORITY_THRESHOLD = 1f;
 
     private const float REFRESH_RATE_GOAL = 10f;
 
     private const float REFRESH_RATE_BUBBLE = 0.5f;
-    
+
     public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         botMovement = GetComponent<BotMovement>();
     }
     [Server]
-    void Start()
+    public override void Start()
     {
+        base.Start();
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
         Debug.Log("bot diamond: " + GetHoldsDiamond().ToString());
 
@@ -152,7 +153,7 @@ public class Bot : CharacterBase
 
         // get all opponents who are holding a diamond
         Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
-        
+
         float opponentPriority = 1f;
 
         // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
@@ -173,7 +174,7 @@ public class Bot : CharacterBase
                 CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
-                if (!opponent.GetIsCaptured()) 
+                if (!opponent.GetIsCaptured())
                 {
                     // set the priority for the opponent interaction
                     interactionPriorities[(int)InteractionID.Opponent] += opponentPriority;
@@ -200,7 +201,7 @@ public class Bot : CharacterBase
         Collider2D[] teammateColliders = GetCollidersByTeamNumber(teamNumber);
 
         // if there are no teammates do nothing
-        if(teammateColliders.Length > 0)
+        if (teammateColliders.Length > 0)
         {
             // loop through all teammates
             foreach (Collider2D collider in teammateColliders)
@@ -233,9 +234,9 @@ public class Bot : CharacterBase
         // get all opponent bubbles in the area 
         Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble").Where(b => b.GetComponent<Bubble>().GetTeamNumber() == GetOpponentTeamNumber(teamNumber)).ToArray();
 
-        if(opponentBubbleColliders.Length > 0)
+        if (opponentBubbleColliders.Length > 0)
         {
-            foreach(Collider2D bubble in opponentBubbleColliders)
+            foreach (Collider2D bubble in opponentBubbleColliders)
             {
                 detectedBubble = true;
                 botMovement.SetGoal(bubble.transform);
@@ -292,7 +293,7 @@ public class Bot : CharacterBase
 
             // multiply interactionPriority with interactionWeight
             interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
-            
+
             // set the interactionGoal to hort
             interactionGoals[(int)InteractionID.Hort] = hort;
 
@@ -302,7 +303,7 @@ public class Bot : CharacterBase
             }
         }
     }
-    
+
     /// <summary>
     /// Gets the colliders around the bot by tag.
     /// orders by distance from the bot 
@@ -326,7 +327,7 @@ public class Bot : CharacterBase
     /// <returns>An array of Collider2DS.</returns>
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
-        Collider2D[] colliders = interactionColliders.Where(c => 
+        Collider2D[] colliders = interactionColliders.Where(c =>
             (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
             (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
         // order by distance
@@ -358,7 +359,7 @@ public class Bot : CharacterBase
             // check: did we find a new interactionId that is higher prioritized the old interaction
             if (foundInteractionID != interactionID && priorityDifference >= PRIORITY_THRESHOLD) // only change id if according priority is a given amount higher than priority of old id
             {
-                Debug.Log("all interaction priorities: \n" + 
+                Debug.Log("all interaction priorities: \n" +
                     "Opponent: " + interactionPriorities[0] + " \n" +
                     "Teammate: " + interactionPriorities[1] + " \n" +
                     "Diamond: " + interactionPriorities[2] + " \n" +

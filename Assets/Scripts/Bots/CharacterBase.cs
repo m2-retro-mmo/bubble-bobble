@@ -14,7 +14,7 @@ public class CharacterBase : NetworkBehaviour
     // Movement
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
-    protected float speed = 3f;
+    [SerializeField] protected float speed = 5f;
 
     // Animations
     protected Animator animator;
@@ -23,7 +23,7 @@ public class CharacterBase : NetworkBehaviour
     public const float BUBBLE_BREAKOUT_TIME = 5f;
 
     // Start is called before the first frame update
-    void Start()
+    public virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -46,7 +46,7 @@ public class CharacterBase : NetworkBehaviour
     protected void Move(Vector2 direction)
     {
         Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
-        //SetAnimatorMovement(direction);
+        SetAnimatorMovement(direction);
         rb.MovePosition(rb.position + moveVector);
     }
 

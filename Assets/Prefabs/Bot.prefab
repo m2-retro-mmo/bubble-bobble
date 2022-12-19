@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 4371296972761775127}
   - component: {fileID: 4599282645670559641}
   - component: {fileID: 5383834154187071568}
+  - component: {fileID: -2817528329491566970}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Bot
@@ -155,6 +156,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  speed: 5
   interactionID: 6
   foundInteraction: 0
   changedInteractionID: 0
@@ -174,6 +176,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  speed: 3
   interactionID: 5
   foundInteraction: 0
   changedInteractionID: 0
@@ -274,6 +277,26 @@ MonoBehaviour:
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!95 &-2817528329491566970
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570426636042546520}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3005f0f4ceebb1e4e8c47e2804afd938, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3159056796918937159
 GameObject:
   m_ObjectHideFlags: 0

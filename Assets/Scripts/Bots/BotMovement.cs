@@ -30,8 +30,9 @@ public class BotMovement : Bot
 
     private bool startedAvoidBubble = false;
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
 

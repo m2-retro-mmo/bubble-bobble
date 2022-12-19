@@ -365,6 +365,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  speed: 5
   directionIndicator: {fileID: 8755906793960408082}
   collisionOffset: 0.1
   mousePosWorld: {x: 0, y: 0}

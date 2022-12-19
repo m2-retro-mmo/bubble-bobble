@@ -22,8 +22,9 @@ public class Player : CharacterBase
     public float itemDuration = 0;
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
+        base.Start();
         if (isLocalPlayer)
         {
             cam.enabled = true;
