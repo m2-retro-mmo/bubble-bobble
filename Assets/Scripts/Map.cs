@@ -552,12 +552,14 @@ public class Map : NetworkBehaviour
             if (hasEastGroud) return northEastTile;
             if (hasWestGroud) return northWestTile;
             if (hasSouthWestGroud) return northWestTile;
+            if (hasSouthEastGroud) return northEastTile;
             return northTile;
         }
         if (hasEastGroud)
         {
             if (hasNorthGroud) return northEastTile;
             if (hasSouthGroud) return southEastTile;
+            if (hasNorthWestGroud) return northEastTile;
             if (hasSouthWestGroud) return southEastTile;
             return eastTile;
         }
@@ -574,6 +576,8 @@ public class Map : NetworkBehaviour
             if (hasNorthGroud) return northWestTile;
             if (hasSouthGroud) return southWestTile;
             if (hasNorthEastGroud) return northWestTile;
+            if (hasSouthEastGroud) return southWestTile;
+
             return westTile;
         }
 
