@@ -10220,6 +10220,11 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 76324334}
+    - target: {fileID: 1366732918332429948, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
+        type: 3}
+      propertyPath: teamNumber
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6811080500062580661, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: bubbleCount_text

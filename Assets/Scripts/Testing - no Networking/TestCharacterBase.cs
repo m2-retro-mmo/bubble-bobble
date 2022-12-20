@@ -8,7 +8,7 @@ public class TestCharacterBase : MonoBehaviour
     protected bool isCaptured = false;
 
     // Team
-    protected byte teamNumber = 1;
+    [SerializeField] protected byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;

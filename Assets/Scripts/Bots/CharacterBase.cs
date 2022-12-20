@@ -9,7 +9,7 @@ public class CharacterBase : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     // Team
-    [SyncVar] protected byte teamNumber = 1;
+    [SyncVar] [SerializeField] protected byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;

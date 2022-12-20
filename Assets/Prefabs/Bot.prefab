@@ -156,6 +156,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  teamNumber: 1
   speed: 5
   interactionID: 6
   foundInteraction: 0
@@ -176,6 +177,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  teamNumber: 0
   speed: 5
   interactionID: 5
   foundInteraction: 0
