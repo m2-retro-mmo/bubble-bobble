@@ -1,15 +1,14 @@
 using UnityEngine;
-using Mirror;
 
 
-public class CharacterBase : NetworkBehaviour
+public class TestCharacterBase : MonoBehaviour
 {
     // States
-    [SyncVar] protected bool holdsDiamond = false;
-    [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
+    protected bool holdsDiamond = false;
+    protected bool isCaptured = false;
 
     // Team
-    [SyncVar] [SerializeField] protected byte teamNumber = 1;
+    [SerializeField] protected byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -59,7 +58,6 @@ public class CharacterBase : NetworkBehaviour
     /**
    * is called when player | bot collides with another Collider2D
    */
-    [ServerCallback]
     private void OnTriggerStay2D(Collider2D other)
     {
         // check collision of Player with other Game objects
@@ -125,14 +123,6 @@ public class CharacterBase : NetworkBehaviour
         SetIsCaptured(false);
     }
 
-    /**
-    * is called when the syncvar isCaptured is changed
-    */
-    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
-    {
-        SetIsCaptured(newIsCaptured);
-    }
-
     public void CaptureCharacter(int teamNumber)
     {
         if (GetTeamNumber() != teamNumber)
@@ -159,6 +149,7 @@ public class CharacterBase : NetworkBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()

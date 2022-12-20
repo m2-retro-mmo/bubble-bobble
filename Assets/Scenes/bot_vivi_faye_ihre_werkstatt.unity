@@ -729,7 +729,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  playerPrefab: {fileID: 7145253158310846173, guid: 2976d6f155c9715e88592944d2614b65,
+  playerPrefab: {fileID: 8755906794819694821, guid: ce39a882ea9c34d438b9fee8dbe27a39,
     type: 3}
   hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
     type: 3}

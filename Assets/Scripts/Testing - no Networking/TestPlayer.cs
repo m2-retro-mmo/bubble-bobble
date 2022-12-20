@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using Cinemachine;
 
-public class Player : CharacterBase
+public class TestPlayer : TestCharacterBase
 {
     // Movement
     private Vector2 moveInput;
@@ -25,15 +24,11 @@ public class Player : CharacterBase
     public override void Start()
     {
         base.Start();
-        if (isLocalPlayer)
-        {
-            cam.enabled = true;
-            cam.GetComponent<Camera>().enabled = true;
-            cam.GetComponent<AudioListener>().enabled = true;
 
-            Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            cm.Follow = gameObject.transform;
-        }
+        cam.enabled = true;
+        cam.GetComponent<Camera>().enabled = true;
+        cam.GetComponent<AudioListener>().enabled = true;
+
         col = gameObject.GetComponent<BoxCollider2D>();
     }
 
@@ -68,7 +63,7 @@ public class Player : CharacterBase
     {
         if (Input.GetButton("Fire1"))
         {
-            GetComponent<Shooting>().CmdShootBubble();
+            GetComponent<TestShooting>().CmdShootBubble();
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
@@ -76,7 +71,6 @@ public class Player : CharacterBase
 
     private void FixedUpdate()
     {
-        if (!isLocalPlayer) return;
         if (!isCaptured)
         {
             bool success = MovePlayer(moveInput);
@@ -95,7 +89,6 @@ public class Player : CharacterBase
 
     private void LateUpdate()
     {
-        if (!isLocalPlayer) return;
         LookAtMouse();
     }
 
