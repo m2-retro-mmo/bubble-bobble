@@ -310,6 +310,10 @@ public class Map : NetworkBehaviour
                         (directions[(int)Direction.NORTH] == EnvironmentType.Ground && directions[(int)Direction.SOUTH] == EnvironmentType.Ground)
                         ||
                         (directions[(int)Direction.EAST] == EnvironmentType.Ground && directions[(int)Direction.WEST] == EnvironmentType.Ground)
+                        ||
+                        (directions[(int)Direction.NORTH] == EnvironmentType.Ground && directions[(int)Direction.WEST] == EnvironmentType.Ground && directions[(int)Direction.SOUTH_EAST] == EnvironmentType.Ground)
+                        ||
+                        (directions[(int)Direction.SOUTH] == EnvironmentType.Ground && directions[(int)Direction.WEST] == EnvironmentType.Ground && directions[(int)Direction.NORTH_EAST] == EnvironmentType.Ground)
                     )
                     {
                         floorEnvironment[x, y] = EnvironmentType.Ground;
@@ -547,24 +551,29 @@ public class Map : NetworkBehaviour
         {
             if (hasEastGroud) return northEastTile;
             if (hasWestGroud) return northWestTile;
+            if (hasSouthWestGroud) return northWestTile;
             return northTile;
         }
         if (hasEastGroud)
         {
             if (hasNorthGroud) return northEastTile;
             if (hasSouthGroud) return southEastTile;
+            if (hasSouthWestGroud) return southEastTile;
             return eastTile;
         }
         if (hasSouthGroud)
         {
             if (hasEastGroud) return southEastTile;
             if (hasWestGroud) return southWestTile;
+            if (hasNorthEastGroud) return southEastTile;
+            if (hasNorthWestGroud) return southWestTile;
             return southTile;
         }
         if (hasWestGroud)
         {
             if (hasNorthGroud) return northWestTile;
             if (hasSouthGroud) return southWestTile;
+            if (hasNorthEastGroud) return northWestTile;
             return westTile;
         }
 
