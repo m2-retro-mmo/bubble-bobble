@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
 /// <summary>
 /// The class of the Bubble object.
 /// </summary>
-public class Bubble : NetworkBehaviour
+public class TestBubble : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble will disappear")]
@@ -29,8 +28,6 @@ public class Bubble : NetworkBehaviour
     /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!isServer) return;
-
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
             collision.gameObject.SendMessage("CaptureCharacter", teamNumber);

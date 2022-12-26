@@ -7,14 +7,12 @@ using System.Linq;
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
 /// </summary>
-public class BotMovement : NetworkBehaviour
+public class BotMovement : Bot
 {
     [HideInInspector]
     public Transform goal;
-    
+
     private float shootRange = 200f;
-    
-    private float botSpeed = 3f;
 
     private Bot bot;
 
@@ -25,18 +23,19 @@ public class BotMovement : NetworkBehaviour
     private int currentIndex;
 
     private Transform directionIndicator;
-    
+
     private Graph graph;
 
     private GameObject goalHolder;
 
     private bool startedAvoidBubble = false;
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
-        
+
         // object holder for the transform of the goal if the interactionId is hort
         goalHolder = new GameObject();
         goalHolder.hideFlags = HideFlags.HideInHierarchy;
@@ -76,7 +75,7 @@ public class BotMovement : NetworkBehaviour
 
             bot.SetChangedInteractionID(false);
         }
-        if(goal != null)
+        if (goal != null)
         {
             LookAtGoal();
         }
@@ -147,7 +146,11 @@ public class BotMovement : NetworkBehaviour
                     Debug.Log("Bot Reached goal");
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+                //transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+
+
+                Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
+                Move(moveDirection);
             }
             // hier noch zusätzlich stopEverything falls goal weg
 
@@ -165,14 +168,14 @@ public class BotMovement : NetworkBehaviour
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
 
         CharacterBase opponent = goal.gameObject.GetComponent<CharacterBase>();
-        
+
         while (true)
         {
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
-            
+
             if (path != null)
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int) path[currentIndex].GetX(), (int) path[currentIndex].GetY());
+                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(transform.position, nextNode);
                 if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
                 {
@@ -183,7 +186,7 @@ public class BotMovement : NetworkBehaviour
                 {
                     GetComponent<Shooting>().ShootBubble();
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -200,19 +203,19 @@ public class BotMovement : NetworkBehaviour
             yield return new WaitForSeconds(0.001f);
         }
     }
-    
+
     IEnumerator AvoidOpponentBubble()
     {
         Debug.Log("---Avoid opponent bubble");
         startedAvoidBubble = true;
-        
-        if(goal == null)
+
+        if (goal == null)
         {
             Debug.Log("Goal is null");
             startedAvoidBubble = false;
             yield break;
         }
-        
+
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
@@ -253,7 +256,7 @@ public class BotMovement : NetworkBehaviour
                         StopEverything();
                         break;
                     }
-                    transform.position = Vector3.MoveTowards(transform.position, nextNode, botSpeed * Time.deltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
                 }
 
                 yield return new WaitForSeconds(0.001f);
@@ -264,7 +267,7 @@ public class BotMovement : NetworkBehaviour
         {
             Debug.Log("---Bubble is further away than shoot range");
             GetComponent<Shooting>().ShootBubble();
-            
+
             startedAvoidBubble = false;
             Debug.Log("Shot Bubble");
             StopEverything();
@@ -312,7 +315,7 @@ public class BotMovement : NetworkBehaviour
         bot.ResetBot(0f);
         path = null;
     }
-        
+
 
     /// <summary>
     /// Gets the euclidean distance.
@@ -344,7 +347,7 @@ public class BotMovement : NetworkBehaviour
     {
         Hort hort = bot.GetHort().GetComponent<Hort>();
         Map map = GameObject.Find("Map").GetComponent<Map>();
-        
+
         int x = (int)hortCenter.x;
         int y = (int)hortCenter.y;
         int xMin = x - (Hort.scale / 2 + 1);
@@ -373,15 +376,15 @@ public class BotMovement : NetworkBehaviour
                 break;
             }
         }
-        
+
         return goalHolder.transform;
     }
-    
+
     private Vector3 GetPosition()
     {
         return transform.position;
     }
-    
+
     public void SetGraph(Graph graph)
     {
         this.graph = graph;
