@@ -217,7 +217,7 @@ PrefabInstance:
     - target: {fileID: 2952005194902861936, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
       propertyPath: orthographic size
-      value: 18.345863
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
@@ -227,7 +227,7 @@ PrefabInstance:
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.18163681
+      value: 0.181633
       objectReference: {fileID: 0}
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
@@ -909,6 +909,11 @@ PrefabInstance:
       propertyPath: m_BoundingShape2D
       value: 
       objectReference: {fileID: 2091722763}
+    - target: {fileID: 7399693169999953571, guid: ff82fee9b48279985814c61788dc81e9,
+        type: 3}
+      propertyPath: m_Lens.OrthographicSize
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7399693169999953581, guid: ff82fee9b48279985814c61788dc81e9,
         type: 3}
       propertyPath: m_Name
