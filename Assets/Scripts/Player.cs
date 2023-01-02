@@ -33,6 +33,7 @@ public class Player : CharacterBase
 
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
             cm.Follow = gameObject.transform;
+            cm.m_Lens.OrthographicSize = 10;
         }
         col = gameObject.GetComponent<BoxCollider2D>();
     }
