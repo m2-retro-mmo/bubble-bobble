@@ -225,11 +225,11 @@ public class BotMovement : Bot
 
             //Vector3 avoidPosition = CalculateAvoidPosition();
 
-            Vector3 oldBubblePos = goal.position;
-            yield return new WaitForSeconds(0.1f);
-            Vector3 newBubblePos = goal.position;
+            //Vector3 oldBubblePos = goal.position;
+            //yield return new WaitForSeconds(0.1f);
+            //Vector3 newBubblePos = goal.position;
 
-            Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
+            Vector3 avoidPosition = CalculateAvoidPosition();
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
@@ -275,7 +275,7 @@ public class BotMovement : Bot
         }
     }
 
-    private Vector3 CalculateAvoidPosition(Vector3 oldBubblePos, Vector3 newBubblePos)
+    private Vector3 CalculateAvoidPosition()
     {
         //Vector3 optimalShoot = oldBubblePos - transform.position; 
         //float lengthOptimalShoot = optimalShoot.magnitude;
@@ -293,8 +293,6 @@ public class BotMovement : Bot
         //}
 
         //return shootDir;
-
-        Vector3 direction = newBubblePos - oldBubblePos;
 
         float rangeOffset = 2f;
         int xMin = (int)(transform.position.x - rangeOffset);
