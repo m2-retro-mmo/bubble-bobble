@@ -49,6 +49,7 @@ public class BotMovement : Bot
         if (bot.GetDetectedBubble() && !startedAvoidBubble)
         {
             Debug.Log("Bubble was detected - start avoiding");
+            bot.ResetBot(3f);
 
             path = null;
             graph.ResetGraph();
@@ -219,17 +220,22 @@ public class BotMovement : Bot
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 2000000f))// TODO: evtl hier den Bereich kleiner machen
         {
             Debug.Log("---Bubble is closer than shoot range");
 
-            //Vector3 avoidPosition = CalculateAvoidPosition();
+            Vector3 oldBubblePos = goal.position;
+            yield return new WaitForSeconds(0.01f);
+            if (goal == null)
+            {
+                Debug.Log("Goal is null");
+                startedAvoidBubble = false;
+                StopEverything();
+                yield break;
+            } 
+            Vector3 newBubblePos = goal.position;
 
-            //Vector3 oldBubblePos = goal.position;
-            //yield return new WaitForSeconds(0.1f);
-            //Vector3 newBubblePos = goal.position;
-
-            Vector3 avoidPosition = CalculateAvoidPosition();
+            Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
@@ -238,11 +244,18 @@ public class BotMovement : Bot
 
             while (true)
             {
+                if (goal == null)
+                {
+                    Debug.Log("Goal is null");
+                    startedAvoidBubble = false;
+                    StopEverything();
+                    yield break;
+                }
+                
                 float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
 
                 if (path != null)
                 {
-                    Debug.Log("dist to goal: " + distToGoal);
                     Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                     float distNextNode = GetEuclideanDistance(transform.position, nextNode);
                     if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
@@ -275,37 +288,51 @@ public class BotMovement : Bot
         }
     }
 
-    private Vector3 CalculateAvoidPosition()
+    private Vector3 CalculateAvoidPosition(Vector3 oldBubblePos, Vector3 newBubblePos)
     {
-        //Vector3 optimalShoot = oldBubblePos - transform.position; 
-        //float lengthOptimalShoot = optimalShoot.magnitude;
+        Vector3 optimalShoot = oldBubblePos - transform.position;
+        float lengthOptimalShoot = optimalShoot.magnitude;
 
-        //// calculate where the bubble will be with the length of the optimal shoot
-        //Vector3 shootDir = newBubblePos - oldBubblePos;
-        //// make sure the shootDir has the same length as the optimalShoot
-        //shootDir = shootDir.normalized * lengthOptimalShoot;
+        // calculate where the bubble will be with the length of the optimal shoot
+        Vector3 shootDir = newBubblePos - oldBubblePos;
+        // make sure the shootDir has the same length as the optimalShoot
+        shootDir = shootDir.normalized * lengthOptimalShoot;
 
-        //float distance = (optimalShoot + shootDir).magnitude;
+        float distance = (optimalShoot + shootDir).magnitude;
 
-        //if(distance <= 500f)
-        //{
-        //    Debug.Log("ausweichen_-----------------");
-        //}
+        if (distance <= 2f)
+        {
+            Debug.Log("ausweichen_-----------------");
+            // get othogonal vector to the shootDir
+            Vector3 orthogonal = new Vector3(-shootDir.y, shootDir.x, 0);
 
-        //return shootDir;
+            Debug.DrawLine(transform.position, transform.position + orthogonal, Color.red);
 
-        float rangeOffset = 2f;
-        int xMin = (int)(transform.position.x - rangeOffset);
-        int xMax = (int)(transform.position.x + rangeOffset);
-        int yMin = (int)(transform.position.y - rangeOffset);
-        int yMax = (int)(transform.position.y + rangeOffset);
+            Vector3 avoidVec = orthogonal + shootDir;
 
-        var random = new System.Random();
-        // get random x in range xMin to xMax
-        float x = random.Next(xMin, xMax);
-        float y = random.Next(yMin, yMax);
+            avoidVec = avoidVec.normalized;
 
-        return new Vector3(x, y, 0);
+            Vector3 goal = oldBubblePos + (5 * avoidVec);
+
+            Debug.DrawLine(transform.position, goal, Color.green);
+
+            return goal;
+        }
+
+        return transform.position; // TODO dieser code muss schöner werden
+
+        //float rangeOffset = 2f;
+        //int xMin = (int)(transform.position.x - rangeOffset);
+        //int xMax = (int)(transform.position.x + rangeOffset);
+        //int yMin = (int)(transform.position.y - rangeOffset);
+        //int yMax = (int)(transform.position.y + rangeOffset);
+
+        //var random = new System.Random();
+        //// get random x in range xMin to xMax
+        //float x = random.Next(xMin, xMax);
+        //float y = random.Next(yMin, yMax);
+
+        //return new Vector3(x, y, 0);
     }
 
     /// <summary>

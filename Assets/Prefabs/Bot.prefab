@@ -203,7 +203,7 @@ MonoBehaviour:
   bubblePrefab: {fileID: 8163775536198988558, guid: 1dabe89422e7da44dad33391978eaa55,
     type: 3}
   fireRate: 0.4
-  bubbleForce: 20
+  bubbleForce: 5
   bubbleCoolDownTime: 3
   bubbleCount_text: {fileID: 0}
 --- !u!114 &4371296972761775127
