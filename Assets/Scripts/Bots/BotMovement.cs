@@ -112,7 +112,7 @@ public class BotMovement : Bot
                 Debug.Log("Start follow hort");
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
-                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht fï¿½r hort geklappt
+                StartCoroutine(FollowGoal()); 
                 break;
             case InteractionID.Item:
                 Debug.Log("Start follow item");
@@ -152,7 +152,7 @@ public class BotMovement : Bot
                 Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
                 Move(moveDirection);
             }
-            // hier noch zusätzlich stopEverything falls goal weg
+            // hier noch zusï¿½tzlich stopEverything falls goal weg
 
             yield return new WaitForSeconds(0.001f);
         }
@@ -219,7 +219,7 @@ public class BotMovement : Bot
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 20000f)) // TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
         {
             Debug.Log("---Bubble is closer than shoot range");
 
@@ -234,6 +234,7 @@ public class BotMovement : Bot
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
             CalculatePathToGoal(avoidPosition);
+
 
             while (true)
             {
@@ -276,6 +277,23 @@ public class BotMovement : Bot
 
     private Vector3 CalculateAvoidPosition(Vector3 oldBubblePos, Vector3 newBubblePos)
     {
+        //Vector3 optimalShoot = oldBubblePos - transform.position; 
+        //float lengthOptimalShoot = optimalShoot.magnitude;
+
+        //// calculate where the bubble will be with the length of the optimal shoot
+        //Vector3 shootDir = newBubblePos - oldBubblePos;
+        //// make sure the shootDir has the same length as the optimalShoot
+        //shootDir = shootDir.normalized * lengthOptimalShoot;
+
+        //float distance = (optimalShoot + shootDir).magnitude;
+
+        //if(distance <= 500f)
+        //{
+        //    Debug.Log("ausweichen_-----------------");
+        //}
+
+        //return shootDir;
+
         Vector3 direction = newBubblePos - oldBubblePos;
 
         float rangeOffset = 2f;

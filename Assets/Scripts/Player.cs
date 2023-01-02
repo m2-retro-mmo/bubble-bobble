@@ -54,8 +54,8 @@ public class Player : CharacterBase
 
 
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
-        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+        directionIndicator.transform.position = (Vector2)playerCenter + lookDir.normalized * distanceFactor;
+        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector2 getCenterOfPlayer()
