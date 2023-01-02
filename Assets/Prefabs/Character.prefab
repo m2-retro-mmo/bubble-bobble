@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3065963813708832963}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 98.166534, y: -15.92, z: -322.2946}
+  m_LocalPosition: {x: 98.16655, y: -15.92, z: -322.2946}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -365,6 +365,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  teamNumber: 1
   speed: 5
   directionIndicator: {fileID: 8755906793960408082}
   collisionOffset: 0.1

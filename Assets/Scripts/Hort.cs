@@ -6,7 +6,7 @@ using Mirror;
 
 public class Hort : NetworkBehaviour
 {
-    [SyncVar (hook = nameof(OnDiamondsChanged))]
+    [SyncVar(hook = nameof(OnDiamondsChanged))]
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
@@ -21,13 +21,13 @@ public class Hort : NetworkBehaviour
 
     public void Awake()
     {
-        teamPoints_text = GameObject.Find("PointsTeam" + team.ToString() + "Value_Text").GetComponent<TextMeshProUGUI>();
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
     }
 
     public void init(byte teamNumber)
     {
         team = teamNumber;
+        teamPoints_text = GameObject.Find("PointsTeam" + team.ToString() + "Value_Text").GetComponent<TextMeshProUGUI>();
     }
 
     [Server]
@@ -50,7 +50,7 @@ public class Hort : NetworkBehaviour
         NetworkServer.Spawn(plusOne);
     }
 
-    public byte GetTeamNumber() 
+    public byte GetTeamNumber()
     {
         return team;
     }
