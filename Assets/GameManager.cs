@@ -96,7 +96,8 @@ public class GameManager : NetworkBehaviour
                 if (DEBUG_BOTS)
                 {
                     Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-                    bot.transform.position = playerPos + new Vector3(5, 5, 0);
+                    Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
+                    bot.transform.position = botPos;
                 }
                 else
                 {
@@ -118,5 +119,24 @@ public class GameManager : NetworkBehaviour
     void Update()
     {
         // TODO: if new player joined place player on the map
+    }
+
+    // helper function to get a random tile around the player (for debugging)
+    public Vector3 GetRandomTileAroundPlayer(int playerX, int playerY)
+    {
+        Vector3 botPos = new Vector3(-1, -1, 0);
+        bool foundTile = false;
+        while(!foundTile)
+        {
+            int x = Random.Range(playerX - 5, playerX + 5);
+            int y = Random.Range(playerY - 5, playerY + 5);
+            botPos.x = x;
+            botPos.y = y;
+            if(map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
+            {
+                foundTile = true;
+            }
+        }
+        return botPos;
     }
 }
