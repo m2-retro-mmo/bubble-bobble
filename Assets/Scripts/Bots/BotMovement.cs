@@ -274,7 +274,7 @@ public class BotMovement : Bot
         else
         {
             Debug.Log("---Bubble is further away than shoot range");
-            GetComponent<Shooting>().ShootBubble();
+            GetComponent<Shooting>().ShootBubble(); // TODO bubble schießt manchmal in falsche richtung
 
             Debug.Log("Shot Bubble");
             StopEverything();

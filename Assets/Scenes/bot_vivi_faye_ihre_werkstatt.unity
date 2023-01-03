@@ -217,7 +217,7 @@ PrefabInstance:
     - target: {fileID: 2952005194902861936, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
       propertyPath: orthographic size
-      value: 18.345863
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
@@ -227,7 +227,7 @@ PrefabInstance:
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.18163681
+      value: 0.181633
       objectReference: {fileID: 0}
     - target: {fileID: 2952005194902861937, guid: ac8cb72a5423f22c98b8a48f71abb8de,
         type: 3}
@@ -737,7 +737,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
   startGameWithBots: 1
-  DEBUG_BOTS: 1
+  DEBUG_BOTS: 0
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
   botNumber: 5

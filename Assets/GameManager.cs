@@ -76,13 +76,17 @@ public class GameManager : NetworkBehaviour
         {
             GameObject bots = new GameObject("Bots");
 
-            Graph graph = new Graph(map, true);
+            bool drawGraph = false;
 
             // spawn only one bot in debug mode
             if (DEBUG_BOTS)
             {
                 botNumber = 1;
+                drawGraph = true;
             }
+
+            Graph graph = new Graph(map, drawGraph);
+
 
             for (int i = 0; i < botNumber; i++)
             {
