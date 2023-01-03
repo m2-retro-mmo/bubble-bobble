@@ -293,72 +293,42 @@ public class BotMovement : Bot
         // make sure the shootDir has the same length as the optimalShoot
         shootDir = shootDir.normalized * lengthOptimalShoot;
 
-        // TODO: check distance to bot -> if bubble close avoid
-
         // POINT the point on shootDir at height of the bot
         Vector2 shootGoal = shootDir + oldBubblePos;
 
-        Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
-
-
-        // VECTOR 
-        Vector2 orthogonal = Vector2.Perpendicular(shootDir);
-
-        Vector2 orthoGoal = orthogonal + oldBubblePos;
-
-        // check if bot is on the same side of the shootDir vector as the orthoGoal
-        bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
-
-        if (!sameSide)
+        // avoid bubble if distance between bot and calculated shoot path is smaller than x
+        if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
         {
-            Debug.Log("bot is on the right of shootDir");
-            orthogonal = -orthogonal;
+            Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
+
+            // VECTOR 
+            Vector2 orthogonal = Vector2.Perpendicular(shootDir);
+
+            Vector2 orthoGoal = orthogonal + oldBubblePos;
+
+            // check if bot is on the same side of the shootDir vector as the orthoGoal
+            bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
+
+            if (!sameSide)
+            {
+                Debug.Log("bot is on the right of shootDir");
+                orthogonal = -orthogonal;
+            }
+
+            Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
+
+            Vector2 botGoal = orthogonal + shootGoal;
+
+            Debug.DrawLine(botPos, botGoal, Color.red, 5f);
+
+            // TODO check if goal is free tile
+            botGoal = GetFreeTileAroundPosition(botGoal);
+
+            // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
+
+            return botGoal;
         }
-
-        Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
-
-        Vector2 botGoal = orthogonal + shootGoal;
-
-        Debug.DrawLine(botPos, botGoal, Color.red, 5f);
-
-        // TODO check if goal is free tile
-
-        return botGoal;
-
-
-        //float distance = (optimalShoot + shootDir).magnitude;
-
-        //if (distance <= 2f)
-        //{
-        //    Debug.Log("ausweichen_-----------------");
-        //    // get othogonal vector to the shootDir
-        //    Vector2 orthogonal = new Vector3(-shootDir.y, shootDir.x, 0);
-
-        //    Debug.DrawLine(transform.position, botPos + orthogonal, Color.red);
-
-        //    Vector2 avoidVec = orthogonal + shootDir;
-
-        //    avoidVec = avoidVec.normalized;
-
-        //    Vector2 goal = oldBubblePos + (5 * avoidVec);
-
-        //    Debug.DrawLine(transform.position, goal, Color.green);
-
-        //    return goal;
-        //}
-
-        //float rangeOffset = 2f;
-        //int xMin = (int)(transform.position.x - rangeOffset);
-        //int xMax = (int)(transform.position.x + rangeOffset);
-        //int yMin = (int)(transform.position.y - rangeOffset);
-        //int yMax = (int)(transform.position.y + rangeOffset);
-
-        //var random = new System.Random();
-        //// get random x in range xMin to xMax
-        //float x = random.Next(xMin, xMax);
-        //float y = random.Next(yMin, yMax);
-
-        //return new Vector3(x, y, 0);
+        return transform.position;
     }
 
     // determines whether a point is left of a line
@@ -367,6 +337,55 @@ public class BotMovement : Bot
         //a = line point 1; b = line point 2; c = point
         return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
     }
+
+    public Vector2 GetFreeTileAroundPosition(Vector2 tile)
+    {
+        Map map = GameObject.Find("Map").GetComponent<Map>();
+        Vector2 freeTileAroundTile = tile;
+
+        int x = (int)tile.x;
+        int y = (int)tile.y;
+
+        if (map.TileIsFree(x, y))
+        {
+            return tile;
+        }
+
+        int offset = 1;
+
+        while (offset < 10) // TODO: evtl dieses Wert hochsetzen
+        {
+            int xMin = x - offset;
+            int xMax = x + offset;
+            int yMin = y - offset;
+            int yMax = y + offset;
+
+            List<GraphNode> nodesAroundTile = new List<GraphNode>();
+            for (int i = xMin; i <= xMax; i++)
+            {
+                for (int j = yMin; j <= yMax; j++)
+                {
+                    nodesAroundTile.Add(graph.GetNode(i, j));
+                }
+            }
+
+            // order nodes by distance to bot
+            nodesAroundTile = nodesAroundTile.OrderBy(node => Vector3.Distance(transform.position, graph.GetWorldPosition(node.GetX(), node.GetY()))).ToList();
+
+            // find closest node to bot that is free
+            foreach (GraphNode node in nodesAroundTile)
+            {
+                if (map.TileIsFree(node.GetX(), node.GetY()))
+                {
+                    freeTileAroundTile = graph.GetWorldPosition(node.GetX(), node.GetY());
+                    return freeTileAroundTile;
+                }
+            }
+            offset++;
+        }
+
+        return freeTileAroundTile;
+    } 
 
     /// <summary>
     /// Calculates the path to goal and resets the path index.
