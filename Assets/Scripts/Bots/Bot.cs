@@ -234,12 +234,15 @@ public class Bot : CharacterBase
 
         if (opponentBubbleColliders.Length > 0)
         {
-            Debug.Log("detected bbubbble");
             foreach (Collider2D bubble in opponentBubbleColliders)
             {
-                detectedBubble = true;
-                botMovement.SetGoal(bubble.transform);
-                Debug.Log("set goal to bubble");
+                if (!bubble.GetComponent<Bubble>().GetAvoidedByBot())
+                {
+                    detectedBubble = true;
+                    bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
+                    botMovement.SetGoal(bubble.transform);
+                    Debug.Log("set goal to bubble");
+                }
             }
         }
     }

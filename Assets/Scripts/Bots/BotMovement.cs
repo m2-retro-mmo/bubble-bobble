@@ -28,8 +28,6 @@ public class BotMovement : Bot
 
     private GameObject goalHolder;
 
-    private bool startedAvoidBubble = false;
-
     public override void Start()
     {
         base.Start();
@@ -46,7 +44,7 @@ public class BotMovement : Bot
         // return if not server
         if (!isServer) return;
 
-        if (bot.GetDetectedBubble() && !startedAvoidBubble)
+        if (bot.GetDetectedBubble())
         {
             Debug.Log("Bubble was detected - start avoiding");
             bot.ResetBot(3f);
@@ -83,7 +81,6 @@ public class BotMovement : Bot
 
         if (bot.GetIsCaptured())
         {
-            startedAvoidBubble = false;
             CancelInvoke();
             StopAllCoroutines();
             bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
@@ -208,12 +205,10 @@ public class BotMovement : Bot
     IEnumerator AvoidOpponentBubble()
     {
         Debug.Log("---Avoid opponent bubble");
-        startedAvoidBubble = true;
 
         if (goal == null)
         {
             Debug.Log("Goal is null");
-            startedAvoidBubble = false;
             yield break;
         }
 
@@ -229,7 +224,6 @@ public class BotMovement : Bot
             if (goal == null)
             {
                 Debug.Log("Goal is null");
-                startedAvoidBubble = false;
                 StopEverything();
                 yield break;
             } 
@@ -239,57 +233,51 @@ public class BotMovement : Bot
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
-            startedAvoidBubble = false; // TODO rausnehmen
-            bot.ResetBot(3f); // TODO rausnehmen
+            Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
 
-            //Debug.DrawLine(transform.position, avoidPosition, Color.red, 5f);
-
-            //    CalculatePathToGoal(avoidPosition);
+            CalculatePathToGoal(avoidPosition);
 
 
-            //    while (true)
-            //    {
-            //        if (goal == null)
-            //        {
-            //            Debug.Log("Goal is null");
-            //            startedAvoidBubble = false;
-            //            StopEverything();
-            //            yield break;
-            //        }
+            while (true)
+            {
+                if (goal == null)
+                {
+                    Debug.Log("Goal is null");
+                    StopEverything();
+                    yield break;
+                }
 
-            //        float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
+                float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
 
-            //        if (path != null)
-            //        {
-            //            Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-            //            float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-            //            if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
-            //            {
-            //                currentIndex++;
-            //            }
+                if (path != null)
+                {
+                    Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
+                    if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                    {
+                        currentIndex++;
+                    }
 
-            //            if (distToGoal <= 0.25f)
-            //            {
-            //                startedAvoidBubble = false;
-            //                Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
-            //                StopEverything();
-            //                break;
-            //            }
-            //            transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
-            //        }
+                    if (distToGoal <= 0.25f)
+                    {
+                        Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
+                        StopEverything();
+                        break;
+                    }
+                    transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                }
 
-            //        yield return new WaitForSeconds(0.001f);
-            //    }
-            //}
-            //// if the bubble is further away than shootRange shoot it 
-            //else
-            //{
-            //    Debug.Log("---Bubble is further away than shoot range");
-            //    GetComponent<Shooting>().ShootBubble();
+                yield return new WaitForSeconds(0.001f);
+            }
+        }
+        // if the bubble is further away than shootRange shoot it 
+        else
+        {
+            Debug.Log("---Bubble is further away than shoot range");
+            GetComponent<Shooting>().ShootBubble();
 
-            //    startedAvoidBubble = false;
-            //    Debug.Log("Shot Bubble");
-            //    StopEverything();
+            Debug.Log("Shot Bubble");
+            StopEverything();
         }
         }
 
@@ -358,8 +346,6 @@ public class BotMovement : Bot
 
         //    return goal;
         //}
-
-        return transform.position; // TODO dieser code muss schöner werden
 
         //float rangeOffset = 2f;
         //int xMin = (int)(transform.position.x - rangeOffset);
