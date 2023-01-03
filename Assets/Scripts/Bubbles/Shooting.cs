@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 
 /// <summary>
@@ -35,6 +36,10 @@ public class Shooting : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI bubbleCount_text;
 
+    private Image bubbleOne;
+    private Image bubbleTwo;
+    private Image bubbleThree;
+
     private GameObject character;
 
     private int maxBubbleCount = 3;
@@ -52,7 +57,13 @@ public class Shooting : NetworkBehaviour
 
         if (character.tag == "Player")
         {
-            bubbleCount_text = GameObject.Find("BubbleCountValue_Text").GetComponent<TextMeshProUGUI>();
+            // bubbleCount_text = GameObject.Find("BubbleCountValue_Text").GetComponent<TextMeshProUGUI>();
+            bubbleOne = GameObject.Find("FirstBobble").GetComponent<Image>();
+            bubbleOne.enabled = true;
+            bubbleTwo = GameObject.Find("SecondBobble").GetComponent<Image>();
+            bubbleTwo.enabled = true;
+            bubbleThree = GameObject.Find("ThirdBobble").GetComponent<Image>();
+            bubbleThree.enabled = true;
             ChangeBubbleCount_UI();
         }
     }
@@ -117,8 +128,9 @@ public class Shooting : NetworkBehaviour
         else
         {
             Debug.Log("No more bubbles");
-            if (character.tag == "Player")
-                StartCoroutine(BlinkBubbleCountText());
+            /*  Commented this out because i replaced bubble text with bubbles
+                if (character.tag == "Player")
+                StartCoroutine(BlinkBubbleCountText()); */
         }
     }
 
@@ -151,18 +163,37 @@ public class Shooting : NetworkBehaviour
     /// </summary>
     private void ChangeBubbleCount_UI()
     {
-        bubbleCount_text.fontStyle = FontStyles.Normal;
-        bubbleCount_text.text = bubbleCount.ToString();
+        // bubbleCount_text.fontStyle = FontStyles.Normal;
+        // bubbleCount_text.text = bubbleCount.ToString();
+        // TODO Show bubble count as bubbles
+        if (bubbleCount == 1) { 
+            bubbleOne.enabled = true;
+            bubbleTwo.enabled = false;
+            bubbleThree.enabled = false;
+        } else if (bubbleCount == 2) {
+            bubbleOne.enabled = true;
+            bubbleTwo.enabled = true;
+            bubbleThree.enabled = false;
+        } else if (bubbleCount == 3) {
+            bubbleOne.enabled = true;
+            bubbleTwo.enabled = true;
+            bubbleThree.enabled = true;
+        } else {
+            bubbleOne.enabled = false;
+            bubbleTwo.enabled = false;
+            bubbleThree.enabled = false;
+            // bubbleCount_text.text = "Keine Bubbles mehr!";
+        }
     }
 
     /// <summary>
     /// Blinks the bubble count text in the UI for a few seconds
     /// </summary>
     /// <returns>An IEnumerator.</returns>
-    private IEnumerator BlinkBubbleCountText()
+   /*  private IEnumerator BlinkBubbleCountText()
     {
         bubbleCount_text.fontStyle = FontStyles.Bold;
         yield return new WaitForSeconds(2f);
         bubbleCount_text.fontStyle = FontStyles.Normal;
-    }
+    } */
 }
