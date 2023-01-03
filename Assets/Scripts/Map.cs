@@ -189,7 +189,7 @@ public class Map : NetworkBehaviour
         }
         DrawTilemap();
         UpdateHortEnvironment();
-        PlaceObstacles();
+        //PlaceObstacles();
         PlaceDiamonds();
         //SetIsWalkableForObstacles();
         Vector2[] path = {
