@@ -108,6 +108,7 @@ public class Map : NetworkBehaviour
 {
     public Diamond diamondPrefab;
     public Hort hortPrefab;
+    public GameObject[] treePrefabs;
 
     public EnvironmentType[,] floorEnvironment;
     public Tilemap floorTilemap;
@@ -141,6 +142,7 @@ public class Map : NetworkBehaviour
     public Tile northWestAndSouthEast;
 
     private GameObject diamondParent;
+    private GameObject treeParent;
 
     public Boolean[,] isWalkable;
 
@@ -178,6 +180,7 @@ public class Map : NetworkBehaviour
             Destroy(diamondParent);
         }
         diamondParent = new GameObject("Diamonds");
+        treeParent = new GameObject("Trees");
 
         ran = new System.Random(generatorData.seed);
         GenerateNoiseGrid();
@@ -190,6 +193,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
+        PlaceTrees();
         PlaceDiamonds();
         //SetIsWalkableForObstacles();
         Vector2[] path = {
@@ -438,6 +442,25 @@ public class Map : NetworkBehaviour
                     Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                     item.transform.parent = diamondParent.transform;
                     NetworkServer.Spawn(item.gameObject);
+                }
+            }
+        }
+    }
+
+    void PlaceTrees()
+    {
+        BoundsInt bounds = floorTilemap.cellBounds;
+
+        for (int x = 0; x < bounds.size.x; x++)
+        {
+            for (int y = 0; y < bounds.size.y; y++)
+            {
+                if (TileIsFree(x, y) && ran.Next(1, 100) < 2)
+                {
+                    int randomTree = ran.Next(1, treePrefabs.Length);
+                    GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
+                    tree.transform.parent = treeParent.transform;
+                    NetworkServer.Spawn(tree.gameObject);
                 }
             }
         }

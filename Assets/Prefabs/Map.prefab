@@ -380,6 +380,10 @@ MonoBehaviour:
     type: 3}
   hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
     type: 3}
+  treePrefabs:
+  - {fileID: 2055102311959635369, guid: 9e7797bb065982d4497d030f065d6e2f, type: 3}
+  - {fileID: 2055102311959635369, guid: 7277dd75e907b27448ec1de08238d0bb, type: 3}
+  - {fileID: 2055102311959635369, guid: f681a54372d73d74785b9c9d4ac477e8, type: 3}
   floorTilemap: {fileID: 6831340143348627996}
   obstacleTilemap: {fileID: 6831340143538986265}
   floorTiles:
