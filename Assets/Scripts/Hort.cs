@@ -6,11 +6,11 @@ using Mirror;
 
 public class Hort : NetworkBehaviour
 {
-    [SyncVar (hook = nameof(OnDiamondsChanged))]
+    [SyncVar(hook = nameof(OnDiamondsChanged))]
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
-    public static byte scale = 7;
+    public static byte scale = 1;
 
     [Header("UI Text")]
 
@@ -50,7 +50,7 @@ public class Hort : NetworkBehaviour
         NetworkServer.Spawn(plusOne);
     }
 
-    public byte GetTeamNumber() 
+    public byte GetTeamNumber()
     {
         return team;
     }
