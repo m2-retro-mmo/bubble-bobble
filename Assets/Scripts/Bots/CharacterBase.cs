@@ -60,16 +60,16 @@ public class CharacterBase : NetworkBehaviour
    * is called when player | bot collides with another Collider2D
    */
     [ServerCallback]
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         // check collision of Player with other Game objects
         switch (other.gameObject.tag)
         {
             case "Hort":
-                Hort hort = other.GetComponent("Hort") as Hort;
+                Hort hort = other.gameObject.GetComponent("Hort") as Hort;
                 if (hort != null)
                 {
-                    Debug.Log("bot collided with hort");
+                    Debug.Log("character collided with hort");
                     // put diamond into hort
                     if (holdsDiamond && teamNumber == hort.team)
                     {
@@ -85,7 +85,7 @@ public class CharacterBase : NetworkBehaviour
                 {
                     diamond.collect();
                     collectDiamond();
-                    Debug.Log("bot collided with diamond");
+                    Debug.Log("character collided with diamond");
                 }
                 break;
             default:
