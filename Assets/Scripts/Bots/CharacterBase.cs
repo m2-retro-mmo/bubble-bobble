@@ -17,6 +17,7 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
+    [SerializeField] protected Material teamBMaterial;
 
     // Constants
     public const float BUBBLE_BREAKOUT_TIME = 5f;
@@ -26,12 +27,19 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        SetTeamColor();
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    void SetTeamColor(){
+        if (teamNumber != 1) {
+            GetComponent<Renderer>().material = teamBMaterial;
+        }
     }
 
     protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)

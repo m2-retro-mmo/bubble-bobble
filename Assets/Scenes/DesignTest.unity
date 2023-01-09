@@ -9841,21 +9841,11 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 76324334}
-    - target: {fileID: 1366732918332429948, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
-        type: 3}
-      propertyPath: holdsDiamond
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6811080500062580661, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: bubbleCount_text
       value: 
       objectReference: {fileID: 1397646525}
-    - target: {fileID: 8755906794819694822, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
     - target: {fileID: 8755906794819694823, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: m_RootOrder
@@ -10235,6 +10225,11 @@ PrefabInstance:
       propertyPath: teamNumber
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 1366732918332429948, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
+        type: 3}
+      propertyPath: teamBMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
     - target: {fileID: 6811080500062580661, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: bubbleCount_text
@@ -10244,7 +10239,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 62b2c28ededc43e469e7a387c4184f51, type: 2}
+      objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 8755906794819694823, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: m_RootOrder

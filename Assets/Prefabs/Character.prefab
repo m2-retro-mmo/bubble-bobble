@@ -61,7 +61,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 18.345863
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -365,8 +365,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  teamNumber: 1
+  teamNumber: 2
   speed: 5
+  teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
   directionIndicator: {fileID: 8755906793960408082}
   collisionOffset: 0.1
   mousePosWorld: {x: 0, y: 0}
