@@ -9851,6 +9851,11 @@ PrefabInstance:
       propertyPath: bubbleCount_text
       value: 
       objectReference: {fileID: 1397646525}
+    - target: {fileID: 8755906794819694822, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
     - target: {fileID: 8755906794819694823, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: m_RootOrder
