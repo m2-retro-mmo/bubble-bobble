@@ -9841,11 +9841,6 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 76324334}
-    - target: {fileID: 3371256874407906731, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6811080500062580661, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
         type: 3}
       propertyPath: bubbleCount_text
@@ -12486,38 +12481,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 913858025}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &959422769 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8755906794819694841, guid: f66400e2f1eb5ab48a71fb87e6af49d9,
-    type: 3}
-  m_PrefabInstance: {fileID: 113920404}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &959422778
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 959422769}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.40641022, y: -1.7332287}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 7.6, y: 8}
-    newSize: {x: 7.6, y: 8}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.4839935, y: 1.9516258}
-  m_EdgeRadius: 0
 --- !u!1001 &1044253283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13348,16 +13311,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3128419441306674631, guid: e7ae3c4d59eed114999c64874ea2b115,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3128419441306674631, guid: e7ae3c4d59eed114999c64874ea2b115,
-        type: 3}
-      propertyPath: m_SortingLayerID
-      value: -44025399
       objectReference: {fileID: 0}
     - target: {fileID: 3128419441306674633, guid: e7ae3c4d59eed114999c64874ea2b115,
         type: 3}
