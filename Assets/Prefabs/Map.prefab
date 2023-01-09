@@ -380,6 +380,10 @@ MonoBehaviour:
     type: 3}
   hortPrefab: {fileID: 3189583790749191374, guid: 1149a5c82f56d0b01b6946e80e7ba269,
     type: 3}
+  treePrefabs:
+  - {fileID: 2055102311959635369, guid: 9e7797bb065982d4497d030f065d6e2f, type: 3}
+  - {fileID: 2055102311959635369, guid: 7277dd75e907b27448ec1de08238d0bb, type: 3}
+  - {fileID: 2055102311959635369, guid: f681a54372d73d74785b9c9d4ac477e8, type: 3}
   floorTilemap: {fileID: 6831340143348627996}
   obstacleTilemap: {fileID: 6831340143538986265}
   floorTiles:
@@ -387,6 +391,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
   - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
+  - {fileID: 11400000, guid: 34303d25145ab104f8fabf97fe65552d, type: 2}
+  - {fileID: 11400000, guid: 57824cd7e1612d14090d617a256eca53, type: 2}
+  - {fileID: 11400000, guid: 1eb88b0997574584f9e6103018404c4c, type: 2}
+  - {fileID: 11400000, guid: fbde4feddd010b84a8e85a316d96b45e, type: 2}
   waterTile: {fileID: 11400000, guid: 179d21ad98546944b89dd263beebdaaf, type: 2}
   pillars:
   - {fileID: 11400000, guid: 3019b47c419fa62288f1ee69c4e08108, type: 2}
