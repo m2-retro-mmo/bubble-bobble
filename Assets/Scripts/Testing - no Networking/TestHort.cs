@@ -15,6 +15,7 @@ public class TestHort : MonoBehaviour
     private TextMeshProUGUI teamPoints_text;
 
     public GameObject plusOnePrefab;
+    private Vector3 plusOneSpawningOffset = new Vector3(0, 3, 0);
 
     public void Awake()
     {
@@ -41,7 +42,7 @@ public class TestHort : MonoBehaviour
 
     private void SpawnPlusOne()
     {
-        GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position, gameObject.transform.rotation);
+        GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position + plusOneSpawningOffset, gameObject.transform.rotation);
     }
 
     public byte GetTeamNumber()
