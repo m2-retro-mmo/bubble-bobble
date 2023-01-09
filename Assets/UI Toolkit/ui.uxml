@@ -23,4 +23,5 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:Label text="Fischerboy" display-tooltip-when-elided="true" name="PlayerName" style="font-size: 35px; margin-right: 10px;" />
 </ui:UXML>

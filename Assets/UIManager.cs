@@ -13,7 +13,9 @@ public class UIManager : MonoBehaviour
     Label labelPointsTeam1;
 
     Label ping;
+    Label playerName;
     VisualElement bubbleContainer;
+
 
     void OnEnable()
     {
@@ -31,7 +33,7 @@ public class UIManager : MonoBehaviour
 
         // ping label
         ping = root.Q("PingValue") as Label;
-
+        playerName = root.Q("PlayerName") as Label;
         // get bubble container
         bubbleContainer = root.Q("BubbleContainer") as VisualElement;
     }
@@ -41,6 +43,11 @@ public class UIManager : MonoBehaviour
     {
         SetPing(20);
         SetBubbleCount(3);
+    }
+
+    public void SetPlayerName(string name)
+    {
+        playerName.text = name;
     }
 
     public void SetBubbleCount(int count)
