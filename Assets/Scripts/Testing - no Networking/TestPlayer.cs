@@ -6,7 +6,7 @@ public class TestPlayer : TestCharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private BoxCollider2D col;
+    private PolygonCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
@@ -29,7 +29,7 @@ public class TestPlayer : TestCharacterBase
         cam.GetComponent<Camera>().enabled = true;
         cam.GetComponent<AudioListener>().enabled = true;
 
-        col = gameObject.GetComponent<BoxCollider2D>();
+        col = gameObject.GetComponent<PolygonCollider2D>();
     }
 
     private void LookAtMouse()

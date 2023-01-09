@@ -4,7 +4,7 @@ using UnityEngine;
 public class TestCharacterBase : MonoBehaviour
 {
     // States
-    protected bool holdsDiamond = false;
+    public bool holdsDiamond = false;
     protected bool isCaptured = false;
 
     // Team
@@ -58,16 +58,15 @@ public class TestCharacterBase : MonoBehaviour
     /**
    * is called when player | bot collides with another Collider2D
    */
-    private void OnTriggerStay2D(Collider2D other)
-    {
+    private void OnTriggerEnter2D(Collider2D other) {
         // check collision of Player with other Game objects
         switch (other.gameObject.tag)
         {
             case "Hort":
-                Hort hort = other.GetComponent("Hort") as Hort;
+                TestHort hort = other.gameObject.GetComponent("TestHort") as TestHort;
                 if (hort != null)
                 {
-                    Debug.Log("bot collided with hort");
+                    Debug.Log("character collided with hort");
                     // put diamond into hort
                     if (holdsDiamond && teamNumber == hort.team)
                     {
@@ -83,7 +82,7 @@ public class TestCharacterBase : MonoBehaviour
                 {
                     diamond.collect();
                     collectDiamond();
-                    Debug.Log("bot collided with diamond");
+                    Debug.Log("character collided with diamond");
                 }
                 break;
             default:

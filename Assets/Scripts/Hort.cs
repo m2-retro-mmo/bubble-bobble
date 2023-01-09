@@ -10,7 +10,7 @@ public class Hort : NetworkBehaviour
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
-    public static byte scale = 7;
+    public static byte scale = 1;
 
     [Header("UI Text")]
 
@@ -18,6 +18,7 @@ public class Hort : NetworkBehaviour
     private TextMeshProUGUI teamPoints_text;
 
     public GameObject plusOnePrefab;
+    private Vector3 plusOneSpawningOffset = new Vector3(0, 3, 0);
 
     public void Awake()
     {
@@ -46,7 +47,7 @@ public class Hort : NetworkBehaviour
     [Server]
     private void SpawnPlusOne()
     {
-        GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position, gameObject.transform.rotation);
+        GameObject plusOne = Instantiate(plusOnePrefab, gameObject.transform.position + plusOneSpawningOffset, gameObject.transform.rotation);
         NetworkServer.Spawn(plusOne);
     }
 
