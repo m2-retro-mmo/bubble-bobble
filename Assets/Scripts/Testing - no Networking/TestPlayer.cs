@@ -29,7 +29,15 @@ public class TestPlayer : TestCharacterBase
         cam.GetComponent<Camera>().enabled = true;
         cam.GetComponent<AudioListener>().enabled = true;
 
-        col = gameObject.GetComponent<PolygonCollider2D>();
+        col = gameObject.GetComponentInChildren<PolygonCollider2D>();
+
+        // Collider2D[] colliders = new Collider2D[2];
+        // int length = rb.GetAttachedColliders(colliders);
+        // Debug.LogWarning(length);
+        // Debug.LogWarning(colliders[0].isTrigger);
+        // Debug.LogWarning(colliders[1].isTrigger);
+
+
     }
 
     private void LookAtMouse()
