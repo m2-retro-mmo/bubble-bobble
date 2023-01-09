@@ -391,6 +391,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf6b59b7c1dad88438263b3160222715, type: 2}
   - {fileID: 11400000, guid: 76a0eb89921157e448ea699f93e95564, type: 2}
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
+  - {fileID: 11400000, guid: 34303d25145ab104f8fabf97fe65552d, type: 2}
+  - {fileID: 11400000, guid: 57824cd7e1612d14090d617a256eca53, type: 2}
+  - {fileID: 11400000, guid: 1eb88b0997574584f9e6103018404c4c, type: 2}
+  - {fileID: 11400000, guid: fbde4feddd010b84a8e85a316d96b45e, type: 2}
   waterTile: {fileID: 11400000, guid: 179d21ad98546944b89dd263beebdaaf, type: 2}
   pillars:
   - {fileID: 11400000, guid: 3019b47c419fa62288f1ee69c4e08108, type: 2}
