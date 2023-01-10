@@ -646,4 +646,9 @@ public class Map : NetworkBehaviour
     {
         return generatorData.hortLocations[teamNumber];
     }
+
+    public int GetHortScale()
+    {
+        return generatorData.hortScale;
+    }
 }

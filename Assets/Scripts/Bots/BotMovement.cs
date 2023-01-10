@@ -440,22 +440,33 @@ public class BotMovement : Bot
 
     private Transform GetFreeTileAroundHort(Vector2 hortCenter)
     {
-        Hort hort = bot.GetHort().GetComponent<Hort>();
         Map map = GameObject.Find("Map").GetComponent<Map>();
+        Hort hort = bot.GetHort().GetComponent<Hort>();
+        int hortScale = map.GetHortScale();
+
+        int radius = (int)hort.gameObject.GetComponent<CircleCollider2D>().radius;
 
         int x = (int)hortCenter.x;
         int y = (int)hortCenter.y;
-        int xMin = x - (Hort.scale / 2 + 1);
-        int xMax = x + (Hort.scale / 2 + 1);
-        int yMin = y - (Hort.scale / 2 + 1);
-        int yMax = y + (Hort.scale / 2 + 1);
+        int xMin = x - radius;
+        int xMax = x + radius;
+        int yMin = y - radius;
+        int yMax = y + radius;
 
         List<GraphNode> nodesAroundHort = new List<GraphNode>();
-        for (int i = xMin; i <= xMax; i++)
+        for (int i = xMin; i < xMax; i++)
         {
-            for (int j = yMin; j <= yMax; j++)
+            for (int j = yMin; j < yMax; j++)
             {
-                nodesAroundHort.Add(graph.GetNode(i, j));
+                double dx = i - x;
+                double dy = j - y;
+                double distanceSquared = dx * dx + dy * dy;
+
+                if (distanceSquared <= Mathf.Pow(radius, 2))
+                {
+                    nodesAroundHort.Add(graph.GetNode(i, j));
+                    graph.SetText(i, j, "hort");
+                }
             }
         }
 
