@@ -419,6 +419,11 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1108362006
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143348627993, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 21
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_TileAnchor.x
@@ -429,10 +434,20 @@ PrefabInstance:
       propertyPath: m_TileAnchor.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986278, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 21
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Name
       value: Map
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223154, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}

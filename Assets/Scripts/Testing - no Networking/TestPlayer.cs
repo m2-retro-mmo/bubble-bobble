@@ -10,6 +10,8 @@ public class TestPlayer : TestCharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
+    public GameObject shape;
+
     public float collisionOffset = 0.1f;
 
     // direction indicator
@@ -75,6 +77,8 @@ public class TestPlayer : TestCharacterBase
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
+
+        shape.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

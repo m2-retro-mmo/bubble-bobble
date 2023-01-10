@@ -9,7 +9,7 @@ public class CharacterBase : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     // Team
-    [SyncVar] [SerializeField] protected byte teamNumber = 1;
+    [SyncVar][SerializeField] protected byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -24,8 +24,8 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        rb = GetComponentInChildren<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -55,14 +55,29 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", direction.sqrMagnitude);
     }
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.LogWarning(other.collider.name);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        Debug.LogWarning(other.collider.name);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.LogWarning(other.name);
+    }
 
     /**
-   * is called when player | bot collides with another Collider2D
-   */
-    [ServerCallback]
+    * is called when player | bot collides with another Collider2D
+    */
     private void OnTriggerEnter2D(Collider2D other)
     {
         // check collision of Player with other Game objects
+        Debug.LogWarning("---" + other.name);
+
         switch (other.gameObject.tag)
         {
             case "Hort":

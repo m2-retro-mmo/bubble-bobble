@@ -11,6 +11,9 @@ public class Player : CharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
+    public GameObject shape;
+    public GameObject collidable;
+
     public float collisionOffset = 0.1f;
 
     // direction indicator
@@ -32,9 +35,13 @@ public class Player : CharacterBase
             cam.GetComponent<AudioListener>().enabled = true;
 
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            cm.Follow = gameObject.transform;
+            cm.Follow = collidable.transform;
         }
-        col = gameObject.GetComponent<BoxCollider2D>();
+        col = gameObject.GetComponentInChildren<BoxCollider2D>();
+
+        // LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        // movementFilter.SetLayerMask(layermask);
+        // movementFilter.useLayerMask = true;
     }
 
     private void LookAtMouse()
@@ -50,7 +57,6 @@ public class Player : CharacterBase
         // rotate the player 
         Vector2 lookDir = mousePosWorld - playerCenter;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
-
 
         // set position of direction indicator
         directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
@@ -72,6 +78,11 @@ public class Player : CharacterBase
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
+
+        // shape.transform.position = rb.transform.position;
+        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        rb2.transform.position = rb.transform.position;
+        cam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()
