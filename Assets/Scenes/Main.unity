@@ -422,7 +422,7 @@ PrefabInstance:
     - target: {fileID: 6831340143348627993, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Layer
-      value: 21
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
@@ -437,7 +437,7 @@ PrefabInstance:
     - target: {fileID: 6831340143538986278, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Layer
-      value: 21
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
@@ -447,7 +447,7 @@ PrefabInstance:
     - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Layer
-      value: 21
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223154, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
@@ -780,7 +780,7 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  startGameWithBots: 1
+  startGameWithBots: 0
   DEBUG_BOTS: 0
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
