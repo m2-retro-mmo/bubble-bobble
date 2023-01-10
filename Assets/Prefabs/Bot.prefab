@@ -128,7 +128,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.007229805, y: 0.643383}
+  m_Offset: {x: 0.0263443, y: 0.026565552}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -139,7 +139,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.4374294, y: 6.726593}
+  m_Size: {x: 3.7023163, y: 3.8121643}
   m_EdgeRadius: 0
 --- !u!114 &2694520938517084979
 MonoBehaviour:
@@ -203,7 +203,7 @@ MonoBehaviour:
   bubblePrefab: {fileID: 8163775536198988558, guid: 1dabe89422e7da44dad33391978eaa55,
     type: 3}
   fireRate: 0.4
-  bubbleForce: 20
+  bubbleForce: 5
   bubbleCoolDownTime: 3
   bubbleCount_text: {fileID: 0}
 --- !u!114 &4371296972761775127

@@ -33,6 +33,7 @@ public class Player : CharacterBase
 
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
             cm.Follow = gameObject.transform;
+            cm.m_Lens.OrthographicSize = 10;
         }
         col = gameObject.GetComponent<BoxCollider2D>();
     }
@@ -53,8 +54,8 @@ public class Player : CharacterBase
 
 
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
-        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+        directionIndicator.transform.position = (Vector2)playerCenter + lookDir.normalized * distanceFactor;
+        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector2 getCenterOfPlayer()
