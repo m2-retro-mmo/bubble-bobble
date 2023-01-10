@@ -39,6 +39,7 @@ public struct GeneratorData
     public int probabilityPillar;
     public int probabilityBushes;
     public int probabilityDecorations;
+    public int probabilityTrees;
     public float noiseDensity;
     public int iterations;
 
@@ -53,7 +54,8 @@ public struct GeneratorData
         probabilityObstaclesGeneral = 6;
         probabilityPillar = 20;
         probabilityBushes = 30;
-        probabilityDecorations = 50;
+        probabilityDecorations = 30;
+        probabilityTrees = 20;
         noiseDensity = 50;
         iterations = 3;
     }
@@ -108,6 +110,7 @@ public class Map : NetworkBehaviour
 {
     public Diamond diamondPrefab;
     public Hort hortPrefab;
+    public GameObject[] treePrefabs;
 
     public EnvironmentType[,] floorEnvironment;
     public Tilemap floorTilemap;
@@ -141,6 +144,7 @@ public class Map : NetworkBehaviour
     public Tile northWestAndSouthEast;
 
     private GameObject diamondParent;
+    private GameObject treeParent;
 
     public Boolean[,] isWalkable;
 
@@ -177,7 +181,12 @@ public class Map : NetworkBehaviour
         {
             Destroy(diamondParent);
         }
+        if (treeParent != null)
+        {
+            Destroy(treeParent);
+        }
         diamondParent = new GameObject("Diamonds");
+        treeParent = new GameObject("Trees");
 
         ran = new System.Random(generatorData.seed);
         GenerateNoiseGrid();
@@ -390,7 +399,7 @@ public class Map : NetworkBehaviour
                 // check if position is water 
                 if (TileIsFree(x, y) && ran.Next(0, 100) < 6)
                 {
-                    int randomValue = ran.Next(0, generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations);
+                    int randomValue = ran.Next(0, generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
                     if (randomValue < generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
@@ -411,7 +420,15 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
-
+                    }
+                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
+                    {
+                        int randomTree = ran.Next(1, treePrefabs.Length);
+                        GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
+                        tree.transform.parent = treeParent.transform;
+                        NetworkServer.Spawn(tree.gameObject);
+                        counter++;
+                        isWalkable[x, y] = false;
                     }
                     else
                     {
