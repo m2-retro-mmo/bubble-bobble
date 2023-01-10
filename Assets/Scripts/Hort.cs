@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Mirror;
+using UnityEngine.UIElements;
 
 public class Hort : NetworkBehaviour
 {
@@ -12,13 +13,13 @@ public class Hort : NetworkBehaviour
     public byte team = 1;
     public static byte scale = 1;
 
-    [Header("UI Text")]
+    private UIManager uIManager;
 
-    [SerializeField]
-    private TextMeshProUGUI teamPoints_text;
+    [Header("UI Text")]
 
     public GameObject plusOnePrefab;
     private Vector3 plusOneSpawningOffset = new Vector3(0, 3, 0);
+
 
     public void Awake()
     {
@@ -28,7 +29,7 @@ public class Hort : NetworkBehaviour
     public void init(byte teamNumber)
     {
         team = teamNumber;
-        teamPoints_text = GameObject.Find("PointsTeam" + team.ToString() + "Value_Text").GetComponent<TextMeshProUGUI>();
+        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
     }
 
     [Server]
@@ -36,12 +37,11 @@ public class Hort : NetworkBehaviour
     {
         diamonds++;
         SpawnPlusOne();
-        teamPoints_text.text = diamonds.ToString();
     }
 
     private void OnDiamondsChanged(int oldDiamonds, int newDiamonds)
     {
-        teamPoints_text.text = diamonds.ToString();
+        uIManager.AddTeamPoint(team);
     }
 
     [Server]
