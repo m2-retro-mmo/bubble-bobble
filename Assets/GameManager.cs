@@ -38,7 +38,7 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField]
     [Tooltip("The duration of a game")]
-    private float timeRemaining;
+    private float gameDuration;
     private bool timerIsRunning;
 
     private List<Hort> horts;
@@ -139,17 +139,17 @@ public class GameManager : NetworkBehaviour
     {
         if (timerIsRunning)
         {
-            if (timeRemaining > 0)
+            if (gameDuration > 0)
             {
-                timeRemaining -= Time.deltaTime;
-                uIManager.SetDuration(timeRemaining);
+                gameDuration -= Time.deltaTime;
+                uIManager.SetDuration(gameDuration);
             } else 
             {
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
                 timerIsRunning = false;
                 DetermineWinner(GetHorts());
-                // TODO: spiel beenden, display gewinnerteam
+                // TODO: spiel beenden, display gewinnerteam in ui
             }
         }
         // TODO: if new player joined place player on the map
@@ -187,7 +187,12 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        Debug.Log("The winner is " + winner.GetTeam() + " with " + winner.GetPoints() + "points!");
+        if (winner.GetPoints() == 0) 
+        {
+            Debug.Log("There is no winner!");
+        } else {
+            Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
+        }
     }
 
     public void SetHorts(List<Hort> horts)
