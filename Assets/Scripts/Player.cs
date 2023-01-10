@@ -39,9 +39,9 @@ public class Player : CharacterBase
         }
         col = gameObject.GetComponentInChildren<BoxCollider2D>();
 
-        // LayerMask layermask = LayerMask.GetMask("Player Move Collider");
-        // movementFilter.SetLayerMask(layermask);
-        // movementFilter.useLayerMask = true;
+        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        movementFilter.SetLayerMask(layermask);
+        movementFilter.useLayerMask = true;
     }
 
     private void LookAtMouse()
