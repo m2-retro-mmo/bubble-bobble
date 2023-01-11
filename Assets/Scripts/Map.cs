@@ -10,6 +10,7 @@ public enum EnvironmentType
     Ground,
     Water,
     Shelter,
+    Obstacle
     // Bridge
 }
 
@@ -388,7 +389,6 @@ public class Map : NetworkBehaviour
 
     // Step 7
     public void PlaceObstacles() // TODO this function sometimes returns cellBounds -1||-2 smaller than width and height
-
     {
         obstacleTilemap.ClearAllTiles();
         int counter = 0;
@@ -406,6 +406,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar)
                     {
@@ -413,6 +414,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations)
                     {
@@ -420,6 +422,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
                     {
@@ -429,6 +432,7 @@ public class Map : NetworkBehaviour
                         NetworkServer.Spawn(tree.gameObject);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else
                     {
