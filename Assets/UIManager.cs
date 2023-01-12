@@ -5,9 +5,6 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    private int pointsTeam0 = 0;
-    private int pointsTeam1 = 0;
-
     UIDocument document;
     Label labelPointsTeam0;
     Label labelPointsTeam1;
@@ -61,17 +58,15 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void AddTeamPoint(int team)
+    public void UpdateTeamPoints(int team, int points)
     {
         switch (team)
         {
             case 0:
-                pointsTeam0++;
-                labelPointsTeam0.text = pointsTeam0.ToString();
+                labelPointsTeam0.text = points.ToString();
                 break;
             case 1:
-                pointsTeam1++;
-                labelPointsTeam1.text = pointsTeam1.ToString();
+                labelPointsTeam1.text = points.ToString();
                 break;
             default:
                 Debug.LogWarning("Invalid Team given.");
