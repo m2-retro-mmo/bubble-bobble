@@ -18,9 +18,13 @@ public class CharacterBase : NetworkBehaviour
     // Animations
     protected Animator animator;
     [SerializeField] protected Material teamBMaterial;
+    [SerializeField] protected CaptureBubble chaptureBubblePrefab;
+    private CaptureBubble captureBubble;
+    public const string CAPTURED_LAYER = "CapturedPlayersLayer";
+    private string defaultLayer;
 
     // Constants
-    public const float BUBBLE_BREAKOUT_TIME = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 10f;
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -28,6 +32,7 @@ public class CharacterBase : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         SetTeamColor();
+        defaultLayer = LayerMask.LayerToName(gameObject.layer);
     }
 
     // Update is called once per frame
@@ -96,6 +101,15 @@ public class CharacterBase : NetworkBehaviour
                     Debug.Log("character collided with diamond");
                 }
                 break;
+            case "CaptureBubble":
+                // uncapture player if it's a teammate
+                Debug.Log("character collided with captured player");
+                TestCharacterBase capturedPlayer = other.gameObject.GetComponent<TestCaptureBubble>().player;
+                if (teamNumber == capturedPlayer.GetTeamNumber()){
+                    Debug.Log("captured player is a teammate -> uncapture");
+                    capturedPlayer.Uncapture();
+                }
+                break;
             default:
                 break;
         }
@@ -121,8 +135,26 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Capture()
     {
+        Debug.Log("Capture");
         SetIsCaptured(true);
+        SetPlayerLevel(CAPTURED_LAYER);
+        SpawnCaptureBubble();
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
+    }
+
+    private void SpawnCaptureBubble(){
+        captureBubble = Instantiate(chaptureBubblePrefab, transform.position, transform.rotation);
+        captureBubble.player = this;
+    }
+
+    private void DeleteCaptureBubble(){
+        Destroy(captureBubble.gameObject);
+    }
+
+    private void SetPlayerLevel(string levelname){
+        // player needs to be set to a level, that does not collide with anything, so that the captureBubble can take over all collisions with others
+
+        gameObject.layer = LayerMask.NameToLayer(levelname);
     }
 
     /**
@@ -130,7 +162,12 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Uncapture()
     {
-        SetIsCaptured(false);
+        if (isCaptured && captureBubble) {
+            Debug.Log("uncapture");
+            DeleteCaptureBubble();
+            SetPlayerLevel(defaultLayer);
+            SetIsCaptured(false);
+        }
     }
 
     /**
