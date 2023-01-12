@@ -137,46 +137,6 @@ public class Graph
         return GetNode(pos.x, pos.y);
     }
 
-    /*public Boolean[,] GetNonWalkableFields(Map map)
-    {
-        EnvironmentType[,] grid = map.floorEnvironment;
-        BoundsInt bounds = map.obstacleTilemap.cellBounds; //bounds Position: (0, 0, 0), Size: (99, 50, 1)
-        BoundsInt myBounds = new BoundsInt(Vector3Int.zero, new Vector3Int(width, height, 1));
-        Debug.Log("myBounds " + myBounds);
-        Debug.Log("bounds " + bounds);
-        TileBase[] tiles = map.obstacleTilemap.GetTilesBlock(myBounds);
-        Debug.Log("width: " + tiles.Length); // 4950
-        Debug.Log("product: " + width * height); // 5000
-
-        Boolean[,] nonWalkables = new Boolean[width, height];
-        int counter = 0;
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++) {
-                
-                if (grid[x, y] == EnvironmentType.Ground)
-                {
-                    nonWalkables[x, y] = false; // TODO EnvironmentType.Bridge
-                } 
-                else
-                {
-                   nonWalkables[x, y] = true;
-                }
-
-                // get the tile at the current position
-                TileBase obstacleTile = tiles[counter];
-                counter++;
-                if (obstacleTile != null)
-                {
-                    nonWalkables[x, y] = true; // komme hier nicht hin - Hilfe
-                    Debug.Log("ich setze ein obstacle");
-                }
-            }
-        }
-        Debug.Log("hello");
-        return nonWalkables;
-    }*/
-
     /// <summary>
     /// Gets the text  of the <param name="debugArray</param> at the given position.
     /// </summary>
