@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using System;
 
 public class Diamond : NetworkBehaviour
 {
@@ -10,21 +11,30 @@ public class Diamond : NetworkBehaviour
         return collected;
     }
 
-    public void drop()
+    public void SetCollected(bool collected)
+    {
+        this.collected = collected;
+    }
+
+    public void Drop()
     {
         collected = false;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.LogWarning(other.collider.name);
+    }
+
     [Server]
-    public void collect()
+    public void Collect()
     {
         Debug.Log("Collected");
         // Destroy(gameObject, 1f);
         // TODO: should take the diamond, instead of destroying itas
         if (!collected)
         {
-            Destroy(gameObject, 1f);
-            collected = true;
+            Destroy(gameObject, 0f);
         }
     }
 }

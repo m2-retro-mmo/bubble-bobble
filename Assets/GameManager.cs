@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using Mirror;
 
@@ -17,6 +18,8 @@ public class GameManager : NetworkBehaviour
     public Camera cam;
     public Camera minimapCam;
 
+    private UIManager uIManager;
+
     [SerializeField]
     [Tooltip("true if the game should run with bots")]
     private bool startGameWithBots;
@@ -32,6 +35,13 @@ public class GameManager : NetworkBehaviour
     [SerializeField]
     [Tooltip("The number of bots the game should start with")]
     private int botNumber;
+
+    [SerializeField]
+    [Tooltip("The duration of a game")]
+    private float gameDuration;
+    private bool timerIsRunning;
+
+    private List<Hort> horts;
 
     private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
     {
@@ -60,7 +70,8 @@ public class GameManager : NetworkBehaviour
             cam.GetComponent<Camera>().enabled = true;
             cam.GetComponent<AudioListener>().enabled = true;
         }
-        map.NewMap();
+        List<Hort> horts = map.NewMap();
+        SetHorts(horts);
 
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
@@ -75,13 +86,17 @@ public class GameManager : NetworkBehaviour
         {
             GameObject bots = new GameObject("Bots");
 
-            Graph graph = new Graph(map, true);
+            bool drawGraph = false;
 
             // spawn only one bot in debug mode
             if (DEBUG_BOTS)
             {
                 botNumber = 1;
+                drawGraph = true;
             }
+
+            Graph graph = new Graph(map, drawGraph);
+
 
             for (int i = 0; i < botNumber; i++)
             {
@@ -95,7 +110,8 @@ public class GameManager : NetworkBehaviour
                 if (DEBUG_BOTS)
                 {
                     Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-                    bot.transform.position = playerPos + new Vector3(5, 5, 0);
+                    Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
+                    bot.transform.position = botPos;
                 }
                 else
                 {
@@ -111,11 +127,80 @@ public class GameManager : NetworkBehaviour
 
         // register connection handler function
         NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
+
+        // handle playtime
+        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+        timerIsRunning = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (timerIsRunning)
+        {
+            if (gameDuration > 0)
+            {
+                gameDuration -= Time.deltaTime;
+                uIManager.SetDuration(gameDuration);
+            } else 
+            {
+                Debug.Log("Time is finished");
+                uIManager.SetDuration(0);
+                timerIsRunning = false;
+                DetermineWinner(GetHorts());
+                // TODO: spiel beenden, display gewinnerteam in ui
+            }
+        }
         // TODO: if new player joined place player on the map
+    }
+
+    // helper function to get a random tile around the player (for debugging)
+    public Vector3 GetRandomTileAroundPlayer(int playerX, int playerY)
+    {
+        Vector3 botPos = new Vector3(-1, -1, 0);
+        bool foundTile = false;
+        while(!foundTile)
+        {
+            int x = Random.Range(playerX - 5, playerX + 5);
+            int y = Random.Range(playerY - 5, playerY + 5);
+            botPos.x = x;
+            botPos.y = y;
+            if(map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
+            {
+                foundTile = true;
+            }
+        }
+        return botPos;
+    }
+
+    public void DetermineWinner(List<Hort> horts)
+    {
+        TeamPoints winner = new TeamPoints(0, 0);
+        foreach (Hort hort in horts) 
+        {
+            Debug.Log(hort.GetTeamPoints());
+            TeamPoints tp = hort.GetTeamPoints();
+            if (tp.GetPoints() > winner.GetPoints())
+            {
+                winner = tp;
+            }
+        }
+
+        if (winner.GetPoints() == 0) 
+        {
+            Debug.Log("There is no winner!");
+        } else {
+            Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
+        }
+    }
+
+    public void SetHorts(List<Hort> horts)
+    {
+        this.horts = horts;
+    }
+
+    public List<Hort> GetHorts() 
+    {
+        return this.horts;
     }
 }

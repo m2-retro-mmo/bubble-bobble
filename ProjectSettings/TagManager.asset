@@ -29,12 +29,12 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
   - CapturedPlayersLayer
-  - Layer 1
-  - Layer 2
-  - Layer 3
+  - Diamond
+  - Player Move Collider
+  - Player HitBox
+  - Bubble Layer
+  - 
   - 
   - 
   - 

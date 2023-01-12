@@ -11,6 +11,9 @@ public class Player : CharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
+    public GameObject shape;
+    public GameObject collidable;
+
     public float collisionOffset = 0.1f;
 
     // direction indicator
@@ -32,9 +35,17 @@ public class Player : CharacterBase
             cam.GetComponent<AudioListener>().enabled = true;
 
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            cm.Follow = gameObject.transform;
+            cm.Follow = shape.transform;
+            cm.m_Lens.OrthographicSize = 10;
         }
-        col = gameObject.GetComponent<BoxCollider2D>();
+        col = gameObject.GetComponentInChildren<BoxCollider2D>();
+
+        // TODO: try this but we need to change hierachy first
+        // col.gameObject.layer = LayerMask.GetMask("Player Move Collider");
+
+        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        movementFilter.SetLayerMask(layermask);
+        movementFilter.useLayerMask = true;
     }
 
     private void LookAtMouse()
@@ -51,16 +62,15 @@ public class Player : CharacterBase
         Vector2 lookDir = mousePosWorld - playerCenter;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
-
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
-        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+        directionIndicator.transform.position = (Vector2)playerCenter + lookDir.normalized * distanceFactor;
+        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector2 getCenterOfPlayer()
     {
         // player rigidbody is not the center of the player --> use rb.position and add the scaled offset from the collider (=0.825)
-        return rb.position + (col.offset * transform.localScale);
+        return rb.position + (col.offset * shape.transform.localScale);
     }
 
     // Update is called once per frame
@@ -72,6 +82,11 @@ public class Player : CharacterBase
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
+
+        // shape.transform.position = rb.transform.position;
+        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        rb2.transform.position = rb.transform.position;
+        cam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

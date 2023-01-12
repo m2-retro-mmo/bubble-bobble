@@ -28,8 +28,8 @@ public class TestCharacterBase : MonoBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        rb = GetComponentInChildren<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
         SetTeamColor();
         defaultLayer = LayerMask.LayerToName(gameObject.layer);
     }
@@ -56,6 +56,7 @@ public class TestCharacterBase : MonoBehaviour
 
     protected void Move(Vector2 direction)
     {
+
         Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
         SetAnimatorMovement(direction);
         rb.MovePosition(rb.position + moveVector);
@@ -71,7 +72,8 @@ public class TestCharacterBase : MonoBehaviour
     /**
    * is called when player | bot collides with another Collider2D
    */
-    private void OnTriggerEnter2D(Collider2D other) {
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         // check collision of Player with other Game objects
         switch (other.gameObject.tag)
         {
@@ -89,13 +91,15 @@ public class TestCharacterBase : MonoBehaviour
                 }
                 break;
             case "Diamond":
-                // collect Diamond if possible
+                // Collect Diamond if possible
                 Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!GetHoldsDiamond() && !diamond.GetCollected())
+                if (!holdsDiamond && !diamond.GetCollected())
                 {
-                    diamond.collect();
+                    diamond.SetCollected(true);
+                    diamond.Collect();
                     collectDiamond();
                     Debug.Log("character collided with diamond");
+                    
                 }
                 break;
             case "CaptureBubble":

@@ -16,6 +16,8 @@ public class Bubble : NetworkBehaviour
     [SerializeField]
     private int teamNumber = -1;
 
+    private bool avoidedByBot = false;
+
     private void Start()
     {
         // destroy bubble after 5 seconds if no Player was captured
@@ -47,5 +49,15 @@ public class Bubble : NetworkBehaviour
     public void SetTeamNumber(int teamNumber)
     {
         this.teamNumber = teamNumber;
+    }
+
+    public bool GetAvoidedByBot()
+    {
+        return avoidedByBot;
+    }
+
+    public void SetAvoidedByBot(bool avoided)
+    {
+        this.avoidedByBot = avoided;
     }
 }
