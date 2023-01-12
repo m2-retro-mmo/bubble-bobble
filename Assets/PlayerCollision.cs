@@ -10,6 +10,10 @@ public class PlayerCollision : MonoBehaviour
     {
         player = gameObject.GetComponentInParent<CharacterBase>();
     }
+
+    /**
+    * is called when player | bot collides with another Collider2D
+    */
     private void OnTriggerStay2D(Collider2D other)
     {
         switch (other.gameObject.tag)

@@ -780,11 +780,11 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  startGameWithBots: 0
+  startGameWithBots: 1
   DEBUG_BOTS: 0
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
-  botNumber: 5
+  botNumber: 2
 --- !u!4 &2103473425
 Transform:
   m_ObjectHideFlags: 0

@@ -55,58 +55,6 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", direction.sqrMagnitude);
     }
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        Debug.LogWarning(other.collider.name);
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        Debug.LogWarning(other.collider.name);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.LogWarning(other.name);
-    }
-
-    /**
-    * is called when player | bot collides with another Collider2D
-    */
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // check collision of Player with other Game objects
-        Debug.LogWarning("---" + other.name);
-
-        switch (other.gameObject.tag)
-        {
-            case "Hort":
-                Hort hort = other.gameObject.GetComponent("Hort") as Hort;
-                if (hort != null)
-                {
-                    Debug.Log("character collided with hort");
-                    // put diamond into hort
-                    if (holdsDiamond && teamNumber == hort.team)
-                    {
-                        hort.AddDiamond();
-                        deliverDiamond();
-                    }
-                }
-                break;
-            case "Diamond":
-                // collect Diamond if possible
-                Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!GetHoldsDiamond() && !diamond.GetCollected())
-                {
-                    diamond.collect();
-                    collectDiamond();
-                    Debug.Log("character collided with diamond");
-                }
-                break;
-            default:
-                break;
-        }
-    }
 
     /**
     * removes the diamonds from the users inventory
