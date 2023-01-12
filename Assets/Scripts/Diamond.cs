@@ -28,7 +28,7 @@ public class Diamond : NetworkBehaviour
         // TODO: should take the diamond, instead of destroying itas
         if (!collected)
         {
-            Destroy(gameObject, 1f);
+            Destroy(gameObject, 0f);
             collected = true;
         }
     }
