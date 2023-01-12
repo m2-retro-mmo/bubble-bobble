@@ -154,6 +154,7 @@ public class BotMovement : Bot
 
             yield return new WaitForSeconds(0.001f);
         }
+        StopEverything();
     }
 
     /// <summary>

@@ -268,7 +268,7 @@ public class Bot : CharacterBase
             foreach (Collider2D collider in diamondColliders)
             {
                 Diamond diamond = collider.gameObject.GetComponent<Diamond>();
-                // has a higher priority to collect a diamond
+                // has a higher priority to Collect a diamond
                 interactionPriorities[(int)InteractionID.Diamond] += 1f;
 
                 // multiply interactionPriority with interactionWeight
@@ -291,7 +291,7 @@ public class Bot : CharacterBase
         // only check for hort if the bot holds a diamond
         if (GetHoldsDiamond() && hort != null)
         {
-            // has a higher priority to drop diamond
+            // has a higher priority to Drop diamond
             interactionPriorities[(int)InteractionID.Hort] += 1f;
 
             // multiply interactionPriority with interactionWeight

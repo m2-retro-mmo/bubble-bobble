@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using System;
 
 public class Diamond : NetworkBehaviour
 {
@@ -10,7 +11,12 @@ public class Diamond : NetworkBehaviour
         return collected;
     }
 
-    public void drop()
+    public void SetCollected(bool collected)
+    {
+        this.collected = collected;
+    }
+
+    public void Drop()
     {
         collected = false;
     }
@@ -21,7 +27,7 @@ public class Diamond : NetworkBehaviour
     }
 
     [Server]
-    public void collect()
+    public void Collect()
     {
         Debug.Log("Collected");
         // Destroy(gameObject, 1f);
@@ -29,7 +35,6 @@ public class Diamond : NetworkBehaviour
         if (!collected)
         {
             Destroy(gameObject, 0f);
-            collected = true;
         }
     }
 }
