@@ -21,6 +21,10 @@
                     <ui:Label text="10ms" display-tooltip-when-elided="true" name="PingValue" style="font-size: 50px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:VisualElement />
+        </ui:VisualElement>
+        <ui:VisualElement style="height: 100px; flex-direction: row; justify-content: center;">
+            <ui:Label text="00:00" display-tooltip-when-elided="true" name="DurationValue" style="font-size: 30px; height: 40px; width: 86px; -unity-text-align: middle-center; white-space: nowrap;" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:Label text="Fischerboy" display-tooltip-when-elided="true" name="PlayerName" style="font-size: 35px; margin-right: 10px;" />

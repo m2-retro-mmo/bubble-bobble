@@ -159,7 +159,7 @@ public class Map : NetworkBehaviour
     private System.Random ran;
 
     [Server]
-    public void NewMap()
+    public List<Hort> NewMap()
     {
         generatorData = new GeneratorData(DateTime.Now.Millisecond);
         List<Hort> horts = new List<Hort>();
@@ -173,6 +173,7 @@ public class Map : NetworkBehaviour
             NetworkServer.Spawn(hort.gameObject);
         }
         BuildMap();
+        return(horts);
     }
 
     public void OnNewMap(GeneratorData oldData, GeneratorData newData)
