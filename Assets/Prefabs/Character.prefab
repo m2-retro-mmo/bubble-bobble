@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8169254547139600981}
   - component: {fileID: 3967187748034076877}
   - component: {fileID: 6237690012241322996}
+  - component: {fileID: 6243189679985552320}
   m_Layer: 0
   m_Name: Shape
   m_TagString: Untagged
@@ -80,6 +81,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 6.669342, y: 6.6621695}
   m_EdgeRadius: 0
+--- !u!114 &6243189679985552320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403649183340406875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 357abf5ccc4418656950620e25a9526c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3065963813708832963
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +225,7 @@ GameObject:
   - component: {fileID: 5314135511303204197}
   - component: {fileID: 8753017840775316469}
   - component: {fileID: 8710188040518108833}
-  m_Layer: 19
+  m_Layer: 0
   m_Name: Collideable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -565,6 +578,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  holdsDiamond: 0
   teamNumber: 1
   speed: 5
   directionIndicator: {fileID: 8755906793960408082}

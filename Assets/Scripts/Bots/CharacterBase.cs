@@ -5,11 +5,11 @@ using Mirror;
 public class CharacterBase : NetworkBehaviour
 {
     // States
-    [SyncVar] protected bool holdsDiamond = false;
+    [SyncVar] public bool holdsDiamond = false;
     [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     // Team
-    [SyncVar][SerializeField] protected byte teamNumber = 1;
+    [SyncVar][SerializeField] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -111,13 +111,13 @@ public class CharacterBase : NetworkBehaviour
     /**
     * removes the diamonds from the users inventory
     */
-    protected void deliverDiamond()
+    public void deliverDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = false;
     }
 
-    protected void collectDiamond()
+    public void collectDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = true;
