@@ -19,11 +19,12 @@ public class PlayerCollision : MonoBehaviour
         switch (other.gameObject.tag)
         {
             case "Diamond":
-                // collect Diamond if possible
+                // Collect Diamond if possible
                 Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                 if (!player.GetHoldsDiamond() && !diamond.GetCollected())
                 {
-                    diamond.collect();
+                    diamond.Collect();
+                    diamond.SetCollected(true);
                     player.collectDiamond();
                     Debug.Log("character collided with diamond");
                 }

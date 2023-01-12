@@ -78,13 +78,15 @@ public class TestCharacterBase : MonoBehaviour
                 }
                 break;
             case "Diamond":
-                // collect Diamond if possible
+                // Collect Diamond if possible
                 Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!GetHoldsDiamond() && !diamond.GetCollected())
+                if (!holdsDiamond && !diamond.GetCollected())
                 {
-                    diamond.collect();
+                    diamond.SetCollected(true);
+                    diamond.Collect();
                     collectDiamond();
                     Debug.Log("character collided with diamond");
+                    
                 }
                 break;
             default:
