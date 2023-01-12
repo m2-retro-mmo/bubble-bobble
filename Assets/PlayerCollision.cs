@@ -26,7 +26,6 @@ public class PlayerCollision : MonoBehaviour
                     diamond.Collect();
                     diamond.SetCollected(true);
                     player.collectDiamond();
-                    Debug.Log("character collided with diamond");
                 }
                 break;
 
@@ -34,7 +33,6 @@ public class PlayerCollision : MonoBehaviour
                 Hort hort = other.gameObject.GetComponent("Hort") as Hort;
                 if (hort != null)
                 {
-                    Debug.Log("character collided with hort");
                     // put diamond into hort
                     if (player.holdsDiamond && player.teamNumber == hort.team)
                     {
