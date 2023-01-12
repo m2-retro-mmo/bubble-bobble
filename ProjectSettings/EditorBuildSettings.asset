@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main.unity
     guid: 5595ce247eb2a4e918f8e1d67ddc6c78
   - enabled: 1
     path: Assets/Scenes/bot_vivi_faye_ihre_werkstatt.unity
-    guid: 46b1d7e36e27083f8a6be9e9750e9189
+    guid: de0ebe5319c5a444992e4cdc550b374e
   m_configObjects: {}

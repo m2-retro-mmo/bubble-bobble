@@ -166,7 +166,7 @@ public class BotMovement : Bot
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
 
-        CharacterBase opponent = goal.gameObject.GetComponent<CharacterBase>();
+        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>(); 
 
         while (true)
         {
@@ -183,7 +183,10 @@ public class BotMovement : Bot
 
                 if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
-                    GetComponent<Shooting>().ShootBubble();
+                    Debug.Log("SHOOOOOOT!");
+                    GetComponent<Shooting>().CmdShootBubble();
+                    StopEverything();
+                    break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
             }
@@ -194,8 +197,8 @@ public class BotMovement : Bot
 
             if (opponent.GetIsCaptured())
             {
-                StopEverything();
                 Debug.Log("Opponent captured");
+                StopEverything();
                 break;
             }
 

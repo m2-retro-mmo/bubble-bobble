@@ -36,7 +36,7 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; 
+    private float[] interactionWeights = new float[] {2, 0,0,0,0 };//{ 2, 5, 4, 3, 1 }; 
 
     private float[] interactionPriorities;
 
@@ -181,7 +181,7 @@ public class Bot : CharacterBase
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
 
                     // set the interactionGoal to the opponent
-                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform;
+                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform.Find("Shape").transform;
 
                     foundInteraction = true;
                     break;
