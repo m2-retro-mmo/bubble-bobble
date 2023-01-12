@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2055102311959635375}
   - component: {fileID: 2055102311959635374}
   - component: {fileID: -593619751277438422}
-  m_Layer: 20
+  m_Layer: 19
   m_Name: PF Props Tree T3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2055102312182832481}
   - component: {fileID: 2055102312182832480}
-  m_Layer: 20
+  m_Layer: 19
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6880079008103839969}
   - component: {fileID: 2444991506894079395}
-  m_Layer: 20
+  m_Layer: 19
   m_Name: Upper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -257,7 +257,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3490479345217099410}
   - component: {fileID: 4370152849212869299}
-  m_Layer: 20
+  m_Layer: 19
   m_Name: Lower
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -40,10 +40,8 @@ public class Player : CharacterBase
         }
         col = gameObject.GetComponentInChildren<BoxCollider2D>();
 
-        // TODO: try this but we need to change hierachy first
-        // col.gameObject.layer = LayerMask.GetMask("Player Move Collider");
-
-        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        string[] layers = { "Player Move Collider", "Ground", "Obstacles" };
+        LayerMask layermask = LayerMask.GetMask(layers);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
     }
