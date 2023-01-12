@@ -173,7 +173,7 @@ public class Map : NetworkBehaviour
             NetworkServer.Spawn(hort.gameObject);
         }
         BuildMap();
-        return(horts);
+        return (horts);
     }
 
     public void OnNewMap(GeneratorData oldData, GeneratorData newData)
@@ -199,6 +199,7 @@ public class Map : NetworkBehaviour
         GenerateNoiseGrid();
         ApplyCellularAutomaton();
         SetMapBoundries();
+        RemoveWaterAroundHort();
         for (int i = 0; i < 2; i++)
         {
             RemoveSingleTiles();
@@ -313,6 +314,33 @@ public class Map : NetworkBehaviour
     }
 
     // Step 4
+    void RemoveWaterAroundHort()
+    {
+        for (int i = 0; i < generatorData.hortLocations.Length; i++)
+        {
+            IntVec2 hortLocation = generatorData.hortLocations[i];
+
+            int hortX = hortLocation.x;
+            int hortY = hortLocation.y;
+
+            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f));
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1);
+            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f));
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1);
+
+            int offset = 3;
+            for (int x = startPositionX - offset; x < endPositionX + offset; x++)
+            {
+                for (int y = startPositionY - offset; y < endPositionY + offset; y++)
+                {
+                    floorEnvironment[x, y] = EnvironmentType.Ground;
+                }
+            }
+        }
+
+    }
+
+    // Step 5
     void RemoveSingleTiles()
     {
         for (int x = 0; x < generatorData.width; x++)
@@ -339,7 +367,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 5
+    // Step 6
     void DrawTilemap()
     {
         isWalkable = new Boolean[generatorData.width, generatorData.height];
@@ -364,7 +392,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 6
+    // Step 7
     public void UpdateHortEnvironment()
     {
         // iterate over generatorData.hortLocations with index
@@ -393,8 +421,8 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 7
-    public void PlaceObstacles() // TODO this function sometimes returns cellBounds -1||-2 smaller than width and height
+    // Step 8
+    public void PlaceObstacles()
     {
         obstacleTilemap.ClearAllTiles();
         int counter = 0;
@@ -449,11 +477,12 @@ public class Map : NetworkBehaviour
         }
     }
 
-    // Step 8 (Server only)
+    // Step 9 (Server only)
     [ServerCallback]
     void PlaceDiamonds(int count)
     {
-        while (count > 0) {
+        while (count > 0)
+        {
             int x = ran.Next(0, generatorData.width);
             int y = ran.Next(0, generatorData.height);
             if (TileIsFree(x, y))
@@ -470,7 +499,8 @@ public class Map : NetworkBehaviour
     IEnumerator RandomDiamondSpawning()
     {
         int diamondCount = GetDiamondCount();
-        if (diamondCount <= generatorData.diamondSpawnCount / 2 || diamondCount == 0) {
+        if (diamondCount <= generatorData.diamondSpawnCount / 2 || diamondCount == 0)
+        {
             int missingDiamondCount = generatorData.diamondSpawnCount - diamondCount;
             PlaceDiamonds(missingDiamondCount);
         }
@@ -668,7 +698,7 @@ public class Map : NetworkBehaviour
     {
         return generatorData.hortScale;
     }
-    
+
     public int GetDiamondCount()
     {
         return this.generatorData.diamondCount;
