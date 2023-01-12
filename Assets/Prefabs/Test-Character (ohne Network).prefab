@@ -264,6 +264,8 @@ MonoBehaviour:
   teamNumber: 1
   speed: 5
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
+  chaptureBubblePrefab: {fileID: 2862413946098944593, guid: 16ec00cae73151d4d9f4743e4475523f,
+    type: 3}
   directionIndicator: {fileID: 8755906793960408082}
   collisionOffset: 0.1
   mousePosWorld: {x: 0, y: 0}

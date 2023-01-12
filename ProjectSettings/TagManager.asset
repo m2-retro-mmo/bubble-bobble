@@ -10,6 +10,7 @@ TagManager:
   - Diamond
   - Bubble
   - Hort
+  - CaptureBubble
   layers:
   - Default
   - TransparentFX
@@ -30,7 +31,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - CapturedPlayersLayer
   - Layer 1
   - Layer 2
   - Layer 3
