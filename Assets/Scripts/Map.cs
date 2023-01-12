@@ -376,10 +376,10 @@ public class Map : NetworkBehaviour
             int hortY = hortLocation.y;
 
             int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f));
-            int startPositionY = (int)Math.Ceiling(hortY - (generatorData.hortScale / 2f));
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1);
             //Debug.Log(startPositionX);
             int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f));
-            int endPositionY = (int)Math.Ceiling(hortY + (generatorData.hortScale / 2f));
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1);
             //Debug.Log(endPositionX);
 
             for (int x = startPositionX; x < endPositionX; x++)
@@ -664,6 +664,11 @@ public class Map : NetworkBehaviour
         return generatorData.hortLocations[teamNumber];
     }
 
+    public int GetHortScale()
+    {
+        return generatorData.hortScale;
+    }
+    
     public int GetDiamondCount()
     {
         return this.generatorData.diamondCount;
