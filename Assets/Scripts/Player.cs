@@ -35,7 +35,8 @@ public class Player : CharacterBase
             cam.GetComponent<AudioListener>().enabled = true;
 
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            cm.Follow = collidable.transform;
+            cm.Follow = shape.transform;
+            cm.m_Lens.OrthographicSize = 10;
         }
         col = gameObject.GetComponentInChildren<BoxCollider2D>();
 
@@ -62,14 +63,14 @@ public class Player : CharacterBase
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
-        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+        directionIndicator.transform.position = (Vector2)playerCenter + lookDir.normalized * distanceFactor;
+        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector2 getCenterOfPlayer()
     {
         // player rigidbody is not the center of the player --> use rb.position and add the scaled offset from the collider (=0.825)
-        return rb.position + (col.offset * transform.localScale);
+        return rb.position + (col.offset * shape.transform.localScale);
     }
 
     // Update is called once per frame

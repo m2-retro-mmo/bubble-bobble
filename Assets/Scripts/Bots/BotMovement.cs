@@ -28,8 +28,6 @@ public class BotMovement : Bot
 
     private GameObject goalHolder;
 
-    private bool startedAvoidBubble = false;
-
     public override void Start()
     {
         base.Start();
@@ -46,9 +44,10 @@ public class BotMovement : Bot
         // return if not server
         if (!isServer) return;
 
-        if (bot.GetDetectedBubble() && !startedAvoidBubble)
+        if (bot.GetDetectedBubble())
         {
             Debug.Log("Bubble was detected - start avoiding");
+            bot.ResetBot(3f);
 
             path = null;
             graph.ResetGraph();
@@ -82,7 +81,6 @@ public class BotMovement : Bot
 
         if (bot.GetIsCaptured())
         {
-            startedAvoidBubble = false;
             CancelInvoke();
             StopAllCoroutines();
             bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
@@ -112,7 +110,7 @@ public class BotMovement : Bot
                 Debug.Log("Start follow hort");
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
-                StartCoroutine(FollowGoal()); // TODO: path berechnung hat nicht f�r hort geklappt
+                StartCoroutine(FollowGoal()); 
                 break;
             case InteractionID.Item:
                 Debug.Log("Start follow item");
@@ -152,6 +150,7 @@ public class BotMovement : Bot
                 Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
                 Move(moveDirection);
             }
+            // hier noch zus�tzlich stopEverything falls goal weg
 
             yield return new WaitForSeconds(0.001f);
         }
@@ -206,35 +205,52 @@ public class BotMovement : Bot
     IEnumerator AvoidOpponentBubble()
     {
         Debug.Log("---Avoid opponent bubble");
-        startedAvoidBubble = true;
 
         if (goal == null)
         {
             Debug.Log("Goal is null");
-            startedAvoidBubble = false;
             yield break;
         }
 
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 20000f)) // TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 2000000f))// TODO: evtl hier den Bereich kleiner machen
         {
             Debug.Log("---Bubble is closer than shoot range");
 
-            Vector3 avoidPosition = CalculateAvoidPosition();
+            Vector3 oldBubblePos = goal.position;
+            yield return new WaitForSeconds(0.01f);
+            if (goal == null)
+            {
+                Debug.Log("Goal is null");
+                StopEverything();
+                yield break;
+            } 
+            Vector3 newBubblePos = goal.position;
+
+            Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
             Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
+            Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
+
             CalculatePathToGoal(avoidPosition);
+
 
             while (true)
             {
+                if (goal == null)
+                {
+                    Debug.Log("Goal is null");
+                    StopEverything();
+                    yield break;
+                }
+
                 float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
 
                 if (path != null)
                 {
-                    Debug.Log("dist to goal: " + distToGoal);
                     Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                     float distNextNode = GetEuclideanDistance(transform.position, nextNode);
                     if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
@@ -244,7 +260,6 @@ public class BotMovement : Bot
 
                     if (distToGoal <= 0.25f)
                     {
-                        startedAvoidBubble = false;
                         Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
                         StopEverything();
                         break;
@@ -259,29 +274,118 @@ public class BotMovement : Bot
         else
         {
             Debug.Log("---Bubble is further away than shoot range");
-            GetComponent<Shooting>().ShootBubble();
+            GetComponent<Shooting>().ShootBubble(); // TODO bubble schießt manchmal in falsche richtung
 
-            startedAvoidBubble = false;
             Debug.Log("Shot Bubble");
             StopEverything();
         }
-    }
+        }
 
-    private Vector3 CalculateAvoidPosition()
+    private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
     {
-        float rangeOffset = 2f;
-        int xMin = (int)(transform.position.x - rangeOffset);
-        int xMax = (int)(transform.position.x + rangeOffset);
-        int yMin = (int)(transform.position.y - rangeOffset);
-        int yMax = (int)(transform.position.y + rangeOffset);
+        Vector2 botPos = new Vector2(transform.position.x, transform.position.y);
+        // VECTOR
+        Vector2 optimalShoot = oldBubblePos - botPos;
+        float lengthOptimalShoot = optimalShoot.magnitude;
 
-        var random = new System.Random();
-        // get random x in range xMin to xMax
-        float x = random.Next(xMin, xMax);
-        float y = random.Next(yMin, yMax);
+        // VECTOR calculate where the bubble will be with the length of the optimal shoot
+        Vector2 shootDir = newBubblePos - oldBubblePos;
+        // make sure the shootDir has the same length as the optimalShoot
+        shootDir = shootDir.normalized * lengthOptimalShoot;
 
-        return new Vector3(x, y, 0);
+        // POINT the point on shootDir at height of the bot
+        Vector2 shootGoal = shootDir + oldBubblePos;
+
+        // avoid bubble if distance between bot and calculated shoot path is smaller than x
+        if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
+        {
+            Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
+
+            // VECTOR 
+            Vector2 orthogonal = Vector2.Perpendicular(shootDir);
+
+            Vector2 orthoGoal = orthogonal + oldBubblePos;
+
+            // check if bot is on the same side of the shootDir vector as the orthoGoal
+            bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
+
+            if (!sameSide)
+            {
+                Debug.Log("bot is on the right of shootDir");
+                orthogonal = -orthogonal;
+            }
+
+            Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
+
+            Vector2 botGoal = orthogonal + shootGoal;
+
+            Debug.DrawLine(botPos, botGoal, Color.red, 5f);
+
+            // TODO check if goal is free tile
+            botGoal = GetFreeTileAroundPosition(botGoal);
+
+            // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
+
+            return botGoal;
+        }
+        return transform.position;
     }
+
+    // determines whether a point is left of a line
+    public bool IsLeft(Vector2 a, Vector2 b, Vector2 c)
+    {
+        //a = line point 1; b = line point 2; c = point
+        return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
+    }
+
+    public Vector2 GetFreeTileAroundPosition(Vector2 tile)
+    {
+        Map map = GameObject.Find("Map").GetComponent<Map>();
+        Vector2 freeTileAroundTile = tile;
+
+        int x = (int)tile.x;
+        int y = (int)tile.y;
+
+        if (map.TileIsFree(x, y))
+        {
+            return tile;
+        }
+
+        int offset = 1;
+
+        while (offset < 10) // TODO: evtl dieses Wert hochsetzen
+        {
+            int xMin = x - offset;
+            int xMax = x + offset;
+            int yMin = y - offset;
+            int yMax = y + offset;
+
+            List<GraphNode> nodesAroundTile = new List<GraphNode>();
+            for (int i = xMin; i <= xMax; i++)
+            {
+                for (int j = yMin; j <= yMax; j++)
+                {
+                    nodesAroundTile.Add(graph.GetNode(i, j));
+                }
+            }
+
+            // order nodes by distance to bot
+            nodesAroundTile = nodesAroundTile.OrderBy(node => Vector3.Distance(transform.position, graph.GetWorldPosition(node.GetX(), node.GetY()))).ToList();
+
+            // find closest node to bot that is free
+            foreach (GraphNode node in nodesAroundTile)
+            {
+                if (map.TileIsFree(node.GetX(), node.GetY()))
+                {
+                    freeTileAroundTile = graph.GetWorldPosition(node.GetX(), node.GetY());
+                    return freeTileAroundTile;
+                }
+            }
+            offset++;
+        }
+
+        return freeTileAroundTile;
+    } 
 
     /// <summary>
     /// Calculates the path to goal and resets the path index.

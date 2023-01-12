@@ -36,7 +36,7 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; // TODO: opponent bubble rausnehmen
+    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; 
 
     private float[] interactionPriorities;
 
@@ -236,8 +236,13 @@ public class Bot : CharacterBase
         {
             foreach (Collider2D bubble in opponentBubbleColliders)
             {
-                detectedBubble = true;
-                botMovement.SetGoal(bubble.transform);
+                if (!bubble.GetComponent<Bubble>().GetAvoidedByBot())
+                {
+                    detectedBubble = true;
+                    bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
+                    botMovement.SetGoal(bubble.transform);
+                    Debug.Log("set goal to bubble");
+                }
             }
         }
     }
