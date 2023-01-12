@@ -15,6 +15,11 @@ public class Diamond : NetworkBehaviour
         collected = false;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.LogWarning(other.collider.name);
+    }
+
     [Server]
     public void collect()
     {
