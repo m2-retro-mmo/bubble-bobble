@@ -107,7 +107,7 @@ public class BotMovement : Bot
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
-                Debug.Log("Start follow hort");
+                Debug.Log("Start follow hort"); 
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
                 StartCoroutine(FollowGoal()); 
@@ -465,7 +465,6 @@ public class BotMovement : Bot
                 if (distanceSquared <= Mathf.Pow(radius, 2))
                 {
                     nodesAroundHort.Add(graph.GetNode(i, j));
-                    graph.SetText(i, j, "hort");
                 }
             }
         }
