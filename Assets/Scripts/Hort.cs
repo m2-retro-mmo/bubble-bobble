@@ -5,6 +5,27 @@ using TMPro;
 using Mirror;
 using UnityEngine.UIElements;
 
+public class TeamPoints {
+    private int team;
+    private int points;
+
+    public TeamPoints(int team, int points)
+    {
+        this.team = team;
+        this.points = points;
+    }
+
+    public int GetTeam()
+    {
+        return team;
+    }
+
+    public int GetPoints()
+    {
+        return points;
+    }
+}
+
 public class Hort : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnDiamondsChanged))]
@@ -19,7 +40,6 @@ public class Hort : NetworkBehaviour
 
     public GameObject plusOnePrefab;
     private Vector3 plusOneSpawningOffset = new Vector3(0, 3, 0);
-
 
     public void Awake()
     {
@@ -54,5 +74,16 @@ public class Hort : NetworkBehaviour
     public byte GetTeamNumber()
     {
         return team;
+    }
+
+    public int GetPoints()
+    {
+        return diamonds;
+    }
+
+    public TeamPoints GetTeamPoints()
+    {
+        TeamPoints tp = new TeamPoints(GetTeamNumber(), GetPoints());
+        return tp;
     }
 }

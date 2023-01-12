@@ -10,6 +10,7 @@ public enum EnvironmentType
     Ground,
     Water,
     Shelter,
+    Obstacle
     // Bridge
 }
 
@@ -40,6 +41,9 @@ public struct GeneratorData
     public int probabilityBushes;
     public int probabilityDecorations;
     public int probabilityTrees;
+    public int diamondSpawnDelay;
+    public int diamondSpawnCount;
+    public int diamondCount;
     public float noiseDensity;
     public int iterations;
 
@@ -56,6 +60,9 @@ public struct GeneratorData
         probabilityBushes = 30;
         probabilityDecorations = 30;
         probabilityTrees = 20;
+        diamondSpawnDelay = 20;
+        diamondSpawnCount = 30;
+        diamondCount = 0;
         noiseDensity = 50;
         iterations = 3;
     }
@@ -118,7 +125,6 @@ public class Map : NetworkBehaviour
     public Tile[] floorTiles;
     public Tile waterTile;
 
-
     [Header("Obstacle Settings")]
     public Tile[] pillars;
     public Tile[] bushes;
@@ -153,7 +159,7 @@ public class Map : NetworkBehaviour
     private System.Random ran;
 
     [Server]
-    public void NewMap()
+    public List<Hort> NewMap()
     {
         generatorData = new GeneratorData(DateTime.Now.Millisecond);
         List<Hort> horts = new List<Hort>();
@@ -167,6 +173,7 @@ public class Map : NetworkBehaviour
             NetworkServer.Spawn(hort.gameObject);
         }
         BuildMap();
+        return(horts);
     }
 
     public void OnNewMap(GeneratorData oldData, GeneratorData newData)
@@ -177,7 +184,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null)
+        if (diamondParent != null && GetDiamondCount() == 0)
         {
             Destroy(diamondParent);
         }
@@ -199,7 +206,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        PlaceDiamonds();
+        StartCoroutine("RandomDiamondSpawning");
         //SetIsWalkableForObstacles();
         Vector2[] path = {
             new Vector2(0, 0),
@@ -388,7 +395,6 @@ public class Map : NetworkBehaviour
 
     // Step 7
     public void PlaceObstacles() // TODO this function sometimes returns cellBounds -1||-2 smaller than width and height
-
     {
         obstacleTilemap.ClearAllTiles();
         int counter = 0;
@@ -406,6 +412,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar)
                     {
@@ -413,6 +420,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations)
                     {
@@ -420,6 +428,7 @@ public class Map : NetworkBehaviour
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
                     {
@@ -429,6 +438,7 @@ public class Map : NetworkBehaviour
                         NetworkServer.Spawn(tree.gameObject);
                         counter++;
                         isWalkable[x, y] = false;
+                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
                     else
                     {
@@ -439,25 +449,32 @@ public class Map : NetworkBehaviour
         }
     }
 
-
     // Step 8 (Server only)
     [ServerCallback]
-    void PlaceDiamonds()
+    void PlaceDiamonds(int count)
     {
-        BoundsInt bounds = floorTilemap.cellBounds;
-
-        for (int x = 0; x < bounds.size.x; x++)
-        {
-            for (int y = 0; y < bounds.size.y; y++)
+        while (count > 0) {
+            int x = ran.Next(0, generatorData.width);
+            int y = ran.Next(0, generatorData.height);
+            if (TileIsFree(x, y))
             {
-                if (TileIsFree(x, y) && ran.Next(1, 100) < 20)
-                {
-                    Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
-                    item.transform.parent = diamondParent.transform;
-                    NetworkServer.Spawn(item.gameObject);
-                }
+                Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
+                item.transform.parent = diamondParent.transform;
+                SetDiamondCount(1);
+                NetworkServer.Spawn(item.gameObject);
+                count--;
             }
         }
+    }
+
+    IEnumerator RandomDiamondSpawning()
+    {
+        int diamondCount = GetDiamondCount();
+        if (diamondCount <= generatorData.diamondSpawnCount / 2 || diamondCount == 0) {
+            int missingDiamondCount = generatorData.diamondSpawnCount - diamondCount;
+            PlaceDiamonds(missingDiamondCount);
+        }
+        yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
     }
 
     public enum Direction : int
@@ -650,5 +667,16 @@ public class Map : NetworkBehaviour
     public int GetHortScale()
     {
         return generatorData.hortScale;
+    }
+    
+    public int GetDiamondCount()
+    {
+        return this.generatorData.diamondCount;
+    }
+
+    public void SetDiamondCount(int count)
+    {
+        this.generatorData.diamondCount += count;
+        return;
     }
 }

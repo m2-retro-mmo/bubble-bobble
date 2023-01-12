@@ -10,6 +10,8 @@ public class TestPlayer : TestCharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
+    public GameObject shape;
+
     public float collisionOffset = 0.1f;
 
     // direction indicator
@@ -29,7 +31,15 @@ public class TestPlayer : TestCharacterBase
         cam.GetComponent<Camera>().enabled = true;
         cam.GetComponent<AudioListener>().enabled = true;
 
-        col = gameObject.GetComponent<PolygonCollider2D>();
+        col = gameObject.GetComponentInChildren<PolygonCollider2D>();
+
+        // Collider2D[] colliders = new Collider2D[2];
+        // int length = rb.GetAttachedColliders(colliders);
+        // Debug.LogWarning(length);
+        // Debug.LogWarning(colliders[0].isTrigger);
+        // Debug.LogWarning(colliders[1].isTrigger);
+
+
     }
 
     private void LookAtMouse()
@@ -67,6 +77,8 @@ public class TestPlayer : TestCharacterBase
         }
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
+
+        shape.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

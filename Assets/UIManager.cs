@@ -14,8 +14,8 @@ public class UIManager : MonoBehaviour
 
     Label ping;
     Label playerName;
+    Label duration;
     VisualElement bubbleContainer;
-
 
     void OnEnable()
     {
@@ -36,6 +36,8 @@ public class UIManager : MonoBehaviour
         playerName = root.Q("PlayerName") as Label;
         // get bubble container
         bubbleContainer = root.Q("BubbleContainer") as VisualElement;
+        // duration label
+        duration = root.Q("DurationValue") as Label;
     }
 
     // Start is called before the first frame update
@@ -80,5 +82,12 @@ public class UIManager : MonoBehaviour
     public void SetPing(int pingValue)
     {
         ping.text = pingValue.ToString() + "ms";
+    }
+
+    public void SetDuration(float timeToDisplay)
+    {
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);  
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        duration.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 }

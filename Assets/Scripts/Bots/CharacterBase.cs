@@ -5,11 +5,11 @@ using Mirror;
 public class CharacterBase : NetworkBehaviour
 {
     // States
-    [SyncVar] protected bool holdsDiamond = false;
+    [SyncVar] public bool holdsDiamond = false;
     [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
 
     // Team
-    [SyncVar] [SerializeField] protected byte teamNumber = 1;
+    [SyncVar][SerializeField] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -24,8 +24,8 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        rb = GetComponentInChildren<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -57,52 +57,15 @@ public class CharacterBase : NetworkBehaviour
     }
 
     /**
-   * is called when player | bot collides with another Collider2D
-   */
-    [ServerCallback]
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // check collision of Player with other Game objects
-        switch (other.gameObject.tag)
-        {
-            case "Hort":
-                Hort hort = other.gameObject.GetComponent("Hort") as Hort;
-                if (hort != null)
-                {
-                    Debug.Log("character collided with hort");
-                    // put diamond into hort
-                    if (holdsDiamond && teamNumber == hort.team)
-                    {
-                        hort.AddDiamond();
-                        deliverDiamond();
-                    }
-                }
-                break;
-            case "Diamond":
-                // collect Diamond if possible
-                Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!GetHoldsDiamond() && !diamond.GetCollected())
-                {
-                    diamond.collect();
-                    collectDiamond();
-                    Debug.Log("character collided with diamond");
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
     * removes the diamonds from the users inventory
     */
-    protected void deliverDiamond()
+    public void deliverDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = false;
     }
 
-    protected void collectDiamond()
+    public void collectDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = true;
