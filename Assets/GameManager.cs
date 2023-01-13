@@ -93,7 +93,7 @@ public class GameManager : NetworkBehaviour
             if (DEBUG_BOTS)
             {
                 botNumber = 1;
-                drawGraph = true;
+                //drawGraph = true;
             }
 
             Graph graph = new Graph(map, drawGraph);

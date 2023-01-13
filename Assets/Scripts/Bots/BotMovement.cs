@@ -183,7 +183,6 @@ public class BotMovement : Bot
 
                 if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
-                    Debug.Log("SHOOOOOOT!");
                     GetComponent<Shooting>().CmdShootBubble();
                     StopEverything();
                     break;
@@ -264,7 +263,7 @@ public class BotMovement : Bot
 
                     if (distToGoal <= 0.25f)
                     {
-                        Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
+                        Debug.Log("Bot avoided Bubble"); 
                         StopEverything();
                         break;
                     }
@@ -438,7 +437,7 @@ public class BotMovement : Bot
         Vector3 lookDir = goal.position - transform.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
-        directionIndicator.position = transform.position + lookDir.normalized * 1f;
+        directionIndicator.position = transform.position + lookDir.normalized * 2f;
         directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 

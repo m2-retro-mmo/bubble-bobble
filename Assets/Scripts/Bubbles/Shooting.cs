@@ -76,7 +76,7 @@ public class Shooting : NetworkBehaviour
         }
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdShootBubble()
     {
         ShootBubble();

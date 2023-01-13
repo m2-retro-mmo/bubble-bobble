@@ -6,7 +6,7 @@ public class CharacterBase : NetworkBehaviour
 {
     // States
     [SyncVar] public bool holdsDiamond = false;
-    [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
+    [SyncVar] public bool isCaptured = false; // (hook = nameof(OnIsCapturedChanged))
 
     // Team
     [SyncVar][SerializeField] public byte teamNumber = 1;
@@ -122,6 +122,7 @@ public class CharacterBase : NetworkBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()
