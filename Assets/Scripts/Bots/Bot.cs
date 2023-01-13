@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using Unity.VisualScripting;
 
 /// <summary>
 /// the states of the InteractionID
@@ -133,10 +134,6 @@ public class Bot : CharacterBase
 
             CalculateInteractionID();
 
-            //Debug.Log("found Interaction " + foundInteraction);
-            //Debug.Log("changedInteraction " + changedInteractionID);
-            //Debug.Log("interactionID: " + interactionID);
-
             yield return new WaitForSeconds(REFRESH_RATE_GOAL);
         }
     }
@@ -150,7 +147,7 @@ public class Bot : CharacterBase
         Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
         // get all opponents who are holding a diamond
-        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
+        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.transform.parent.gameObject.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
 
         float opponentPriority = 1f;
 
@@ -169,7 +166,7 @@ public class Bot : CharacterBase
             // loop through all opponents 
             foreach (Collider2D collider in opponentColliders)
             {
-                CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
+                CharacterBase opponent = collider.transform.parent.gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured())
@@ -204,7 +201,7 @@ public class Bot : CharacterBase
             // loop through all teammates
             foreach (Collider2D collider in teammateColliders)
             {
-                CharacterBase teammate = collider.gameObject.GetComponent<CharacterBase>();
+                CharacterBase teammate = collider.transform.parent.gameObject.GetComponent<CharacterBase>();
 
                 // check if the teammate is captured - if he is, free teammate
                 if (teammate.GetIsCaptured())
@@ -331,8 +328,9 @@ public class Bot : CharacterBase
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
         Collider2D[] colliders = interactionColliders.Where(c =>
-            (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
-            (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
+            (c.gameObject.CompareTag("Player") || c.gameObject.CompareTag("Bot")) &&
+            (c.gameObject.transform.parent.gameObject.TryGetComponent(out CharacterBase characterBase) && characterBase.GetTeamNumber() == teamNumber)).ToArray();
+        
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
