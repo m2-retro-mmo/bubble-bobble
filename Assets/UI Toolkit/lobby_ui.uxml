@@ -7,7 +7,7 @@
             </ui:VisualElement>
             <ui:VisualElement style="width: 300px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; right: auto; justify-content: flex-start; align-items: stretch;">
                 <ui:TextField picking-mode="Ignore" label="Enter your name" value="playerName" text="Player 1" multiline="false" name="PlayerName" style="font-size: 20px; flex-wrap: wrap; align-items: stretch; white-space: nowrap; height: auto; color: rgb(14, 14, 14); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-top: 5px; margin-bottom: 5px; flex-direction: column;" />
-                <ui:TextField picking-mode="Ignore" label="Game duration" value="Duration in seconds" text="20" name="DurationSelection" max-length="50" is-delayed="false" multiline="false" style="font-size: 20px; color: rgb(12, 11, 11); flex-wrap: wrap; margin-top: 5px; flex-direction: column;" />
+                <ui:TextField picking-mode="Ignore" label="Game duration" value="Duration in seconds" text="20" name="DurationValue" max-length="50" is-delayed="false" multiline="false" style="font-size: 20px; color: rgb(12, 11, 11); flex-wrap: wrap; margin-top: 5px; flex-direction: column;" />
                 <ui:VisualElement style="margin-left: 0; margin-right: 0; margin-top: 20%; margin-bottom: 20%;">
                     <ui:Button text="Play" display-tooltip-when-elided="true" name="PlayButton" style="align-items: auto; justify-content: flex-start;" />
                     <ui:Button text="Exit" display-tooltip-when-elided="true" name="ExitButton" style="align-items: auto; justify-content: flex-start;" />
