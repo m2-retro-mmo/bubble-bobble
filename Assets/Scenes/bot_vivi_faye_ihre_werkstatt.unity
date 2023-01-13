@@ -730,7 +730,7 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  startGameWithBots: 1
+  startGameWithBots: 0
   DEBUG_BOTS: 0
   botPrefab: {fileID: -6257299136199735923, guid: 7221b9531972646c98196fac0c7e9247,
     type: 3}
@@ -775,6 +775,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1190517968536407029, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: Port
+      value: 7778
+      objectReference: {fileID: 0}
     - target: {fileID: 1190517968536407030, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}
       propertyPath: m_Name

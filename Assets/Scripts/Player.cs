@@ -19,6 +19,7 @@ public class Player : CharacterBase
     // direction indicator
     public Vector2 mousePosWorld;
     public Camera cam;
+    public Camera mouseCam;
     public Vector3 mousePosScreen = new Vector3();
     public float distanceFactor = 2f;
 
@@ -55,8 +56,8 @@ public class Player : CharacterBase
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
         mousePosScreen.y = Input.mousePosition.y;
-        mousePosScreen.z = cam.transform.position.z;
-        mousePosWorld = (Vector2)cam.ScreenToWorldPoint(mousePosScreen);
+        mousePosScreen.z = mouseCam.transform.position.z;
+        mousePosWorld = (Vector2)mouseCam.ScreenToWorldPoint(mousePosScreen);
 
         // rotate the player 
         Vector2 lookDir = mousePosWorld - playerCenter;
@@ -87,6 +88,7 @@ public class Player : CharacterBase
         Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
+        mouseCam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()
