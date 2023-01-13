@@ -9,6 +9,10 @@ public class PlayerCollision : MonoBehaviour
     private void Start()
     {
         player = gameObject.GetComponentInParent<CharacterBase>();
+        // This script is only needed on the server
+        if (player.isClientOnly) {
+            Destroy(this);
+        }
     }
 
     /**
@@ -24,7 +28,6 @@ public class PlayerCollision : MonoBehaviour
                 if (!player.GetHoldsDiamond() && !diamond.GetCollected())
                 {
                     diamond.Collect();
-                    diamond.SetCollected(true);
                     player.collectDiamond();
                 }
                 break;
@@ -44,6 +47,5 @@ public class PlayerCollision : MonoBehaviour
             default:
                 break;
         }
-
     }
 }

@@ -4,16 +4,12 @@ using System;
 
 public class Diamond : NetworkBehaviour
 {
+    [SyncVar]
     private bool collected = false;
 
     public bool GetCollected()
     {
         return collected;
-    }
-
-    public void SetCollected(bool collected)
-    {
-        this.collected = collected;
     }
 
     public void Drop()
@@ -29,12 +25,9 @@ public class Diamond : NetworkBehaviour
     [Server]
     public void Collect()
     {
+        this.collected = true;
         Debug.Log("Collected");
-        // Destroy(gameObject, 1f);
         // TODO: should take the diamond, instead of destroying itas
-        if (!collected)
-        {
-            Destroy(gameObject, 0f);
-        }
+        Destroy(gameObject);
     }
 }
