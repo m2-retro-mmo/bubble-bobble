@@ -6,11 +6,12 @@ public class TestPlayer : TestCharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private PolygonCollider2D col;
+    private BoxCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
     public GameObject shape;
+    public GameObject collidable;
 
     public float collisionOffset = 0.1f;
 
@@ -31,15 +32,11 @@ public class TestPlayer : TestCharacterBase
         cam.GetComponent<Camera>().enabled = true;
         cam.GetComponent<AudioListener>().enabled = true;
 
-        col = gameObject.GetComponentInChildren<PolygonCollider2D>();
+        col = gameObject.GetComponentInChildren<BoxCollider2D>();
 
-        // Collider2D[] colliders = new Collider2D[2];
-        // int length = rb.GetAttachedColliders(colliders);
-        // Debug.LogWarning(length);
-        // Debug.LogWarning(colliders[0].isTrigger);
-        // Debug.LogWarning(colliders[1].isTrigger);
-
-
+        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        movementFilter.SetLayerMask(layermask);
+        movementFilter.useLayerMask = true;
     }
 
     private void LookAtMouse()
@@ -65,7 +62,7 @@ public class TestPlayer : TestCharacterBase
     private Vector2 getCenterOfPlayer()
     {
         // player rigidbody is not the center of the player --> use rb.position and add the scaled offset from the collider (=0.825)
-        return rb.position + (col.offset * transform.localScale);
+        return rb.position + (col.offset * shape.transform.localScale);
     }
 
     // Update is called once per frame
@@ -78,7 +75,9 @@ public class TestPlayer : TestCharacterBase
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
 
-        shape.transform.position = rb.transform.position;
+        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        rb2.transform.position = rb.transform.position;
+        cam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

@@ -8,7 +8,7 @@ public class TestCharacterBase : MonoBehaviour
     protected bool isCaptured = false;
 
     // Team
-    [SerializeField] protected byte teamNumber = 1;
+    [SerializeField] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -16,6 +16,7 @@ public class TestCharacterBase : MonoBehaviour
 
     // Animations
     protected Animator animator;
+    protected Renderer rend;
     [SerializeField] protected Material teamBMaterial;
     [SerializeField] protected TestCaptureBubble chaptureBubblePrefab;
     private TestCaptureBubble captureBubble;
@@ -30,6 +31,7 @@ public class TestCharacterBase : MonoBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        rend = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
         SetTeamColor();
         defaultLayer = LayerMask.LayerToName(gameObject.layer);
     }
@@ -42,7 +44,7 @@ public class TestCharacterBase : MonoBehaviour
 
     void SetTeamColor(){
         if (teamNumber != 1) {
-            GetComponent<Renderer>().material = teamBMaterial;
+            rend.material = teamBMaterial;
         }
     }
 
@@ -70,62 +72,15 @@ public class TestCharacterBase : MonoBehaviour
     }
 
     /**
-   * is called when player | bot collides with another Collider2D
-   */
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // check collision of Player with other Game objects
-        switch (other.gameObject.tag)
-        {
-            case "Hort":
-                TestHort hort = other.gameObject.GetComponent("TestHort") as TestHort;
-                if (hort != null)
-                {
-                    Debug.Log("character collided with hort");
-                    // put diamond into hort
-                    if (holdsDiamond && teamNumber == hort.team)
-                    {
-                        hort.AddDiamond();
-                        deliverDiamond();
-                    }
-                }
-                break;
-            case "Diamond":
-                // Collect Diamond if possible
-                Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!holdsDiamond && !diamond.GetCollected())
-                {
-                    diamond.SetCollected(true);
-                    diamond.Collect();
-                    collectDiamond();
-                    Debug.Log("character collided with diamond");
-                    
-                }
-                break;
-            case "CaptureBubble":
-                // uncapture player if it's a teammate
-                Debug.Log("character collided with captured player");
-                TestCharacterBase capturedPlayer = other.gameObject.GetComponent<TestCaptureBubble>().player;
-                if (teamNumber == capturedPlayer.GetTeamNumber()){
-                    Debug.Log("captured player is a teammate -> uncapture");
-                    capturedPlayer.Uncapture();
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
     * removes the diamonds from the users inventory
     */
-    protected void deliverDiamond()
+    public void deliverDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = false;
     }
 
-    protected void collectDiamond()
+    public void collectDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = true;

@@ -17,6 +17,7 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
+    protected Renderer rend;
     [SerializeField] protected Material teamBMaterial;
     [SerializeField] protected CaptureBubble chaptureBubblePrefab;
     private CaptureBubble captureBubble;
@@ -31,7 +32,7 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        SetTeamColor();
+        rend = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
         defaultLayer = LayerMask.LayerToName(gameObject.layer);
     }
 
@@ -43,7 +44,7 @@ public class CharacterBase : NetworkBehaviour
 
     void SetTeamColor(){
         if (teamNumber != 1) {
-            GetComponent<Renderer>().material = teamBMaterial;
+            rend.material = teamBMaterial;
         }
     }
 
