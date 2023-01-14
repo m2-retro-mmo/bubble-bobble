@@ -9,8 +9,8 @@ public class LobbyUIManager : MonoBehaviour
 {
     UIDocument document;
 
-    Label playerName;
-    Label duration;
+    TextField playerName;
+    TextField duration;
 
     VisualElement playersContainer;
 
@@ -30,8 +30,8 @@ public class LobbyUIManager : MonoBehaviour
 
         VisualElement root = document.rootVisualElement;
         playersContainer = root.Q("ListOfPlayers") as VisualElement;
-        playerName = root.Q("PlayerName") as Label;
-        duration = root.Q("DurationValue") as Label;
+        playerName = root.Q("PlayerName") as TextField;
+        duration = root.Q("DurationValue") as TextField;
         playButton = root.Q("PlayButton") as Button;
         playButton.clicked += Play;
         exitButton = root.Q("ExitButton") as Button;
