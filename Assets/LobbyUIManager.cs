@@ -17,8 +17,6 @@ public class LobbyUIManager : MonoBehaviour
     Button playButton;
     Button exitButton;
 
-    private UIManager uIManager;
-
     void OnEnable()
     {
         document = GetComponent<UIDocument>();
@@ -32,8 +30,12 @@ public class LobbyUIManager : MonoBehaviour
         playersContainer = root.Q("ListOfPlayers") as VisualElement;
         playerName = root.Q("PlayerName") as TextField;
         duration = root.Q("DurationValue") as TextField;
+        // TODO Set duration only editable for host
+        
         playButton = root.Q("PlayButton") as Button;
+        // TODO remove button if player is not host, playButton.Clear();
         playButton.clicked += Play;
+
         exitButton = root.Q("ExitButton") as Button;
         exitButton.clicked += Quit;
     }
@@ -41,6 +43,7 @@ public class LobbyUIManager : MonoBehaviour
     private void Play()
     {
         // TODO set player name in game + duration
+        Debug.Log("Player name: " + playerName.text + ", Game duration: " + duration.text);
         SceneManager.LoadSceneAsync("Main");
     }
 
