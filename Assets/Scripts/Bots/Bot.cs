@@ -37,14 +37,14 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] {2, 0,0,0,0 };//{ 2, 5, 4, 3, 1 }; 
+    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; // TODO: Teammate testen
 
     private float[] interactionPriorities;
 
     private Transform[] interactionGoals;
 
     // area radius around the bot
-    private float interactionRadius = 10;
+    private float interactionRadius = 500;
 
     private Vector3 botPosition;
 
@@ -88,7 +88,7 @@ public class Bot : CharacterBase
     public void StartBot()
     {
         StartCoroutine(CheckAreaOfInterest());
-        StartCoroutine(CheckForBubbles());
+        //StartCoroutine(CheckForBubbles());
     }
 
     IEnumerator CheckForBubbles()
@@ -379,7 +379,7 @@ public class Bot : CharacterBase
         }
         else // if no interaction was found, increase the radius
         {
-            interactionRadius += 10f;
+            interactionRadius += 50f;
         }
     }
 

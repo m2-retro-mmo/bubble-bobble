@@ -48,7 +48,7 @@ public class CharacterBase : NetworkBehaviour
         rb.MovePosition(rb.position + moveVector);
     }
 
-    private void SetAnimatorMovement(Vector2 direction)
+    protected void SetAnimatorMovement(Vector2 direction)
     {
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);

@@ -157,13 +157,12 @@ public class BotMovement : Bot
                         Debug.Log("Bot Reached goal");
                     break;
                 }
-                //transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
 
 
                 Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
-                Move(moveDirection);
+                SetAnimatorMovement(moveDirection);
             }
-            // hier noch zus�tzlich stopEverything falls goal weg
 
             yield return new WaitForSeconds(0.001f);
         }
@@ -201,6 +200,9 @@ public class BotMovement : Bot
                     break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+
+                Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
+                SetAnimatorMovement(moveDirection);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -289,6 +291,9 @@ public class BotMovement : Bot
                         break;
                     }
                     transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+
+                    Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
+                    SetAnimatorMovement(moveDirection);
                 }
 
                 yield return new WaitForSeconds(0.001f);
