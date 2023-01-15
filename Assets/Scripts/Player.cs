@@ -5,7 +5,7 @@ public class Player : CharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private PolygonCollider2D col;
+    private CapsuleCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
@@ -16,7 +16,6 @@ public class Player : CharacterBase
     // direction indicator
     public Vector2 mousePosWorld;
     public Camera cam;
-    public Camera mouseCam;
     public Vector3 mousePosScreen = new Vector3();
     public float distanceFactor = 2f;
 
@@ -36,7 +35,7 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
         }
-        col = gameObject.GetComponentInChildren<PolygonCollider2D>();
+        col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
 
         LayerMask layermask = LayerMask.GetMask("Player Move Collider");
         movementFilter.SetLayerMask(layermask);
@@ -45,14 +44,13 @@ public class Player : CharacterBase
 
     private void LookAtMouse()
     {
-        //Vector2 playerCenter = rb.position;
-        Vector2 playerCenter = shape.GetComponent<Rigidbody2D>().position;
+        Vector2 playerCenter = rb.position;
 
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
         mousePosScreen.y = Input.mousePosition.y;
-        mousePosScreen.z = mouseCam.transform.position.z;
-        mousePosWorld = (Vector2)mouseCam.ScreenToWorldPoint(mousePosScreen);
+        mousePosScreen.z = cam.transform.position.z;
+        mousePosWorld = (Vector2)cam.ScreenToWorldPoint(mousePosScreen);
 
         // rotate the player 
         Vector2 lookDir = mousePosWorld - playerCenter;
@@ -73,10 +71,10 @@ public class Player : CharacterBase
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
 
-        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        // shape.transform.position = rb.transform.position;
+        Rigidbody2D rb2 = GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
-        mouseCam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

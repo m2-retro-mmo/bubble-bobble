@@ -145,7 +145,7 @@ public class Bot : CharacterBase
         Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
         // get all opponents who are holding a diamond
-        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.transform.parent.gameObject.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
+        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.gameObject.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
 
         float opponentPriority = 1f;
 
@@ -163,7 +163,7 @@ public class Bot : CharacterBase
             // loop through all opponents 
             foreach (Collider2D collider in opponentColliders)
             {
-                CharacterBase opponent = collider.transform.parent.gameObject.GetComponent<CharacterBase>();
+                CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured())
@@ -198,7 +198,7 @@ public class Bot : CharacterBase
             // loop through all teammates
             foreach (Collider2D collider in teammateColliders)
             {
-                CharacterBase teammate = collider.transform.parent.gameObject.GetComponent<CharacterBase>();
+                CharacterBase teammate = collider.gameObject.GetComponent<CharacterBase>();
 
                 // check if the teammate is captured - if he is, free teammate
                 if (teammate.GetIsCaptured())
@@ -327,9 +327,21 @@ public class Bot : CharacterBase
     /// <returns>An array of Collider2DS.</returns>
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
+        // iterate over interactionColliders and Debug.Log
+        // foreach (Collider2D c in interactionColliders)
+        // {
+        //     Debug.Log("L1: " + c.gameObject.CompareTag("Player"));
+        //     Debug.Log("L2: " + c.gameObject.CompareTag("Bot"));
+        //     Debug.Log("L3: " + c.gameObject.TryGetComponent(out CharacterBase characterBase));
+        //     Debug.Log("L3.5: " + characterBase);
+        //     Debug.Log("L4: " + (characterBase.GetTeamNumber() == teamNumber));
+        // }
+
         Collider2D[] colliders = interactionColliders.Where(c =>
-            (c.gameObject.CompareTag("Player") || c.gameObject.CompareTag("Bot")) &&
-            (c.gameObject.transform.parent.gameObject.TryGetComponent(out CharacterBase characterBase) && characterBase.GetTeamNumber() == teamNumber)).ToArray();
+            (c.gameObject.CompareTag("Player") ||
+            c.gameObject.CompareTag("Bot")) &&
+            (c.TryGetComponent(out CharacterBase characterBase)
+            && characterBase.GetTeamNumber() == teamNumber)).ToArray();
         
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();

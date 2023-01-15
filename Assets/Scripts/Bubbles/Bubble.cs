@@ -33,9 +33,11 @@ public class Bubble : NetworkBehaviour
     {
         if (!isServer) return;
 
+        Debug.Log("Henlo!! - " + collision.gameObject.tag);
+
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            collision.transform.parent.gameObject.SendMessage("CaptureCharacter", teamNumber);
+            collision.gameObject.SendMessage("CaptureCharacter", teamNumber);
         }
         // destroy bubble instantly no matter which collision was detected
         Destroy(gameObject, 0);

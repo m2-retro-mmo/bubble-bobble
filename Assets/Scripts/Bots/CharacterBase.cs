@@ -4,11 +4,14 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
+
     private GameManager gameManager;
 
     // States
     [SyncVar] public bool holdsDiamond = false;
-    [SyncVar] public bool isCaptured = false; // (hook = nameof(OnIsCapturedChanged))
+    // [SyncVar(hook = nameof(OnIsCapturedChanged))]
+    [SyncVar] public bool isCaptured = false;
+
     protected bool DEBUG_BOTS;
 
     // Team
@@ -31,6 +34,12 @@ public class CharacterBase : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
     }
 
     protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
@@ -77,6 +86,7 @@ public class CharacterBase : NetworkBehaviour
     {
         SetIsCaptured(true);
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
+        animator.SetBool("isCaptured", true);
     }
 
     /**
@@ -85,6 +95,7 @@ public class CharacterBase : NetworkBehaviour
     public void Uncapture()
     {
         SetIsCaptured(false);
+        animator.SetBool("isCaptured", false);
     }
 
     /**
@@ -92,11 +103,14 @@ public class CharacterBase : NetworkBehaviour
     */
     public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
     {
+        // Debug.Log("Heelo, Captured changed + " + newIsCaptured);
         SetIsCaptured(newIsCaptured);
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public void CaptureCharacter(int teamNumber)
     {
+        Debug.Log("I've been hit!!! My Team " + GetTeamNumber() + " got hit by " + teamNumber);
         if (GetTeamNumber() != teamNumber)
         {
             Capture();
@@ -121,7 +135,6 @@ public class CharacterBase : NetworkBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
-        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()

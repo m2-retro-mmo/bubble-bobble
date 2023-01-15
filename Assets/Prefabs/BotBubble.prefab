@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2504326652704442901}
   - component: {fileID: 7042332057259455667}
   - component: {fileID: 3008960474071732062}
-  m_Layer: 22
+  m_Layer: 21
   m_Name: BotBubble
   m_TagString: Bubble
   m_Icon: {fileID: 0}

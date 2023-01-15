@@ -732,7 +732,7 @@ MonoBehaviour:
   minimapCam: {fileID: 774985694}
   startGameWithBots: 1
   DEBUG_BOTS: 0
-  botPrefab: {fileID: -6257299136199735923, guid: 7221b9531972646c98196fac0c7e9247,
+  botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
   botNumber: 5
   gameDuration: 20
