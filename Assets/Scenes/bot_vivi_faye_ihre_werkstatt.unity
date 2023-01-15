@@ -703,7 +703,7 @@ GameObject:
   - component: {fileID: 2103473426}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -731,8 +731,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
   startGameWithBots: 1
-  DEBUG_BOTS: 1
-  botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
+  DEBUG_BOTS: 0
+  botPrefab: {fileID: -6257299136199735923, guid: 7221b9531972646c98196fac0c7e9247,
     type: 3}
   botNumber: 5
   gameDuration: 20
@@ -775,6 +775,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1190517968536407029, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: Port
+      value: 7778
+      objectReference: {fileID: 0}
     - target: {fileID: 1190517968536407030, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}
       propertyPath: m_Name

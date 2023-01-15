@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using Unity.VisualScripting;
 
 /// <summary>
 /// the states of the InteractionID
@@ -36,14 +37,14 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; 
+    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; // TODO: Teammate testen
 
     private float[] interactionPriorities;
 
     private Transform[] interactionGoals;
 
     // area radius around the bot
-    private float interactionRadius = 10;
+    private float interactionRadius = 500;
 
     private Vector3 botPosition;
 
@@ -70,7 +71,6 @@ public class Bot : CharacterBase
     {
         base.Start();
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
-        Debug.Log("bot diamond: " + GetHoldsDiamond().ToString());
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
     }
@@ -116,7 +116,6 @@ public class Bot : CharacterBase
         // check area every ten seconds
         while (true)
         {
-            //Debug.Log("start searching for interaction...");
             foundInteraction = false;
             // reset all priority values
             interactionPriorities = new float[5];
@@ -133,10 +132,6 @@ public class Bot : CharacterBase
 
             CalculateInteractionID();
 
-            //Debug.Log("found Interaction " + foundInteraction);
-            //Debug.Log("changedInteraction " + changedInteractionID);
-            //Debug.Log("interactionID: " + interactionID);
-
             yield return new WaitForSeconds(REFRESH_RATE_GOAL);
         }
     }
@@ -150,14 +145,13 @@ public class Bot : CharacterBase
         Collider2D[] opponentColliders = GetCollidersByTeamNumber(GetOpponentTeamNumber(teamNumber));
 
         // get all opponents who are holding a diamond
-        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
+        Collider2D[] opponentWithDiamondColliders = opponentColliders.Where(c => c.gameObject.GetComponent<CharacterBase>().GetHoldsDiamond() == true).ToArray();
 
         float opponentPriority = 1f;
 
         // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
         if (opponentWithDiamondColliders.Length > 0)
         {
-            //Debug.Log("opponent with diamond found");
             opponentColliders = opponentWithDiamondColliders;
             // priority for opponents who are holding a diamond is higher
             opponentPriority = 2f;
@@ -181,7 +175,7 @@ public class Bot : CharacterBase
                     interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
 
                     // set the interactionGoal to the opponent
-                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform;
+                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform.Find("Shape").transform;
 
                     foundInteraction = true;
                     break;
@@ -241,7 +235,10 @@ public class Bot : CharacterBase
                     detectedBubble = true;
                     bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
                     botMovement.SetGoal(bubble.transform);
-                    Debug.Log("set goal to bubble");
+                    if(DEBUG_BOTS)
+                    {
+                        Debug.Log("set goal to bubble");
+                    }
                 }
             }
         }
@@ -330,9 +327,22 @@ public class Bot : CharacterBase
     /// <returns>An array of Collider2DS.</returns>
     private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
     {
+        // iterate over interactionColliders and Debug.Log
+        // foreach (Collider2D c in interactionColliders)
+        // {
+        //     Debug.Log("L1: " + c.gameObject.CompareTag("Player"));
+        //     Debug.Log("L2: " + c.gameObject.CompareTag("Bot"));
+        //     Debug.Log("L3: " + c.gameObject.TryGetComponent(out CharacterBase characterBase));
+        //     Debug.Log("L3.5: " + characterBase);
+        //     Debug.Log("L4: " + (characterBase.GetTeamNumber() == teamNumber));
+        // }
+
         Collider2D[] colliders = interactionColliders.Where(c =>
-            (c.gameObject.TryGetComponent(out Player player) && player.GetTeamNumber() == teamNumber) ||
-            (c.gameObject.TryGetComponent(out Bot bot) && bot.GetTeamNumber() == teamNumber)).ToArray();
+            (c.gameObject.CompareTag("Player") ||
+            c.gameObject.CompareTag("Bot")) &&
+            (c.TryGetComponent(out CharacterBase characterBase)
+            && characterBase.GetTeamNumber() == teamNumber)).ToArray();
+        
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
@@ -362,14 +372,17 @@ public class Bot : CharacterBase
             // check: did we find a new interactionId that is higher prioritized the old interaction
             if (foundInteractionID != interactionID && priorityDifference >= PRIORITY_THRESHOLD) // only change id if according priority is a given amount higher than priority of old id
             {
-                Debug.Log("all interaction priorities: \n" +
-                    "Opponent: " + interactionPriorities[0] + " \n" +
-                    "Teammate: " + interactionPriorities[1] + " \n" +
-                    "Diamond: " + interactionPriorities[2] + " \n" +
-                    "Hort: " + interactionPriorities[3] + " \n" +
-                    "Item: " + interactionPriorities[4]);
+                if(DEBUG_BOTS)
+                {
+                    Debug.Log("all interaction priorities: \n" +
+                        "Opponent: " + interactionPriorities[0] + " \n" +
+                        "Teammate: " + interactionPriorities[1] + " \n" +
+                        "Diamond: " + interactionPriorities[2] + " \n" +
+                        "Hort: " + interactionPriorities[3] + " \n" +
+                        "Item: " + interactionPriorities[4]);
 
-                Debug.Log("set goal to: " + foundInteractionID);
+                    Debug.Log("set goal to: " + foundInteractionID);
+                }
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
@@ -378,7 +391,7 @@ public class Bot : CharacterBase
         }
         else // if no interaction was found, increase the radius
         {
-            interactionRadius += 10f;
+            interactionRadius += 50f;
         }
     }
 

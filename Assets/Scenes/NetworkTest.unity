@@ -697,7 +697,7 @@ GameObject:
   - component: {fileID: 2103473426}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -725,9 +725,11 @@ MonoBehaviour:
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
   startGameWithBots: 0
+  DEBUG_BOTS: 0
   botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
     type: 3}
   botNumber: 5
+  gameDuration: 0
 --- !u!4 &2103473425
 Transform:
   m_ObjectHideFlags: 0

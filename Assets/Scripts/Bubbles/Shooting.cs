@@ -76,7 +76,7 @@ public class Shooting : NetworkBehaviour
         }
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdShootBubble()
     {
         ShootBubble();
@@ -113,13 +113,6 @@ public class Shooting : NetworkBehaviour
 
                 lastShootTime = Time.time;
             }
-        }
-        else
-        {
-            Debug.Log("No more bubbles");
-            /*  Commented this out because i replaced bubble text with bubbles
-                if (character.tag == "Player")
-                StartCoroutine(BlinkBubbleCountText()); */
         }
     }
 
