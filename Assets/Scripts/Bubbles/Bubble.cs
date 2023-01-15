@@ -33,8 +33,6 @@ public class Bubble : NetworkBehaviour
     {
         if (!isServer) return;
 
-        Debug.Log("Henlo!! - " + collision.gameObject.tag);
-
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
             collision.gameObject.SendMessage("CaptureCharacter", teamNumber);

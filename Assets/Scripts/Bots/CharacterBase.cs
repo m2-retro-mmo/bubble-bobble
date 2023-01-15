@@ -110,7 +110,6 @@ public class CharacterBase : NetworkBehaviour
 
     public void CaptureCharacter(int teamNumber)
     {
-        Debug.Log("I've been hit!!! My Team " + GetTeamNumber() + " got hit by " + teamNumber);
         if (GetTeamNumber() != teamNumber)
         {
             Capture();
