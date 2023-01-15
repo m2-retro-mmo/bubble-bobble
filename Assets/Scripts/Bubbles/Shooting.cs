@@ -38,6 +38,7 @@ public class Shooting : NetworkBehaviour
 
     private UIManager uIManager;
     private GameObject character;
+    private CharacterBase characterBase;
 
     private int maxBubbleCount = 3;
 
@@ -51,7 +52,7 @@ public class Shooting : NetworkBehaviour
     {
         bubbleCount = maxBubbleCount;
         character = this.gameObject;
-
+        characterBase = character.GetComponent<CharacterBase>();
         if (character.tag == "Player")
         {
             uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
@@ -89,7 +90,7 @@ public class Shooting : NetworkBehaviour
     public void ShootBubble()
     {
         // Check if the bubble count is greater than 0
-        if (bubbleCount > 0)
+        if (bubbleCount > 0 && !characterBase.GetIsCaptured())
         {
             // check if firerate allows shoting
             if (Time.time > lastShootTime + fireRate)
