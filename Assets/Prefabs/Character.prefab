@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 8753017840775316469}
   - component: {fileID: 8710188040518108833}
   m_Layer: 0
-  m_Name: Collideable
+  m_Name: Collidable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -658,7 +658,6 @@ MonoBehaviour:
   speed: 5
   directionIndicator: {fileID: 8755906793960408082}
   shape: {fileID: 403649183340406875}
-  collidable: {fileID: 4488846616080284733}
   collisionOffset: 0.1
   mousePosWorld: {x: 0, y: 0}
   cam: {fileID: 2782065190629251749}

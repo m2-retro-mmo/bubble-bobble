@@ -5,7 +5,7 @@ public class Player : CharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private CapsuleCollider2D col;
+    private PolygonCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
@@ -36,7 +36,7 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
         }
-        col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
+        col = gameObject.GetComponentInChildren<PolygonCollider2D>();
 
         LayerMask layermask = LayerMask.GetMask("Player Move Collider");
         movementFilter.SetLayerMask(layermask);
@@ -45,7 +45,8 @@ public class Player : CharacterBase
 
     private void LookAtMouse()
     {
-        Vector2 playerCenter = rb.position;
+        //Vector2 playerCenter = rb.position;
+        Vector2 playerCenter = shape.GetComponent<Rigidbody2D>().position;
 
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
@@ -72,8 +73,7 @@ public class Player : CharacterBase
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
 
-        // shape.transform.position = rb.transform.position;
-        Rigidbody2D rb2 = GetComponent<Rigidbody2D>();
+        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
         mouseCam.transform.position = rb.transform.position;
