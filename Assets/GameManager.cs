@@ -43,7 +43,30 @@ public class GameManager : NetworkBehaviour
 
     private List<Hort> horts;
 
-    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
+    public static GameManager singleton { get; internal set; }
+
+    bool InitializeSingleton()
+    {
+        if (singleton != null && singleton == this)
+            return true;
+        
+        if (singleton != null)
+        {
+            Debug.LogError("Multiple GameManagers in the scene");
+            return false;
+        }
+
+        singleton = this;
+        return true;
+    }
+
+    void OnDestroy()
+    {
+        if (singleton == this)
+            singleton = null;
+    }
+
+    public void CreatePlayer(NetworkConnectionToClient conn)
     {
         foreach (Player player in FindObjectsOfType<Player>())
         {
@@ -62,8 +85,9 @@ public class GameManager : NetworkBehaviour
 
     // Start is called before the first frame update
     [Server]
-    void Start()
+    public override void OnStartServer()
     {
+        InitializeSingleton();
         if (isServerOnly)
         {
             cam = GameObject.Find("Server Camera").GetComponent<Camera>();
@@ -74,12 +98,14 @@ public class GameManager : NetworkBehaviour
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
 
+        Debug.Log("Spawn players!!!");
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
         {
+            Debug.Log("Spawn player for connection: " + conn.connectionId);
             if (conn != null)
             {
-                CreatePlayer(conn, new CreatePlayerMessage());
+                CreatePlayer(conn);
             }
         }
 
@@ -126,9 +152,6 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        // register connection handler function
-        NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
-
         // handle playtime
         uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
         timerIsRunning = true;
@@ -143,7 +166,8 @@ public class GameManager : NetworkBehaviour
             {
                 gameDuration -= Time.deltaTime;
                 uIManager.SetDuration(gameDuration);
-            } else 
+            }
+            else
             {
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
@@ -160,13 +184,13 @@ public class GameManager : NetworkBehaviour
     {
         Vector3 botPos = new Vector3(-1, -1, 0);
         bool foundTile = false;
-        while(!foundTile)
+        while (!foundTile)
         {
             int x = Random.Range(playerX - 5, playerX + 5);
             int y = Random.Range(playerY - 5, playerY + 5);
             botPos.x = x;
             botPos.y = y;
-            if(map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
+            if (map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
             {
                 foundTile = true;
             }
@@ -177,7 +201,7 @@ public class GameManager : NetworkBehaviour
     public void DetermineWinner(List<Hort> horts)
     {
         TeamPoints winner = new TeamPoints(0, 0);
-        foreach (Hort hort in horts) 
+        foreach (Hort hort in horts)
         {
             Debug.Log(hort.GetTeamPoints());
             TeamPoints tp = hort.GetTeamPoints();
@@ -187,12 +211,15 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (winner.GetPoints() == 0) 
+        if (winner.GetPoints() == 0)
         {
             Debug.Log("There is no winner!");
-        } else {
+        }
+        else
+        {
             Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
         }
+        (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
     public void SetHorts(List<Hort> horts)
@@ -200,7 +227,7 @@ public class GameManager : NetworkBehaviour
         this.horts = horts;
     }
 
-    public List<Hort> GetHorts() 
+    public List<Hort> GetHorts()
     {
         return this.horts;
     }

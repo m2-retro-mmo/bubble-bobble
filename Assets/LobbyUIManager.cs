@@ -17,6 +17,34 @@ public class LobbyUIManager : MonoBehaviour
     Button playButton;
     Button exitButton;
 
+    public static LobbyUIManager singleton { get; internal set; }
+
+    bool InitializeSingleton()
+    {
+        if (singleton != null && singleton == this)
+            return true;
+
+        if (singleton != null)
+        {
+            Debug.LogError("Multiple GameManagers in the scene");
+            return false;
+        }
+
+        singleton = this;
+        return true;
+    }
+
+    void Start()
+    {
+        InitializeSingleton();
+    }
+
+    void OnDestroy()
+    {
+        if (singleton == this)
+            singleton = null;
+    }
+
     void OnEnable()
     {
         document = GetComponent<UIDocument>();
@@ -31,7 +59,7 @@ public class LobbyUIManager : MonoBehaviour
         playerName = root.Q("PlayerName") as TextField;
         duration = root.Q("DurationValue") as TextField;
         // TODO Set duration only editable for host
-        
+
         playButton = root.Q("PlayButton") as Button;
         // TODO remove button if player is not host, playButton.Clear();
         playButton.clicked += Play;
@@ -44,15 +72,15 @@ public class LobbyUIManager : MonoBehaviour
     {
         // TODO set player name in game + duration
         Debug.Log("Player name: " + playerName.text + ", Game duration: " + duration.text);
-        SceneManager.LoadSceneAsync("Main");
+        (BBNetworkManager.singleton as BBNetworkManager).OnRoomServerPlayersReady();
     }
 
     private static void Quit()
     {
-        #if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-        #else
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
             Application.Quit();
-        #endif
+#endif
     }
 }
