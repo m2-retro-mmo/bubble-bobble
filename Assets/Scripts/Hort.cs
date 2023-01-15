@@ -44,12 +44,12 @@ public class Hort : NetworkBehaviour
     public void Awake()
     {
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
+        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
     }
 
     public void init(byte teamNumber)
     {
         team = teamNumber;
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
     }
 
     [Server]
@@ -61,7 +61,7 @@ public class Hort : NetworkBehaviour
 
     private void OnDiamondsChanged(int oldDiamonds, int newDiamonds)
     {
-        uIManager.AddTeamPoint(team);
+        uIManager.UpdateTeamPoints(team, newDiamonds);
     }
 
     [Server]

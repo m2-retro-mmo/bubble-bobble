@@ -82,7 +82,6 @@ public class TestCharacterBase : MonoBehaviour
                 Diamond diamond = other.GetComponent<Diamond>() as Diamond;
                 if (!holdsDiamond && !diamond.GetCollected())
                 {
-                    diamond.SetCollected(true);
                     diamond.Collect();
                     collectDiamond();
                     Debug.Log("character collided with diamond");

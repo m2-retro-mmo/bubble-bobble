@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
-using Cinemachine;
 
 public class Player : CharacterBase
 {
     // Movement
     private Vector2 moveInput;
-    private BoxCollider2D col;
+    private CapsuleCollider2D col;
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
     public GameObject shape;
-    public GameObject collidable;
 
     public float collisionOffset = 0.1f;
 
@@ -39,10 +36,7 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
         }
-        col = gameObject.GetComponentInChildren<BoxCollider2D>();
-
-        // TODO: try this but we need to change hierachy first
-        // col.gameObject.layer = LayerMask.GetMask("Player Move Collider");
+        col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
 
         LayerMask layermask = LayerMask.GetMask("Player Move Collider");
         movementFilter.SetLayerMask(layermask);
@@ -51,7 +45,7 @@ public class Player : CharacterBase
 
     private void LookAtMouse()
     {
-        Vector2 playerCenter = getCenterOfPlayer();
+        Vector2 playerCenter = rb.position;
 
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
@@ -68,12 +62,6 @@ public class Player : CharacterBase
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
-    private Vector2 getCenterOfPlayer()
-    {
-        // player rigidbody is not the center of the player --> use rb.position and add the scaled offset from the collider (=0.825)
-        return rb.position + (col.offset * shape.transform.localScale);
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -85,7 +73,7 @@ public class Player : CharacterBase
         moveInput.y = Input.GetAxis("Vertical");
 
         // shape.transform.position = rb.transform.position;
-        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb2 = GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
         mouseCam.transform.position = rb.transform.position;
@@ -123,7 +111,7 @@ public class Player : CharacterBase
     public bool MovePlayer(Vector2 direction)
     {
         // Cast returns the number of collisions that would accour when moving n the dsired direction
-        int count = rb.Cast(
+        int count = col.Cast(
             direction,
             movementFilter,
             castCollisions,

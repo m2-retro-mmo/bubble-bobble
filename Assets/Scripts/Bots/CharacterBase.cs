@@ -27,7 +27,7 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        rb = GetComponentInChildren<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();

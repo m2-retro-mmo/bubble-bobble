@@ -435,7 +435,6 @@ public class Map : NetworkBehaviour
                         int randomTree = ran.Next(1, treePrefabs.Length);
                         GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                         tree.transform.parent = treeParent.transform;
-                        NetworkServer.Spawn(tree.gameObject);
                         counter++;
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
