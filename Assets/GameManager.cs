@@ -204,4 +204,9 @@ public class GameManager : NetworkBehaviour
     {
         return this.horts;
     }
+
+    public bool GetDebugBots()
+    {
+        return this.DEBUG_BOTS;
+    }
 }

@@ -703,7 +703,7 @@ GameObject:
   - component: {fileID: 2103473426}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -730,7 +730,7 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  startGameWithBots: 0
+  startGameWithBots: 1
   DEBUG_BOTS: 0
   botPrefab: {fileID: -6257299136199735923, guid: 7221b9531972646c98196fac0c7e9247,
     type: 3}

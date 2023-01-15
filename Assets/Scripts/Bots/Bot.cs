@@ -71,7 +71,6 @@ public class Bot : CharacterBase
     {
         base.Start();
         teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
-        Debug.Log("bot diamond: " + GetHoldsDiamond().ToString());
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
     }
@@ -117,7 +116,6 @@ public class Bot : CharacterBase
         // check area every ten seconds
         while (true)
         {
-            //Debug.Log("start searching for interaction...");
             foundInteraction = false;
             // reset all priority values
             interactionPriorities = new float[5];
@@ -154,7 +152,6 @@ public class Bot : CharacterBase
         // if there are opponents who are holding a diamond set the opponents array to the opponents who are holding a diamond
         if (opponentWithDiamondColliders.Length > 0)
         {
-            //Debug.Log("opponent with diamond found");
             opponentColliders = opponentWithDiamondColliders;
             // priority for opponents who are holding a diamond is higher
             opponentPriority = 2f;
@@ -238,7 +235,10 @@ public class Bot : CharacterBase
                     detectedBubble = true;
                     bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
                     botMovement.SetGoal(bubble.transform);
-                    Debug.Log("set goal to bubble");
+                    if(DEBUG_BOTS)
+                    {
+                        Debug.Log("set goal to bubble");
+                    }
                 }
             }
         }
@@ -360,14 +360,17 @@ public class Bot : CharacterBase
             // check: did we find a new interactionId that is higher prioritized the old interaction
             if (foundInteractionID != interactionID && priorityDifference >= PRIORITY_THRESHOLD) // only change id if according priority is a given amount higher than priority of old id
             {
-                Debug.Log("all interaction priorities: \n" +
-                    "Opponent: " + interactionPriorities[0] + " \n" +
-                    "Teammate: " + interactionPriorities[1] + " \n" +
-                    "Diamond: " + interactionPriorities[2] + " \n" +
-                    "Hort: " + interactionPriorities[3] + " \n" +
-                    "Item: " + interactionPriorities[4]);
+                if(DEBUG_BOTS)
+                {
+                    Debug.Log("all interaction priorities: \n" +
+                        "Opponent: " + interactionPriorities[0] + " \n" +
+                        "Teammate: " + interactionPriorities[1] + " \n" +
+                        "Diamond: " + interactionPriorities[2] + " \n" +
+                        "Hort: " + interactionPriorities[3] + " \n" +
+                        "Item: " + interactionPriorities[4]);
 
-                Debug.Log("set goal to: " + foundInteractionID);
+                    Debug.Log("set goal to: " + foundInteractionID);
+                }
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position

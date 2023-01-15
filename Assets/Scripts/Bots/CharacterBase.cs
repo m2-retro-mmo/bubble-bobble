@@ -4,9 +4,12 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
+    private GameManager gameManager;
+
     // States
     [SyncVar] public bool holdsDiamond = false;
     [SyncVar] public bool isCaptured = false; // (hook = nameof(OnIsCapturedChanged))
+    protected bool DEBUG_BOTS;
 
     // Team
     [SyncVar][SerializeField] public byte teamNumber = 1;
@@ -26,12 +29,8 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
+        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
