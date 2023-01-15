@@ -88,7 +88,7 @@ public class Bot : CharacterBase
     public void StartBot()
     {
         StartCoroutine(CheckAreaOfInterest());
-        //StartCoroutine(CheckForBubbles());
+        StartCoroutine(CheckForBubbles());
     }
 
     IEnumerator CheckForBubbles()
