@@ -119,7 +119,7 @@ public class GameManager : NetworkBehaviour
             if (DEBUG_BOTS)
             {
                 botNumber = 1;
-                drawGraph = true;
+                //drawGraph = true;
             }
 
             Graph graph = new Graph(map, drawGraph);
@@ -230,5 +230,10 @@ public class GameManager : NetworkBehaviour
     public List<Hort> GetHorts()
     {
         return this.horts;
+    }
+
+    public bool GetDebugBots()
+    {
+        return this.DEBUG_BOTS;
     }
 }

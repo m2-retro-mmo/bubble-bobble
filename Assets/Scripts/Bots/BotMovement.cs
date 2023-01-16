@@ -46,7 +46,10 @@ public class BotMovement : Bot
 
         if (bot.GetDetectedBubble())
         {
-            Debug.Log("Bubble was detected - start avoiding");
+            if (DEBUG_BOTS)
+            {
+                Debug.Log("Bubble was detected - start avoiding");
+            }
             bot.ResetBot(3f);
 
             path = null;
@@ -62,7 +65,10 @@ public class BotMovement : Bot
         // if the Interaction ID was changed stop everything and start new interaction
         else if (bot.GetChangedInteractionID())
         {
-            Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
+            if (DEBUG_BOTS)
+            {
+                Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
+            }
 
             // reset everythin for new interaction
             path = null;
@@ -95,29 +101,35 @@ public class BotMovement : Bot
         switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
-                Debug.Log("Start follow opponent");
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow opponent");
                 StartCoroutine(FollowOpponent());
                 break;
             case InteractionID.Teammate:
-                Debug.Log("Start follow teammate");
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow teammate");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Diamond:
-                Debug.Log("Start follow diamond");
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow diamond");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
-                Debug.Log("Start follow hort"); 
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow hort"); 
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
                 StartCoroutine(FollowGoal()); 
                 break;
             case InteractionID.Item:
-                Debug.Log("Start follow item");
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow item");
                 StartCoroutine(FollowGoal());
                 break;
             case InteractionID.None:
-                Debug.Log("Start follow with nothing");
+                if (DEBUG_BOTS)
+                    Debug.Log("Start follow with nothing");
                 break;
         }
     }
@@ -141,16 +153,16 @@ public class BotMovement : Bot
                 if (distToGoal <= 0.01f)
                 {
                     StopEverything();
-                    Debug.Log("Bot Reached goal");
+                    if (DEBUG_BOTS)
+                        Debug.Log("Bot Reached goal");
                     break;
                 }
-                //transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
 
 
                 Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
-                Move(moveDirection);
+                SetAnimatorMovement(moveDirection);
             }
-            // hier noch zus�tzlich stopEverything falls goal weg
 
             yield return new WaitForSeconds(0.001f);
         }
@@ -166,7 +178,7 @@ public class BotMovement : Bot
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
 
-        CharacterBase opponent = goal.gameObject.GetComponent<CharacterBase>();
+        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>(); 
 
         while (true)
         {
@@ -183,9 +195,14 @@ public class BotMovement : Bot
 
                 if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
-                    GetComponent<Shooting>().ShootBubble();
+                    GetComponent<Shooting>().CmdShootBubble();
+                    StopEverything();
+                    break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+
+                Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
+                SetAnimatorMovement(moveDirection);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -194,8 +211,9 @@ public class BotMovement : Bot
 
             if (opponent.GetIsCaptured())
             {
+                if (DEBUG_BOTS)
+                    Debug.Log("Opponent captured");
                 StopEverything();
-                Debug.Log("Opponent captured");
                 break;
             }
 
@@ -205,26 +223,30 @@ public class BotMovement : Bot
 
     IEnumerator AvoidOpponentBubble()
     {
-        Debug.Log("---Avoid opponent bubble");
+        if (DEBUG_BOTS)
+            Debug.Log("Avoid opponent bubble");
 
         if (goal == null)
         {
-            Debug.Log("Goal is null");
+            if (DEBUG_BOTS)
+                Debug.Log("Goal is null");
             yield break;
         }
 
         float distToBubble = GetEuclideanDistance(transform.position, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 2000000f))// TODO: evtl hier den Bereich kleiner machen
+        if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
         {
-            Debug.Log("---Bubble is closer than shoot range");
+            if (DEBUG_BOTS)
+                Debug.Log("Bubble is closer than shoot range");
 
             Vector3 oldBubblePos = goal.position;
             yield return new WaitForSeconds(0.01f);
             if (goal == null)
             {
-                Debug.Log("Goal is null");
+                if (DEBUG_BOTS)
+                    Debug.Log("Goal is null");
                 StopEverything();
                 yield break;
             } 
@@ -232,7 +254,8 @@ public class BotMovement : Bot
 
             Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
-            Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
+            if (DEBUG_BOTS)
+                Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
 
             Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
 
@@ -243,7 +266,8 @@ public class BotMovement : Bot
             {
                 if (goal == null)
                 {
-                    Debug.Log("Goal is null");
+                    if (DEBUG_BOTS)
+                        Debug.Log("Goal is null");
                     StopEverything();
                     yield break;
                 }
@@ -261,11 +285,15 @@ public class BotMovement : Bot
 
                     if (distToGoal <= 0.25f)
                     {
-                        Debug.Log("Bot avoided Bubble"); // TODO: hier komme ich nicht hin
+                        if (DEBUG_BOTS)
+                            Debug.Log("Bot avoided Bubble"); 
                         StopEverything();
                         break;
                     }
                     transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+
+                    Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
+                    SetAnimatorMovement(moveDirection);
                 }
 
                 yield return new WaitForSeconds(0.001f);
@@ -274,10 +302,12 @@ public class BotMovement : Bot
         // if the bubble is further away than shootRange shoot it 
         else
         {
-            Debug.Log("---Bubble is further away than shoot range");
+            if (DEBUG_BOTS)
+                Debug.Log("Bubble is further away than shoot range");
             GetComponent<Shooting>().ShootBubble(); // TODO bubble schießt manchmal in falsche richtung
 
-            Debug.Log("Shot Bubble");
+            if (DEBUG_BOTS)
+                Debug.Log("Shot Bubble");
             StopEverything();
         }
         }
@@ -312,7 +342,8 @@ public class BotMovement : Bot
 
             if (!sameSide)
             {
-                Debug.Log("bot is on the right of shootDir");
+                if (DEBUG_BOTS)
+                    Debug.Log("bot is on the right of shootDir");
                 orthogonal = -orthogonal;
             }
 
@@ -435,7 +466,7 @@ public class BotMovement : Bot
         Vector3 lookDir = goal.position - transform.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
-        directionIndicator.position = transform.position + lookDir.normalized * 1f;
+        directionIndicator.position = transform.position + lookDir.normalized * 2f;
         directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 

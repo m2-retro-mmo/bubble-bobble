@@ -10,6 +10,7 @@ TagManager:
   - Diamond
   - Bubble
   - Hort
+  - GameManager
   layers:
   - Default
   - TransparentFX

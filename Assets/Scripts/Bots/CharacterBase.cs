@@ -4,9 +4,15 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
+
+    private GameManager gameManager;
+
     // States
     [SyncVar] public bool holdsDiamond = false;
-    [SyncVar(hook = nameof(OnIsCapturedChanged))] protected bool isCaptured = false;
+    // [SyncVar(hook = nameof(OnIsCapturedChanged))]
+    [SyncVar] public bool isCaptured = false;
+
+    protected bool DEBUG_BOTS;
 
     // Team
     [SyncVar][SerializeField] public byte teamNumber = 1;
@@ -24,8 +30,10 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
+        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     // Update is called once per frame
@@ -49,7 +57,7 @@ public class CharacterBase : NetworkBehaviour
         rb.MovePosition(rb.position + moveVector);
     }
 
-    private void SetAnimatorMovement(Vector2 direction)
+    protected void SetAnimatorMovement(Vector2 direction)
     {
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
@@ -78,6 +86,7 @@ public class CharacterBase : NetworkBehaviour
     {
         SetIsCaptured(true);
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
+        animator.SetBool("isCaptured", true);
     }
 
     /**
@@ -86,6 +95,7 @@ public class CharacterBase : NetworkBehaviour
     public void Uncapture()
     {
         SetIsCaptured(false);
+        animator.SetBool("isCaptured", false);
     }
 
     /**
@@ -93,7 +103,9 @@ public class CharacterBase : NetworkBehaviour
     */
     public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
     {
+        // Debug.Log("Heelo, Captured changed + " + newIsCaptured);
         SetIsCaptured(newIsCaptured);
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public void CaptureCharacter(int teamNumber)

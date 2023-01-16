@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 45006312}
   - component: {fileID: 3189583790749191374}
   - component: {fileID: 5786842296568961251}
-  m_Layer: 19
+  m_Layer: 20
   m_Name: Hort
   m_TagString: Hort
   m_Icon: {fileID: 0}
@@ -297,7 +297,6 @@ MonoBehaviour:
   syncInterval: 0.1
   diamonds: 0
   team: 1
-  teamPoints_text: {fileID: 0}
   plusOnePrefab: {fileID: 4114649147731558615, guid: e163b3d4071c86d188b3fca0d91a5ff2,
     type: 3}
 --- !u!114 &5786842296568961251

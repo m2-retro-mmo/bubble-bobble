@@ -374,6 +374,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986264, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986264, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -44025399
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_TileAnchor.x
@@ -703,7 +713,7 @@ GameObject:
   - component: {fileID: 2103473426}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -732,7 +742,7 @@ MonoBehaviour:
   minimapCam: {fileID: 774985694}
   startGameWithBots: 1
   DEBUG_BOTS: 0
-  botPrefab: {fileID: 2694520938517084979, guid: fe5a86dd9b61aa84f9e0f15a67c00182,
+  botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
   botNumber: 5
   gameDuration: 20
