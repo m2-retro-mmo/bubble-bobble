@@ -374,6 +374,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986264, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143538986264, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -44025399
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143538986265, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_TileAnchor.x
