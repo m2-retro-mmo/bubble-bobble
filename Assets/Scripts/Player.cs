@@ -19,7 +19,7 @@ public class Player : CharacterBase
     public Vector3 mousePosScreen = new Vector3();
 
     private Cinemachine.CinemachineBrain cinemachineBrain;
-    public float distanceFactor = 1f;
+    public float distanceFactor = 1.5f;
 
     public float itemDuration = 0;
 
@@ -60,7 +60,7 @@ public class Player : CharacterBase
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized;
+        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
         directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
     }
 
