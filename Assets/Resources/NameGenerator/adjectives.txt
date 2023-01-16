@@ -35,19 +35,15 @@ red
 salmon
 white
 yellow
-alive
 better
 careful
 clever
-dead
 easy
 famous
 gifted
-hallowed
 helpful
 important
 inexpensive
-mealy
 mushy
 odd
 poor
@@ -57,5 +53,3 @@ shy
 tender
 unimportant
 uninterested
-vast
-wrong
