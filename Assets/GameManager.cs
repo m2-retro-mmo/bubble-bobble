@@ -43,6 +43,9 @@ public class GameManager : NetworkBehaviour
 
     private List<Hort> horts;
 
+    private byte playerCounterTeam0 = 0;
+    private byte playerCounterTeam1 = 0;
+
     private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
     {
         foreach (Player player in FindObjectsOfType<Player>())
@@ -55,8 +58,21 @@ public class GameManager : NetworkBehaviour
         }
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+
+        byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
+
+        if(teamNumber == 0)
+        {
+            playerCounterTeam0++;
+        }
+        else
+        {
+            playerCounterTeam1++;
+        }
+
+        p.SetTeamNumber(teamNumber);
+
         map.PlaceCharacter(p);
-        //p.SetTeamNumber(1);
         NetworkServer.AddPlayerForConnection(conn, p.gameObject);
     }
 
