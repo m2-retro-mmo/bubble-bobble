@@ -17,7 +17,9 @@ public class Player : CharacterBase
     public Vector2 mousePosWorld;
     public Camera cam;
     public Vector3 mousePosScreen = new Vector3();
-    public float distanceFactor = 2f;
+
+    private Cinemachine.CinemachineBrain cinemachineBrain;
+    public float distanceFactor = 1.5f;
 
     public float itemDuration = 0;
 
@@ -36,6 +38,7 @@ public class Player : CharacterBase
             cm.m_Lens.OrthographicSize = 10;
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
+        cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
 
         LayerMask layermask = LayerMask.GetMask("Player Move Collider");
         movementFilter.SetLayerMask(layermask);
@@ -44,21 +47,21 @@ public class Player : CharacterBase
 
     private void LookAtMouse()
     {
-        Vector2 playerCenter = rb.position;
+        Vector2 playerCenter = shape.transform.position;
 
         // transform mouse screen coordinates into world coordinates
         mousePosScreen.x = Input.mousePosition.x;
         mousePosScreen.y = Input.mousePosition.y;
-        mousePosScreen.z = cam.transform.position.z;
+        mousePosScreen.z = -40;
         mousePosWorld = (Vector2)cam.ScreenToWorldPoint(mousePosScreen);
 
         // rotate the player 
-        Vector2 lookDir = mousePosWorld - playerCenter;
+        Vector2 lookDir = playerCenter - mousePosWorld - (Vector2)cinemachineBrain.CurrentCameraState.PositionCorrection;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
         // set position of direction indicator
-        directionIndicator.transform.position = (Vector2)playerCenter + lookDir.normalized * distanceFactor;
-        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        directionIndicator.transform.position = (Vector2)playerCenter - lookDir.normalized * distanceFactor;
+        directionIndicator.transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
     }
 
     // Update is called once per frame
