@@ -40,7 +40,8 @@ public class Player : CharacterBase
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
         cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
 
-        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground" };
+        LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
     }
