@@ -36,6 +36,7 @@ public class Hort : NetworkBehaviour
     public static byte scale = 1;
 
     private UIManager uIManager;
+    private Map map;
 
     [Header("UI Text")]
 
@@ -46,6 +47,7 @@ public class Hort : NetworkBehaviour
     {
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
         uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+        map = GameObject.Find("Map").GetComponent<Map>();
     }
 
     public void init(byte teamNumber)
@@ -60,6 +62,7 @@ public class Hort : NetworkBehaviour
     public void AddDiamond()
     {
         diamonds++;
+        map.UpdateSpawnedDiamond(-1);
         SpawnPlusOne();
     }
 
