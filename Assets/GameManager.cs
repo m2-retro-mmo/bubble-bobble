@@ -100,15 +100,6 @@ public class GameManager : NetworkBehaviour
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
 
-        // get all connections and instanciate a player for each connection
-        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
-        {
-            if (conn != null)
-            {
-                CreatePlayer(conn, new CreatePlayerMessage());
-            }
-        }
-
         if (startGameWithBots)
         {
             bots = new GameObject("Bots");
@@ -122,11 +113,20 @@ public class GameManager : NetworkBehaviour
             }
 
             graph = new Graph(map, drawGraph);
+        }
 
-            if (DEBUG_BOTS)
+        // get all connections and instanciate a player for each connection
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn != null)
             {
-                AddBots(1);
+                CreatePlayer(conn, new CreatePlayerMessage());
             }
+        }
+
+        if (DEBUG_BOTS)
+        {
+            AddBots(1);
         }
 
         // register connection handler function

@@ -1,6 +1,5 @@
 using UnityEngine;
 using Mirror;
-using UnityEditor.Experimental.GraphView;
 
 
 public class CharacterBase : NetworkBehaviour
