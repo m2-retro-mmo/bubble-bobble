@@ -517,7 +517,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8755906794819694823}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8189573883149377053
 SpriteRenderer:
@@ -780,7 +780,7 @@ MonoBehaviour:
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
   itemDuration: 0
-  playerName: {fileID: 529653101480904807}
+  playerNameGUI: {fileID: 529653101480904807}
 --- !u!114 &8755906794819694818
 MonoBehaviour:
   m_ObjectHideFlags: 0
