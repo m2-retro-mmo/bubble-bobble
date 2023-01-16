@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Player : CharacterBase
 {
@@ -23,6 +24,8 @@ public class Player : CharacterBase
 
     public float itemDuration = 0;
 
+    public TextMeshProUGUI playerName;
+
     // Start is called before the first frame update
     public override void Start()
     {
@@ -44,6 +47,9 @@ public class Player : CharacterBase
         LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
+
+        // TODO: get playerName from Lobby
+        playerName.text = "Test123";
     }
 
     private void LookAtMouse()
