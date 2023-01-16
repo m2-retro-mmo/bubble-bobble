@@ -96,6 +96,7 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Capture()
     {
+        if (isCaptured || captureBubble) return;
         SetIsCaptured(true);
         SetPlayerLevel(CAPTURED_LAYER);
         SpawnCaptureBubble();
