@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
-
     private CharacterBase player;
+
     private void Start()
     {
         player = gameObject.GetComponentInParent<CharacterBase>();
@@ -21,6 +21,8 @@ public class PlayerCollision : MonoBehaviour
     */
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // check if player is set
+        if (player == null) return;
         switch (other.gameObject.tag)
         {
             case "Diamond":
@@ -46,11 +48,10 @@ public class PlayerCollision : MonoBehaviour
                 }
                 break;
             case "CaptureBubble":
-                Debug.Log("character collided with captured player");
-                CharacterBase capturedPlayer = other.gameObject.GetComponent<CaptureBubble>().player;
+                CharacterBase capturedPlayer = other.gameObject.GetComponentInParent<CharacterBase>();
                 // uncapture player if it's a teammate
-                if (player.teamNumber == capturedPlayer.GetTeamNumber()){
-                    Debug.Log("captured player is a teammate -> uncapture");
+                if (player.teamNumber == capturedPlayer.GetTeamNumber())
+                {
                     capturedPlayer.Uncapture();
                 }
                 break;

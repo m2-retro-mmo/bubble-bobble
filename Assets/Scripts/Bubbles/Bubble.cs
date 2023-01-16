@@ -29,24 +29,24 @@ public class Bubble : NetworkBehaviour
         UpdateAppearance();
     }
 
-    private void UpdateAppearance() {
-        if (teamNumber != 1) {
+    private void UpdateAppearance()
+    {
+        if (teamNumber != 1)
+        {
             GetComponent<SpriteRenderer>().sprite = teamBSprite;
         }
     }
 
-    /// <summary>
-    /// this method is called when the bubble collides with another object
-    /// it handles the event that happens 
-    /// </summary>
-    /// <param name="collision">The collision</param>
+    /**
+     * this method is called when the bubble collides with another object it handles the event that happens 
+     */
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isServer) return;
 
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            collision.gameObject.SendMessage("CaptureCharacter", teamNumber);
+            collision.gameObject.SendMessage("Capture", teamNumber);
         }
         // destroy bubble instantly no matter which collision was detected
         Destroy(gameObject, 0);

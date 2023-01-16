@@ -70,7 +70,7 @@ public class Bot : CharacterBase
     {
         botMovement = GetComponent<BotMovement>();
     }
-    [Server]
+
     public override void Start()
     {
         base.Start();
