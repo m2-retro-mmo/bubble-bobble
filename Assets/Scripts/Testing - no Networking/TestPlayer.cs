@@ -10,7 +10,6 @@ public class TestPlayer : TestCharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
-    public GameObject shape;
     public GameObject collidable;
 
     public float collisionOffset = 0.1f;
@@ -75,9 +74,10 @@ public class TestPlayer : TestCharacterBase
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.y = Input.GetAxis("Vertical");
 
-        Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
-        rb2.transform.position = rb.transform.position;
-        cam.transform.position = rb.transform.position;
+        // not needed anymore, if new Movement via transform.position works properly
+        //Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        //rb2.transform.position = rb.transform.position;
+        //cam.transform.position = rb.transform.position;
     }
 
     private void FixedUpdate()

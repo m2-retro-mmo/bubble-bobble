@@ -32,7 +32,7 @@ public class TestBubble : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
         {
-            collision.gameObject.SendMessage("CaptureCharacter", teamNumber);
+            collision.gameObject.transform.parent.gameObject.SendMessage("CaptureCharacter", teamNumber);
         }
         // destroy bubble instantly no matter which collision was detected
         Destroy(gameObject, 0);

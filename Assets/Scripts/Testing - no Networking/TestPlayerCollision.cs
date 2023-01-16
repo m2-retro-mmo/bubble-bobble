@@ -9,7 +9,6 @@ public class TestPlayerCollision : MonoBehaviour
     private void Start()
     {
         player = gameObject.GetComponentInParent<TestCharacterBase>();
-        Debug.Log(player);
     }
 
     /**

@@ -18,6 +18,7 @@ public class CharacterBase : NetworkBehaviour
     // Animations
     protected Animator animator;
     protected Renderer rend;
+    protected GameObject shape;
     [SerializeField] protected Material teamBMaterial;
     [SerializeField] protected CaptureBubble chaptureBubblePrefab;
     private CaptureBubble captureBubble;
@@ -33,7 +34,9 @@ public class CharacterBase : NetworkBehaviour
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         rend = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
-        defaultLayer = LayerMask.LayerToName(gameObject.layer);
+        shape = transform.Find("Shape").gameObject;
+        defaultLayer = LayerMask.LayerToName(shape.layer);
+        SetTeamColor();
     }
 
     // Update is called once per frame
@@ -58,9 +61,13 @@ public class CharacterBase : NetworkBehaviour
 
     protected void Move(Vector2 direction)
     {
-        Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
+        //Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
+        //rb.MovePosition(rb.position + moveVector);
+
         SetAnimatorMovement(direction);
-        rb.MovePosition(rb.position + moveVector);
+
+        // new movement via tranform.position to fix bug, that only the rigidbody of the character'parent node is moved, but not the transform or it's children
+        transform.position = transform.position + new Vector3(direction.x * speed * Time.deltaTime, direction.y * speed * Time.deltaTime, 0);
     }
 
     private void SetAnimatorMovement(Vector2 direction)
@@ -98,6 +105,10 @@ public class CharacterBase : NetworkBehaviour
     }
 
     private void SpawnCaptureBubble(){
+        // commented out code is not needed if new player movement works
+
+        /*Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        captureBubble = Instantiate(chaptureBubblePrefab, rb2.position, chaptureBubblePrefab.transform.rotation);*/
         captureBubble = Instantiate(chaptureBubblePrefab, transform.position, transform.rotation);
         captureBubble.player = this;
     }
@@ -107,9 +118,8 @@ public class CharacterBase : NetworkBehaviour
     }
 
     private void SetPlayerLevel(string levelname){
-        // player needs to be set to a level, that does not collide with anything, so that the captureBubble can take over all collisions with others
-
-        gameObject.layer = LayerMask.NameToLayer(levelname);
+        // player's shape needs to be set to a level, that does not collide with anything, so that the captureBubble can take over all collisions with others
+        shape.layer = LayerMask.NameToLayer(levelname);
     }
 
     /**
@@ -159,6 +169,7 @@ public class CharacterBase : NetworkBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()
