@@ -12,8 +12,6 @@ This class handles:
 public class GameManager : NetworkBehaviour
 {
 
-    public float characterSpawnOffsetX = 0.45f;
-    public float characterSpawnOffsetY = 0.8f;
 
     public Player playerPrefab;
     public Hort hortPrefab;
@@ -57,7 +55,7 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        Player p = Instantiate(playerPrefab, new Vector3(((float)22) + characterSpawnOffsetX, ((float)22) + characterSpawnOffsetY, 0), Quaternion.identity);
+        Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
         map.PlaceCharacter(p);
         p.SetTeamNumber(1);
         NetworkServer.AddPlayerForConnection(conn, p.gameObject);
@@ -106,7 +104,7 @@ public class GameManager : NetworkBehaviour
             {
                 // spawn a bot
                 // TODO: spawn the bot within the bounds of the map
-                Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + characterSpawnOffsetX, ((float)22) + characterSpawnOffsetY, 0), Quaternion.identity);
+                Bot bot = Instantiate(botPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
                 bot.transform.parent = bots.transform;
 
                 bot.SetTeamNumber(0); // TODO set team number randomly
