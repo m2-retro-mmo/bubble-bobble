@@ -621,8 +621,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   holdsDiamond: 0
+  isCaptured: 0
   teamNumber: 1
   speed: 5
+  teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
   interactionID: 5
   foundInteraction: 0
   changedInteractionID: 0
@@ -643,8 +645,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   holdsDiamond: 0
+  isCaptured: 0
   teamNumber: 1
   speed: 5
+  teamBMaterial: {fileID: 0}
   interactionID: 5
   foundInteraction: 0
   changedInteractionID: 0
