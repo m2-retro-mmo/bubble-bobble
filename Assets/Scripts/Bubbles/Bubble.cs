@@ -17,9 +17,13 @@ public class Bubble : NetworkBehaviour
     private int teamNumber = -1;
 
     private bool avoidedByBot = false;
+    [SerializeField] private Sprite teamBSprite;
 
     private void Start()
     {
+        if (teamNumber != 1) {
+            GetComponent<SpriteRenderer>().sprite = teamBSprite;
+        }
         // destroy bubble after 5 seconds if no Player was captured
         Destroy(gameObject, bubbleLifeTime);
     }
