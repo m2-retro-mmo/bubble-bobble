@@ -472,10 +472,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   firePoint: {fileID: 8755906793989592806}
-  bubblePrefab: {fileID: 8163775536198988558, guid: 0257f72f9386e48c9997ca8bbda1e4ce,
+  bubblePrefab: {fileID: 8163775536198988558, guid: f64f195c8a0383349bf56cfc1a008509,
     type: 3}
   fireRate: 0.4
-  bubbleForce: 20
+  bubbleForce: 10
   bubbleCoolDownTime: 3
   bubbleCount_text: {fileID: 0}
 --- !u!114 &1123104192531228010
@@ -626,6 +626,8 @@ MonoBehaviour:
   speed: 5
   collideableRenderer: {fileID: 5786438884688892800}
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
+  captureBubblePrefab: {fileID: 4136545206852165549, guid: 93efc6229953b0747a71086da6f7b75d,
+    type: 3}
   interactionID: 5
   foundInteraction: 0
   changedInteractionID: 0

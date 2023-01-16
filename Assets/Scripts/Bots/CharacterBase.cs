@@ -18,16 +18,22 @@ public class CharacterBase : NetworkBehaviour
     // Animations
     protected Animator animator;
     [SerializeField] protected Renderer collideableRenderer;
+    protected GameObject shape;
     [SerializeField] protected Material teamBMaterial;
-
+    public CaptureBubble captureBubblePrefab;
+    private CaptureBubble captureBubble;
+    public const string CAPTURED_LAYER = "CapturedPlayersLayer";
+    private string defaultLayer;
     // Constants
-    public const float BUBBLE_BREAKOUT_TIME = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 10f;
 
     // Start is called before the first frame update
     public virtual void Start()
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        shape = transform.Find("Shape").gameObject;
+        defaultLayer = LayerMask.LayerToName(shape.layer);
         SetTeamColor();
     }
 
@@ -90,9 +96,30 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Capture()
     {
+        if (isCaptured || captureBubble) return;
         SetIsCaptured(true);
+        SetPlayerLevel(CAPTURED_LAYER);
+        SpawnCaptureBubble();
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
-        animator.SetBool("isCaptured", true);
+    }
+
+    private void SetPlayerLevel(string levelname){
+        // player's shape needs to be set to a level, that does not collide with anything, so that the captureBubble can take over all collisions with others
+        shape.layer = LayerMask.NameToLayer(levelname);
+    }
+
+    private void SpawnCaptureBubble(){
+        // commented out code is not needed if new player movement works
+
+        /*Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
+        captureBubble = Instantiate(chaptureBubblePrefab, rb2.position, chaptureBubblePrefab.transform.rotation);*/
+        Debug.Log(captureBubblePrefab);
+        captureBubble = Instantiate(captureBubblePrefab, transform.position, transform.rotation);
+        captureBubble.player = this;
+    }
+
+    private void DeleteCaptureBubble(){
+        Destroy(captureBubble.gameObject);
     }
 
     /**
@@ -100,8 +127,11 @@ public class CharacterBase : NetworkBehaviour
     */
     public void Uncapture()
     {
-        SetIsCaptured(false);
-        animator.SetBool("isCaptured", false);
+        if (isCaptured && captureBubble) {
+            DeleteCaptureBubble();
+            SetPlayerLevel(defaultLayer);
+            SetIsCaptured(false);
+        }
     }
 
     /**
@@ -140,6 +170,7 @@ public class CharacterBase : NetworkBehaviour
     public void SetIsCaptured(bool newIsCaptured)
     {
         isCaptured = newIsCaptured;
+        animator.SetBool("isCaptured", newIsCaptured);
     }
 
     public bool GetIsCaptured()
