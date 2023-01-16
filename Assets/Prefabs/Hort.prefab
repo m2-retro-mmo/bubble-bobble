@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: -44025399
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9dc36a0dd7868044683e7800e727d3d9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7af7d0e84b7354848a2ca9e624094e64, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -297,6 +297,7 @@ MonoBehaviour:
   syncInterval: 0.1
   diamonds: 0
   team: 1
+  teamBMaterial: {fileID: 2100000, guid: a4c5040620629144f86a0e41f44c7f0b, type: 2}
   plusOnePrefab: {fileID: 4114649147731558615, guid: e163b3d4071c86d188b3fca0d91a5ff2,
     type: 3}
 --- !u!114 &5786842296568961251
