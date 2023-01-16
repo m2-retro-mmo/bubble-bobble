@@ -25,7 +25,7 @@ public class Shooting : NetworkBehaviour
 
     [SerializeField]
     [Tooltip("The force with which the bubble is shot")]
-    private float bubbleForce = 2f;
+    private float bubbleForce = 10f;
 
     [SerializeField]
     [Tooltip("The time in seconds after which the bubble count will be incremented")]
