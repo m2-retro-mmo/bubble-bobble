@@ -12,6 +12,7 @@ This class handles:
 public class GameManager : NetworkBehaviour
 {
 
+
     public Player playerPrefab;
     public Hort hortPrefab;
     public Map map;
@@ -54,7 +55,7 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+        Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
         map.PlaceCharacter(p);
         p.SetTeamNumber(1);
         NetworkServer.AddPlayerForConnection(conn, p.gameObject);
@@ -103,7 +104,7 @@ public class GameManager : NetworkBehaviour
             {
                 // spawn a bot
                 // TODO: spawn the bot within the bounds of the map
-                Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+                Bot bot = Instantiate(botPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
                 bot.transform.parent = bots.transform;
 
                 bot.SetTeamNumber(0); // TODO set team number randomly
@@ -143,7 +144,8 @@ public class GameManager : NetworkBehaviour
             {
                 gameDuration -= Time.deltaTime;
                 uIManager.SetDuration(gameDuration);
-            } else 
+            }
+            else
             {
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
@@ -160,13 +162,13 @@ public class GameManager : NetworkBehaviour
     {
         Vector3 botPos = new Vector3(-1, -1, 0);
         bool foundTile = false;
-        while(!foundTile)
+        while (!foundTile)
         {
             int x = Random.Range(playerX - 5, playerX + 5);
             int y = Random.Range(playerY - 5, playerY + 5);
             botPos.x = x;
             botPos.y = y;
-            if(map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
+            if (map.TileIsFree((int)botPos.x, (int)botPos.y) == true && (botPos.x != playerX || botPos.y != playerY))
             {
                 foundTile = true;
             }
@@ -177,7 +179,7 @@ public class GameManager : NetworkBehaviour
     public void DetermineWinner(List<Hort> horts)
     {
         TeamPoints winner = new TeamPoints(0, 0);
-        foreach (Hort hort in horts) 
+        foreach (Hort hort in horts)
         {
             Debug.Log(hort.GetTeamPoints());
             TeamPoints tp = hort.GetTeamPoints();
@@ -187,10 +189,12 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (winner.GetPoints() == 0) 
+        if (winner.GetPoints() == 0)
         {
             Debug.Log("There is no winner!");
-        } else {
+        }
+        else
+        {
             Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
         }
     }
@@ -200,7 +204,7 @@ public class GameManager : NetworkBehaviour
         this.horts = horts;
     }
 
-    public List<Hort> GetHorts() 
+    public List<Hort> GetHorts()
     {
         return this.horts;
     }

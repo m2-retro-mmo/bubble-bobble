@@ -158,6 +158,10 @@ public class Map : NetworkBehaviour
     private GeneratorData generatorData;
     private System.Random ran;
 
+    public float characterSpawnOffsetX = 0.45f;
+    public float characterSpawnOffsetY = 0.8f;
+
+
     [Server]
     public List<Hort> NewMap()
     {
@@ -670,7 +674,7 @@ public class Map : NetworkBehaviour
             if (TileIsFree(randomX, randomY)) break;
         }
 
-        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        character.transform.position = new Vector3(randomX + characterSpawnOffsetX, randomY + characterSpawnOffsetY, 0);
     }
 
     public int GetWidth()
