@@ -141,7 +141,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  bubbleLifeTime: 5
+  bubbleLifeTime: 10
   teamNumber: -1
   teamBSprite: {fileID: 21300000, guid: 1e8ba53806142d34984bc6e2e3fe4304, type: 3}
 --- !u!114 &7042332057259455667
