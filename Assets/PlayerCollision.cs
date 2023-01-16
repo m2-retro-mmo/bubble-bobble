@@ -45,6 +45,15 @@ public class PlayerCollision : MonoBehaviour
                     }
                 }
                 break;
+            case "CaptureBubble":
+                Debug.Log("character collided with captured player");
+                CharacterBase capturedPlayer = other.gameObject.GetComponent<CaptureBubble>().player;
+                // uncapture player if it's a teammate
+                if (player.teamNumber == capturedPlayer.GetTeamNumber()){
+                    Debug.Log("captured player is a teammate -> uncapture");
+                    capturedPlayer.Uncapture();
+                }
+                break;
             default:
                 break;
         }
