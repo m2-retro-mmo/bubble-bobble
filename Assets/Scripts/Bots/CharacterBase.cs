@@ -1,7 +1,6 @@
 using UnityEngine;
 using Mirror;
 
-
 public class CharacterBase : NetworkBehaviour
 {
     // States
@@ -10,7 +9,7 @@ public class CharacterBase : NetworkBehaviour
     [SyncVar] public bool isCaptured = false;
 
     // Team
-    [SyncVar][SerializeField] public byte teamNumber = 1;
+    [SyncVar(hook = nameof(OnTeamNumberChanged))] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -18,7 +17,7 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
-    protected Renderer collideableRenderer;
+    [SerializeField] protected Renderer collideableRenderer;
     [SerializeField] protected Material teamBMaterial;
 
     // Constants
@@ -29,7 +28,6 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        collideableRenderer = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
         SetTeamColor();
     }
 
@@ -45,6 +43,10 @@ public class CharacterBase : NetworkBehaviour
         }
     }
 
+    void OnTeamNumberChanged(byte oldTeamNumber, byte newTeamNumber)
+    {
+        SetTeamColor();
+    }
 
     public Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
     {
@@ -163,5 +165,11 @@ public class CharacterBase : NetworkBehaviour
     public float GetSpeed()
     {
         return speed;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = teamNumber == 1 ? Color.red : Color.yellow;
+        Gizmos.DrawWireCube(transform.position, new Vector3(3, 3, 0));
     }
 }
