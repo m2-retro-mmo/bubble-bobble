@@ -40,7 +40,7 @@ GraphicsSettings:
   m_CustomRenderPipeline: {fileID: 11400000, guid: 0c500c37542c66840bae950d194be2ff,
     type: 2}
   m_TransparencySortMode: 3
-  m_TransparencySortAxis: {x: 0, y: 1, z: 1}
+  m_TransparencySortAxis: {x: 0, y: 1, z: 0}
   m_DefaultRenderingPath: 1
   m_DefaultMobileRenderingPath: 1
   m_TierSettings: []
@@ -58,7 +58,9 @@ GraphicsSettings:
   m_FogKeepExp2: 1
   m_AlbedoSwatchInfos: []
   m_LightsUseLinearIntensity: 0
-  m_LightsUseColorTemperature: 0
+  m_LightsUseColorTemperature: 1
   m_DefaultRenderingLayerMask: 1
   m_LogWhenShaderIsCompiled: 0
-  m_SRPDefaultSettings: {}
+  m_SRPDefaultSettings:
+    UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: 78c79229a88d07846a995f311ee8afc7,
+      type: 2}
