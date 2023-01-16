@@ -70,7 +70,6 @@ public class Bot : CharacterBase
     public override void Start()
     {
         base.Start();
-        teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
     }
