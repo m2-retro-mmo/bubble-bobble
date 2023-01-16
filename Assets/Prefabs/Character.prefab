@@ -508,6 +508,7 @@ MonoBehaviour:
   isCaptured: 0
   teamNumber: 2
   speed: 5
+  collideableRenderer: {fileID: 5786438884688892800}
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
   directionIndicator: {fileID: 8755906793960408082}
   shape: {fileID: 403649183340406875}
@@ -646,8 +647,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.19119608, y: -1.2330344}
-  m_Size: {x: 3.864623, y: 2.985248}
+  m_Offset: {x: 0.11378752, y: -1.2330345}
+  m_Size: {x: 2.9852483, y: 2.9852483}
   m_Direction: 1
 --- !u!114 &2431136168717951391
 MonoBehaviour:

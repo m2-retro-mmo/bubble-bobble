@@ -38,7 +38,7 @@ public struct GeneratorData
     public IntVec2[] hortLocations;
     public int probabilityObstaclesGeneral;
     public int probabilityPillar;
-    public int probabilityBushes;
+
     public int probabilityDecorations;
     public int probabilityTrees;
     public int diamondSpawnDelay;
@@ -55,11 +55,10 @@ public struct GeneratorData
         hortScale = 7;
         teams = 2;
         hortLocations = HortLocations(s, teams, width, height, hortScale);
-        probabilityObstaclesGeneral = 6;
-        probabilityPillar = 20;
-        probabilityBushes = 30;
-        probabilityDecorations = 30;
-        probabilityTrees = 20;
+        probabilityObstaclesGeneral = 5;
+        probabilityPillar = 30;
+        probabilityDecorations = 40;
+        probabilityTrees = 30;
         diamondSpawnDelay = 20;
         diamondSpawnCount = 30;
         diamondCount = 0;
@@ -157,6 +156,10 @@ public class Map : NetworkBehaviour
     [SyncVar(hook = nameof(OnNewMap))]
     private GeneratorData generatorData;
     private System.Random ran;
+
+    public float characterSpawnOffsetX = 0.45f;
+    public float characterSpawnOffsetY = 0.8f;
+
 
     [Server]
     public List<Hort> NewMap()
@@ -433,7 +436,7 @@ public class Map : NetworkBehaviour
                 // check if position is water 
                 if (TileIsFree(x, y) && ran.Next(0, 100) < 6)
                 {
-                    int randomValue = ran.Next(0, generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
+                    int randomValue = ran.Next(0, generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
                     if (randomValue < generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
@@ -442,15 +445,7 @@ public class Map : NetworkBehaviour
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar)
-                    {
-                        obstacleTilemap.SetTile(new Vector3Int(x, y, 0), bushes[ran.Next(0, bushes.Length)]);
-                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
-                        counter++;
-                        isWalkable[x, y] = false;
-                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
-                    }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations)
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), accessoirs[ran.Next(0, accessoirs.Length)]);
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
@@ -458,7 +453,7 @@ public class Map : NetworkBehaviour
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
                     {
                         int randomTree = ran.Next(1, treePrefabs.Length);
                         GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
@@ -670,7 +665,7 @@ public class Map : NetworkBehaviour
             if (TileIsFree(randomX, randomY)) break;
         }
 
-        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        character.transform.position = new Vector3(randomX + characterSpawnOffsetX, randomY + characterSpawnOffsetY, 0);
     }
 
     public int GetWidth()

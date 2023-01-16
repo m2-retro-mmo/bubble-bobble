@@ -7,10 +7,14 @@ using System.Linq;
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
 /// </summary>
-public class BotMovement : Bot
+public class BotMovement : MonoBehaviour
 {
     [HideInInspector]
     public Transform goal;
+
+    private GameManager gameManager;
+
+    private bool DEBUG_BOTS;
 
     private float shootRange = 200f;
 
@@ -28,28 +32,29 @@ public class BotMovement : Bot
 
     private GameObject goalHolder;
 
-    public override void Start()
+    public void Start()
     {
-        base.Start();
         bot = GetComponent<Bot>();
         directionIndicator = transform.Find("Triangle");
 
         // object holder for the transform of the goal if the interactionId is hort
         goalHolder = new GameObject();
         goalHolder.hideFlags = HideFlags.HideInHierarchy;
+
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
+        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     private void Update()
     {
         // return if not server
-        if (!isServer) return;
+        if (!bot.isServer) return;
 
         if (bot.GetDetectedBubble())
         {
             if (DEBUG_BOTS)
-            {
                 Debug.Log("Bubble was detected - start avoiding");
-            }
+            
             bot.ResetBot(3f);
 
             path = null;
@@ -157,11 +162,11 @@ public class BotMovement : Bot
                         Debug.Log("Bot Reached goal");
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
+                
 
-
-                Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
-                SetAnimatorMovement(moveDirection);
+                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
+                bot.SetAnimatorMovement(moveDirection);
             }
 
             yield return new WaitForSeconds(0.001f);
@@ -199,10 +204,10 @@ public class BotMovement : Bot
                     StopEverything();
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
 
-                Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
-                SetAnimatorMovement(moveDirection);
+                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
+                bot.SetAnimatorMovement(moveDirection);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -290,10 +295,10 @@ public class BotMovement : Bot
                         StopEverything();
                         break;
                     }
-                    transform.position = Vector3.MoveTowards(transform.position, nextNode, speed * Time.deltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
 
-                    Vector2 moveDirection = transformTargetNodeIntoDirection(nextNode);
-                    SetAnimatorMovement(moveDirection);
+                    Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
+                    bot.SetAnimatorMovement(moveDirection);
                 }
 
                 yield return new WaitForSeconds(0.001f);

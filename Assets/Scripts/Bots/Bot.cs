@@ -56,6 +56,10 @@ public class Bot : CharacterBase
 
     private Transform hort;
 
+    private GameManager gameManager;
+
+    private bool DEBUG_BOTS;
+
     private const float PRIORITY_THRESHOLD = 1f;
 
     private const float REFRESH_RATE_GOAL = 10f;
@@ -70,9 +74,11 @@ public class Bot : CharacterBase
     public override void Start()
     {
         base.Start();
-        teamNumber = 0; // TODO: sp�ter anders l�sen, nur zum testen
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
+
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
+        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     public void ResetBot(float restartTime)
