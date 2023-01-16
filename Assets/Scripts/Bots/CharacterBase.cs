@@ -23,6 +23,8 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
+    protected Renderer collideableRenderer;
+    [SerializeField] protected Material teamBMaterial;
 
     // Constants
     public const float BUBBLE_BREAKOUT_TIME = 5f;
@@ -32,6 +34,8 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        collideableRenderer = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
+        SetTeamColor();
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();
     }
@@ -41,6 +45,13 @@ public class CharacterBase : NetworkBehaviour
     {
 
     }
+
+    void SetTeamColor(){
+        if (teamNumber != 1) {
+            collideableRenderer.material = teamBMaterial;
+        }
+    }
+
 
     protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
     {

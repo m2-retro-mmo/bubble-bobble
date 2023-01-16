@@ -56,7 +56,7 @@ public class GameManager : NetworkBehaviour
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
         map.PlaceCharacter(p);
-        p.SetTeamNumber(1);
+        //p.SetTeamNumber(1);
         NetworkServer.AddPlayerForConnection(conn, p.gameObject);
     }
 
