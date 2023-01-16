@@ -49,7 +49,7 @@ public class Player : CharacterBase
         movementFilter.useLayerMask = true;
 
         // TODO: get playerName from Lobby
-        playerName.text = "Test123";
+        playerName.text = NameGenerator.GetRandomName();
     }
 
     private void LookAtMouse()
