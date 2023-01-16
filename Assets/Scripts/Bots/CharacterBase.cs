@@ -1,21 +1,15 @@
 using UnityEngine;
 using Mirror;
 
-
 public class CharacterBase : NetworkBehaviour
 {
-
-    private GameManager gameManager;
-
     // States
     [SyncVar] public bool holdsDiamond = false;
     // [SyncVar(hook = nameof(OnIsCapturedChanged))]
     [SyncVar] public bool isCaptured = false;
 
-    protected bool DEBUG_BOTS;
-
     // Team
-    [SyncVar][SerializeField] public byte teamNumber = 1;
+    [SyncVar(hook = nameof(OnTeamNumberChanged))] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -23,7 +17,7 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
-    protected Renderer collideableRenderer;
+    [SerializeField] protected Renderer collideableRenderer;
     [SerializeField] protected Material teamBMaterial;
 
     // Constants
@@ -34,10 +28,7 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        collideableRenderer = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
         SetTeamColor();
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
-        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     // Update is called once per frame
@@ -52,8 +43,12 @@ public class CharacterBase : NetworkBehaviour
         }
     }
 
+    void OnTeamNumberChanged(byte oldTeamNumber, byte newTeamNumber)
+    {
+        SetTeamColor();
+    }
 
-    protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
+    public Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
     {
         Vector2 target = targetNode;
         Vector2 moveDirection = (target - rb.position);
@@ -68,7 +63,7 @@ public class CharacterBase : NetworkBehaviour
         rb.MovePosition(rb.position + moveVector);
     }
 
-    protected void SetAnimatorMovement(Vector2 direction)
+    public void SetAnimatorMovement(Vector2 direction)
     {
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
@@ -160,5 +155,21 @@ public class CharacterBase : NetworkBehaviour
     public bool GetHoldsDiamond()
     {
         return holdsDiamond;
+    }
+
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = teamNumber == 1 ? Color.red : Color.yellow;
+        Gizmos.DrawWireCube(transform.position, new Vector3(3, 3, 0));
     }
 }

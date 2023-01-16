@@ -666,6 +666,7 @@ MonoBehaviour:
   isCaptured: 0
   teamNumber: 1
   speed: 5
+  collideableRenderer: {fileID: 5786438884688892800}
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
   directionIndicator: {fileID: 8755906793960408082}
   shape: {fileID: 403649183340406875}
