@@ -48,10 +48,21 @@ public class Hort : NetworkBehaviour
         uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
     }
 
+    [Server]
     public void init(byte teamNumber)
     {
         team = teamNumber;
-        if (teamNumber != 1) {
+        updateAfterTeamChange();
+    }
+
+    public override void OnStartClient()
+    {
+        updateAfterTeamChange();
+    }
+
+    private void updateAfterTeamChange()
+    {
+        if (team != 1) {
             GetComponent<Renderer>().material = teamBMaterial;
         }
     }

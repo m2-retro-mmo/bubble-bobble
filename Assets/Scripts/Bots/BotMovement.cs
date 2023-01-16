@@ -200,7 +200,7 @@ public class BotMovement : MonoBehaviour
 
                 if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
                 {
-                    GetComponent<Shooting>().CmdShootBubble();
+                    GetComponent<Shooting>().ShootBubble();
                     StopEverything();
                     break;
                 }

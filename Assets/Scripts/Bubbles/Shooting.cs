@@ -42,7 +42,7 @@ public class Shooting : NetworkBehaviour
 
     private int maxBubbleCount = 3;
 
-    private int bubbleCount = 3;
+    [SyncVar(hook = nameof(OnBubbleCountChanged))] private int bubbleCount = 3;
 
     private float nextIncrementTime = 0;
 
@@ -77,7 +77,7 @@ public class Shooting : NetworkBehaviour
         }
     }
 
-    [Command(requiresAuthority = false)]
+    [Command]
     public void CmdShootBubble()
     {
         ShootBubble();
@@ -115,6 +115,12 @@ public class Shooting : NetworkBehaviour
                 lastShootTime = Time.time;
             }
         }
+    }
+
+    void OnBubbleCountChanged(int oldBubbleCount, int newBubbleCount)
+    {
+        if (!isLocalPlayer) return;
+        uIManager.SetBubbleCount(bubbleCount);
     }
 
     /// <summary>

@@ -73,6 +73,7 @@ public class Player : CharacterBase
     // Update is called once per frame
     void Update()
     {
+        if (!isLocalPlayer) return;
         if (Input.GetButton("Fire1"))
         {
             GetComponent<Shooting>().CmdShootBubble();

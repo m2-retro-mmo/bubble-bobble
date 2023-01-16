@@ -5,11 +5,10 @@ public class CharacterBase : NetworkBehaviour
 {
     // States
     [SyncVar] public bool holdsDiamond = false;
-    // [SyncVar(hook = nameof(OnIsCapturedChanged))]
-    [SyncVar] public bool isCaptured = false;
+    [SyncVar(hook = nameof(OnCaptureChanged))] public bool isCaptured = false;
 
     // Team
-    [SyncVar(hook = nameof(OnTeamNumberChanged))] public byte teamNumber = 1;
+    [SyncVar] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -20,8 +19,8 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] protected Renderer collideableRenderer;
     protected GameObject shape;
     [SerializeField] protected Material teamBMaterial;
-    public CaptureBubble captureBubblePrefab;
-    private CaptureBubble captureBubble;
+    [SerializeField] protected Sprite captureBobbleBSprite;
+    [SerializeField] private GameObject captureBubble;
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
     // Constants
@@ -37,21 +36,18 @@ public class CharacterBase : NetworkBehaviour
         SetTeamColor();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    void SetTeamColor(){
-        if (teamNumber != 1) {
-            collideableRenderer.material = teamBMaterial;
-        }
-    }
-
-    void OnTeamNumberChanged(byte oldTeamNumber, byte newTeamNumber)
+    public override void OnStartClient()
     {
         SetTeamColor();
+    }
+
+    void SetTeamColor()
+    {
+        if (teamNumber != 1)
+        {
+            collideableRenderer.material = teamBMaterial;
+            captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+        }
     }
 
     public Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
@@ -76,15 +72,13 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Speed", direction.sqrMagnitude);
     }
 
-    /**
-    * removes the diamonds from the users inventory
-    */
+    [Server]
     public void deliverDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = false;
     }
-
+    [Server]
     public void collectDiamond()
     {
         // TODO: change appearance of dragon here
@@ -94,90 +88,72 @@ public class CharacterBase : NetworkBehaviour
     /**
     * is triggered when the player got captured by a bubble
     */
-    public void Capture()
+    [Server]
+    public void Capture(int fromTeamNumber)
     {
-        if (isCaptured || captureBubble) return;
-        SetIsCaptured(true);
-        SetPlayerLevel(CAPTURED_LAYER);
-        SpawnCaptureBubble();
+        if (isCaptured) return;
+        if (teamNumber == fromTeamNumber) return;
+        isCaptured = true;
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
-    }
-
-    private void SetPlayerLevel(string levelname){
-        // player's shape needs to be set to a level, that does not collide with anything, so that the captureBubble can take over all collisions with others
-        shape.layer = LayerMask.NameToLayer(levelname);
-    }
-
-    private void SpawnCaptureBubble(){
-        // commented out code is not needed if new player movement works
-
-        /*Rigidbody2D rb2 = shape.GetComponent<Rigidbody2D>();
-        captureBubble = Instantiate(chaptureBubblePrefab, rb2.position, chaptureBubblePrefab.transform.rotation);*/
-        Debug.Log(captureBubblePrefab);
-        captureBubble = Instantiate(captureBubblePrefab, transform.position, transform.rotation);
-        captureBubble.player = this;
-    }
-
-    private void DeleteCaptureBubble(){
-        Destroy(captureBubble.gameObject);
+        CaptureStateUpdate();
     }
 
     /**
     * uncaptures the dragon 
     */
+    [Server]
     public void Uncapture()
     {
-        if (isCaptured && captureBubble) {
-            DeleteCaptureBubble();
-            SetPlayerLevel(defaultLayer);
-            SetIsCaptured(false);
-        }
+        if (!isCaptured) return;
+        isCaptured = false;
+        CaptureStateUpdate();
     }
 
-    /**
-    * is called when the syncvar isCaptured is changed
-    */
-    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
+    [Client]
+    private void OnCaptureChanged(bool oldIsCaptured, bool newIsCaptured)
     {
-        // Debug.Log("Heelo, Captured changed + " + newIsCaptured);
-        SetIsCaptured(newIsCaptured);
-        animator.SetBool("isCaptured", newIsCaptured);
+        CaptureStateUpdate();
     }
 
-    public void CaptureCharacter(int teamNumber)
+    // [Both]
+    private void CaptureStateUpdate()
     {
-        if (GetTeamNumber() != teamNumber)
-        {
-            Capture();
-        }
+        animator.SetBool("isCaptured", isCaptured);
+        captureBubble.SetActive(isCaptured);
+        SetPlayerLevel(isCaptured ? CAPTURED_LAYER : defaultLayer);
     }
+
+    private void SetPlayerLevel(string levelname)
+    {
+        // player's shape needs to be set to a level, that does not collide with anything,
+        // so that the captureBubble can take over all collisions with others
+        shape.layer = LayerMask.NameToLayer(levelname);
+    }
+
     /**
     * set the team number of the player
     */
+    [Server]
     public void SetTeamNumber(byte newTeamNumber)
     {
         teamNumber = newTeamNumber;
     }
 
     /**
-    * get the players team number
+    * [Both] get the players team number
     */
     public byte GetTeamNumber()
     {
         return teamNumber;
     }
 
-    public void SetIsCaptured(bool newIsCaptured)
-    {
-        isCaptured = newIsCaptured;
-        animator.SetBool("isCaptured", newIsCaptured);
-    }
-
+    // [Both]
     public bool GetIsCaptured()
     {
         return isCaptured;
     }
 
+    [Server]
     public void SetHoldsDiamond(bool newHoldsDiamond)
     {
         holdsDiamond = newHoldsDiamond;
@@ -188,6 +164,7 @@ public class CharacterBase : NetworkBehaviour
         return holdsDiamond;
     }
 
+    [Server]
     public void SetSpeed(float newSpeed)
     {
         speed = newSpeed;
