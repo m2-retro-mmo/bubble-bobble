@@ -10,7 +10,8 @@ public class PlayerCollision : MonoBehaviour
     {
         player = gameObject.GetComponentInParent<CharacterBase>();
         // This script is only needed on the server
-        if (player.isClientOnly) {
+        if (player.isClientOnly)
+        {
             Destroy(this);
         }
     }
@@ -18,7 +19,7 @@ public class PlayerCollision : MonoBehaviour
     /**
     * is called when player | bot collides with another Collider2D
     */
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         switch (other.gameObject.tag)
         {
