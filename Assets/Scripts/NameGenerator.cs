@@ -16,10 +16,10 @@ public class NameGenerator : MonoBehaviour
         animals = System.IO.File.ReadAllLines(animalsPath);
         adjectives = System.IO.File.ReadAllLines(adjectivesPath);
 
-        for (int i = 0; i < 10; i++)
-        {
-            Debug.Log(GetRandomName());
-        }
+        //for (int i = 0; i < 10; i++)
+        //{
+        //    Debug.Log(GetRandomName());
+        //}
     }
 
     public static string GetRandomName()
