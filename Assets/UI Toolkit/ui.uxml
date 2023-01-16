@@ -1,31 +1,31 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:VisualElement style="height: 100%; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
-        <ui:VisualElement style="height: 100px; flex-direction: row;">
-            <ui:VisualElement style="width: 50%; height: 100%; flex-direction: row; justify-content: space-between;">
+        <ui:VisualElement style="height: 100px; flex-direction: row; width: 100%; justify-content: space-between; align-items: center;">
+            <ui:VisualElement style="width: 100%; height: 100%; flex-direction: row; justify-content: space-between; align-items: stretch;">
                 <ui:VisualElement name="BubbleContainer" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; flex-direction: row; flex-shrink: 0;">
                     <ui:IMGUIContainer style="width: 95px; background-image: url(&apos;project://database/Assets/Prefabs/Bubble.png?fileID=2800000&amp;guid=7013883c3871ef3418eabf0c8812edaa&amp;type=3#Bubble&apos;); justify-content: flex-start; height: 100%; margin-right: 10px;" />
                     <ui:IMGUIContainer style="width: 95px; background-image: url(&apos;project://database/Assets/Prefabs/Bubble.png?fileID=2800000&amp;guid=7013883c3871ef3418eabf0c8812edaa&amp;type=3#Bubble&apos;); justify-content: flex-start; height: 100%; margin-right: 10px;" />
                     <ui:IMGUIContainer style="width: 95px; background-image: url(&apos;project://database/Assets/Prefabs/Bubble.png?fileID=2800000&amp;guid=7013883c3871ef3418eabf0c8812edaa&amp;type=3#Bubble&apos;); justify-content: flex-start; height: 100%; margin-right: 10px;" />
                 </ui:VisualElement>
-                <ui:VisualElement style="width: 156px; align-items: center; justify-content: center;">
-                    <ui:Label text="0" display-tooltip-when-elided="true" name="PointsTeam0" style="font-size: 80px;" />
+                <ui:VisualElement style="width: auto; align-items: auto; justify-content: center; flex-direction: row; height: auto;">
+                    <ui:IMGUIContainer name="FlagTeam0" style="background-image: resource(&apos;fahne-orange&apos;); width: 100%; height: 100%; -unity-background-scale-mode: stretch-to-fill; white-space: normal; flex-wrap: nowrap; flex-direction: column; rotate: 0; translate: 0 0; scale: -1 1; margin-left: 0; margin-right: 30%; min-width: 70px;" />
+                    <ui:Label text="0" display-tooltip-when-elided="true" name="PointsTeam0" style="font-size: 80px; margin-left: 0;" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label text=":" display-tooltip-when-elided="true" style="font-size: 80px;" />
-            <ui:VisualElement style="width: 50%; height: 100%; flex-direction: row; justify-content: space-between;">
-                <ui:VisualElement style="width: 156px; align-items: center; justify-content: center; height: 100%; flex-direction: column-reverse;">
+            <ui:Label text=":" display-tooltip-when-elided="true" style="font-size: 80px; margin-left: 1%; margin-right: 1%; justify-content: center; align-items: stretch; padding-top: 0; -unity-text-align: upper-center; height: 100%;" />
+            <ui:VisualElement name="VisualElement" style="width: 100%; height: 100%; flex-direction: row; justify-content: space-between;">
+                <ui:VisualElement style="width: auto; align-items: auto; justify-content: center; height: auto; flex-direction: row;">
                     <ui:Label text="0" display-tooltip-when-elided="true" name="PointsTeam1" style="font-size: 80px;" />
+                    <ui:IMGUIContainer name="FlagTeam1" style="background-image: resource(&apos;fahne-lila&apos;); width: 100%; height: 100%; -unity-background-scale-mode: stretch-to-fill; margin-left: 30%; max-width: none; min-width: 70px;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="PingContainer" style="justify-content: flex-end; flex-direction: row;">
-                    <ui:Label text="Ping: " display-tooltip-when-elided="true" name="PingText" style="font-size: 50px; margin-right: 10px;" />
-                    <ui:Label text="10ms" display-tooltip-when-elided="true" name="PingValue" style="font-size: 50px;" />
+                    <ui:Label text="Ping: " display-tooltip-when-elided="true" name="PingText" style="font-size: 20px; margin-right: 10px;" />
+                    <ui:Label text="10ms" display-tooltip-when-elided="true" name="PingValue" style="font-size: 20px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement />
         </ui:VisualElement>
-        <ui:VisualElement style="height: 100px; flex-direction: row; justify-content: center;">
+        <ui:VisualElement name="CounterContainer" style="height: 50px; flex-direction: row; justify-content: center; width: auto;">
             <ui:Label text="00:00" display-tooltip-when-elided="true" name="DurationValue" style="font-size: 30px; height: 40px; width: 86px; -unity-text-align: middle-center; white-space: nowrap;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Label text="Fischerboy" display-tooltip-when-elided="true" name="PlayerName" style="font-size: 35px; margin-right: 10px;" />
 </ui:UXML>
