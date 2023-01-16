@@ -13,19 +13,26 @@ public class Bubble : NetworkBehaviour
     [Tooltip("The time in seconds after which the bubble will disappear")]
     private float bubbleLifeTime = 5f;
 
-    [SerializeField]
+    [SerializeField, SyncVar]
     private int teamNumber = -1;
 
     private bool avoidedByBot = false;
     [SerializeField] private Sprite teamBSprite;
 
-    private void Start()
+    public override void OnStartServer()
     {
+        UpdateAppearance();
+        Destroy(gameObject, bubbleLifeTime);
+    }
+    public override void OnStartClient()
+    {
+        UpdateAppearance();
+    }
+
+    private void UpdateAppearance() {
         if (teamNumber != 1) {
             GetComponent<SpriteRenderer>().sprite = teamBSprite;
         }
-        // destroy bubble after 5 seconds if no Player was captured
-        Destroy(gameObject, bubbleLifeTime);
     }
 
     /// <summary>
@@ -50,16 +57,19 @@ public class Bubble : NetworkBehaviour
         return this.teamNumber;
     }
 
+    [Server]
     public void SetTeamNumber(int teamNumber)
     {
         this.teamNumber = teamNumber;
     }
 
+    [Server]
     public bool GetAvoidedByBot()
     {
         return avoidedByBot;
     }
 
+    [Server]
     public void SetAvoidedByBot(bool avoided)
     {
         this.avoidedByBot = avoided;
