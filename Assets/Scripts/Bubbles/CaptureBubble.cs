@@ -6,8 +6,16 @@ using Mirror;
 public class CaptureBubble : NetworkBehaviour
 {
     public CharacterBase player;
+    [SerializeField] private Sprite teamBSprite;
 
-    // Update is called once per frame
+    private void Start()
+    {
+        // render the opposite CaptureBubble color of the captured player
+        if (player.teamNumber == 1) {
+            GetComponent<SpriteRenderer>().sprite = teamBSprite;
+        }
+    }
+
     void Update()
     {
         transform.position = player.transform.position;
