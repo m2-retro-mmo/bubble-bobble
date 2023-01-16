@@ -4,15 +4,10 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
-
-    private GameManager gameManager;
-
     // States
     [SyncVar] public bool holdsDiamond = false;
     // [SyncVar(hook = nameof(OnIsCapturedChanged))]
     [SyncVar] public bool isCaptured = false;
-
-    protected bool DEBUG_BOTS;
 
     // Team
     [SyncVar][SerializeField] public byte teamNumber = 1;
@@ -36,8 +31,6 @@ public class CharacterBase : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         collideableRenderer = transform.Find("Collideable").gameObject.GetComponent<Renderer>();
         SetTeamColor();
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
-        DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
     // Update is called once per frame
@@ -53,7 +46,7 @@ public class CharacterBase : NetworkBehaviour
     }
 
 
-    protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
+    public Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
     {
         Vector2 target = targetNode;
         Vector2 moveDirection = (target - rb.position);
@@ -68,7 +61,7 @@ public class CharacterBase : NetworkBehaviour
         rb.MovePosition(rb.position + moveVector);
     }
 
-    protected void SetAnimatorMovement(Vector2 direction)
+    public void SetAnimatorMovement(Vector2 direction)
     {
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
@@ -160,5 +153,15 @@ public class CharacterBase : NetworkBehaviour
     public bool GetHoldsDiamond()
     {
         return holdsDiamond;
+    }
+
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
     }
 }
