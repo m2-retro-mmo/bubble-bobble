@@ -32,6 +32,7 @@ public class Hort : NetworkBehaviour
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
+    [SerializeField] private Material teamBMaterial;
     public static byte scale = 1;
 
     private UIManager uIManager;
@@ -50,6 +51,9 @@ public class Hort : NetworkBehaviour
     public void init(byte teamNumber)
     {
         team = teamNumber;
+        if (teamNumber != 1) {
+            GetComponent<Renderer>().material = teamBMaterial;
+        }
     }
 
     [Server]
