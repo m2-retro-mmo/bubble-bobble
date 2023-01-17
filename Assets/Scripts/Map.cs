@@ -59,7 +59,7 @@ public struct GeneratorData
         probabilityPillar = 30;
         probabilityDecorations = 40;
         probabilityTrees = 30;
-        diamondSpawnDelay = 20;
+        diamondSpawnDelay = 10;
         diamondSpawnCount = 30;
         diamondCount = 0;
         noiseDensity = 50;
@@ -160,6 +160,7 @@ public class Map : NetworkBehaviour
     public float characterSpawnOffsetX = 0.45f;
     public float characterSpawnOffsetY = 0.8f;
 
+    public int spawnedDiamonds = 0;
 
     [Server]
     public List<Hort> NewMap()
@@ -187,7 +188,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null && GetDiamondCount() == 0)
+        if (diamondParent != null && spawnedDiamonds == 0)
         {
             Destroy(diamondParent);
         }
@@ -210,7 +211,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        StartCoroutine("RandomDiamondSpawning");
+        StartCoroutine(RandomDiamondSpawning());
         //SetIsWalkableForObstacles();
         Vector2[] path = {
             new Vector2(0, 0),
@@ -483,8 +484,7 @@ public class Map : NetworkBehaviour
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
-                SetDiamondCount(1);
-                NetworkServer.Spawn(item.gameObject);
+                spawnedDiamonds++;
                 count--;
             }
         }
@@ -492,13 +492,15 @@ public class Map : NetworkBehaviour
 
     IEnumerator RandomDiamondSpawning()
     {
-        int diamondCount = GetDiamondCount();
-        if (diamondCount <= generatorData.diamondSpawnCount / 2 || diamondCount == 0)
+        while (true)
         {
-            int missingDiamondCount = generatorData.diamondSpawnCount - diamondCount;
-            PlaceDiamonds(missingDiamondCount);
+            if (spawnedDiamonds < generatorData.diamondSpawnCount / 2 || spawnedDiamonds == 0)
+            {
+                int missingDiamondCount = generatorData.diamondSpawnCount - spawnedDiamonds;
+                PlaceDiamonds(missingDiamondCount);
+            }
+            yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
         }
-        yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
     }
 
     public enum Direction : int
@@ -693,14 +695,9 @@ public class Map : NetworkBehaviour
         return generatorData.hortScale;
     }
 
-    public int GetDiamondCount()
+    public void UpdateSpawnedDiamond(int count)
     {
-        return this.generatorData.diamondCount;
-    }
-
-    public void SetDiamondCount(int count)
-    {
-        this.generatorData.diamondCount += count;
+        this.spawnedDiamonds += count;
         return;
     }
 }
