@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Mirror;
 
 public class Player : CharacterBase
 {
@@ -22,6 +24,9 @@ public class Player : CharacterBase
 
     public float itemDuration = 0;
 
+    [SyncVar(hook = nameof(OnPlayerNameChanged))] private string playerName;
+    public TextMeshProUGUI playerNameGUI;
+
     // Start is called before the first frame update
     public override void Start()
     {
@@ -43,6 +48,17 @@ public class Player : CharacterBase
         LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
+
+        if (isServer)
+        {
+            playerName = NameGenerator.GetRandomName();
+            playerNameGUI.text = playerName;
+        }
+    }
+
+    private void OnPlayerNameChanged(string oldName, string newName)
+    {
+        playerNameGUI.text = newName;
     }
 
     private void LookAtMouse()
