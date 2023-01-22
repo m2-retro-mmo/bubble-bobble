@@ -130,6 +130,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7925460009327909261, guid: 5e9f6686c09064daa885a7467b1692cf,
+        type: 3}
+      propertyPath: orangeBubble
+      value: 
+      objectReference: {fileID: 21300000, guid: 1e8ba53806142d34984bc6e2e3fe4304,
+        type: 3}
     - target: {fileID: 9052121522475689698, guid: 5e9f6686c09064daa885a7467b1692cf,
         type: 3}
       propertyPath: m_Name

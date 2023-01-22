@@ -40,6 +40,12 @@ public class Player : CharacterBase
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
+
+            UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+            if (GetTeamNumber() == 0) 
+            {
+                uIManager.SetBubbleColorOrange();
+            }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
         cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
