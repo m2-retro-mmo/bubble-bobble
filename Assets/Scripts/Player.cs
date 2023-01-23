@@ -42,7 +42,7 @@ public class Player : CharacterBase
             cm.m_Lens.OrthographicSize = 10;
 
             UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
-            if (GetTeamNumber() == 0) 
+            if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();
             }
@@ -50,7 +50,7 @@ public class Player : CharacterBase
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
         cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
 
-        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground" };
+        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground", "Hort" };
         LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
