@@ -54,8 +54,6 @@ public class Bot : CharacterBase
 
     private float prevPriorityValue = 0;
 
-    private Transform hort;
-
     private GameManager gameManager;
 
     private bool DEBUG_BOTS;
@@ -430,11 +428,6 @@ public class Bot : CharacterBase
     public void SetInteractionID(InteractionID newInteractionID)
     {
         interactionID = newInteractionID;
-    }
-
-    public Transform GetHort()
-    {
-        return hort;
     }
 
     public bool GetDetectedBubble()

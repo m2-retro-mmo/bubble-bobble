@@ -27,6 +27,9 @@ public class Player : CharacterBase
     [SyncVar(hook = nameof(OnPlayerNameChanged))] private string playerName;
     public TextMeshProUGUI playerNameGUI;
 
+    [SerializeField]
+    public GameObject hortIndicator;
+
     // Start is called before the first frame update
     public override void Start()
     {
@@ -101,6 +104,8 @@ public class Player : CharacterBase
         Rigidbody2D rb2 = GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
+
+        SetHortIndicator();
     }
 
     private void FixedUpdate()
@@ -151,4 +156,30 @@ public class Player : CharacterBase
         Move(direction);
         return true;
     }
+
+    public Vector2 calcHortIndicator()
+    {
+        Vector2 target = GetHort().position;
+        Vector2 moveDirection = (target - rb.position);
+        return (Vector2)Vector3.Normalize(moveDirection);
+    }
+
+    public void SetHortIndicator()
+    {
+        hortIndicator.transform.position = rb.position + calcHortIndicator();
+    }
+
+    /* public void test()
+    {
+        Vector3 screenpos = Camera.main.WorldToScreenPoint(GetHort().position);
+        if (screenpos.z>0 && screenpos.x>0 && screenpos.y>0 && screenpos.x<Screen.width && screenpos.y<Screen.height)
+        {
+            // TODO: Remove Indicator if hort is in screen
+            hortIndicator.SetActive(false);
+        } else 
+        {
+            hortIndicator.SetActive(true);
+            SetHortIndicator();
+        }
+    } */
 }

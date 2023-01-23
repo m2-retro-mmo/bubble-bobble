@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using System.Linq;
 
 public class CharacterBase : NetworkBehaviour
 {
@@ -9,6 +10,7 @@ public class CharacterBase : NetworkBehaviour
 
     // Team
     [SyncVar] public byte teamNumber = 1;
+    public Transform hort;
 
     // Movement
     protected Rigidbody2D rb;
@@ -34,6 +36,8 @@ public class CharacterBase : NetworkBehaviour
         shape = transform.Find("Shape").gameObject;
         defaultLayer = LayerMask.LayerToName(shape.layer);
         SetTeamColor();
+
+        hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == GetTeamNumber()).FirstOrDefault().transform;
     }
 
     public override void OnStartClient()
@@ -179,5 +183,10 @@ public class CharacterBase : NetworkBehaviour
     {
         Gizmos.color = teamNumber == 1 ? Color.red : Color.yellow;
         Gizmos.DrawWireCube(transform.position, new Vector3(3, 3, 0));
+    }
+
+    public Transform GetHort()
+    {
+        return hort;
     }
 }
