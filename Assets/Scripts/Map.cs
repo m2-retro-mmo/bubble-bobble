@@ -162,6 +162,8 @@ public class Map : NetworkBehaviour
 
     public int spawnedDiamonds = 0;
 
+    private int hortDeadAreaOffset = 3;
+
     [Server]
     public List<Hort> NewMap()
     {
@@ -225,6 +227,25 @@ public class Map : NetworkBehaviour
     // checks if there is water or an obstacles on the given position
     public bool TileIsFree(int x, int y)
     {
+        // check if coordinates are around the hort
+        for (int i = 0; i < generatorData.hortLocations.Length; i++)
+        {
+            IntVec2 hortLocation = generatorData.hortLocations[i];
+
+            int hortX = hortLocation.x;
+            int hortY = hortLocation.y;
+
+            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f)) - hortDeadAreaOffset;
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1) - hortDeadAreaOffset;
+            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f)) + hortDeadAreaOffset;
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1) + hortDeadAreaOffset;
+
+            if ((x > startPositionX && x < endPositionX) && (y > startPositionY && y < endPositionY))
+            {
+                return false;
+            }
+        }
+
         return floorEnvironment[x, y] == EnvironmentType.Ground && obstacleTilemap.GetTile(new Vector3Int(x, y, 0)) == null;
     }
 
@@ -327,15 +348,14 @@ public class Map : NetworkBehaviour
             int hortX = hortLocation.x;
             int hortY = hortLocation.y;
 
-            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f));
-            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1);
-            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f));
-            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1);
+            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f)) - hortDeadAreaOffset;
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1) - hortDeadAreaOffset;
+            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f)) + hortDeadAreaOffset;
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1) + hortDeadAreaOffset;
 
-            int offset = 3;
-            for (int x = startPositionX - offset; x < endPositionX + offset; x++)
+            for (int x = startPositionX; x < endPositionX; x++)
             {
-                for (int y = startPositionY - offset; y < endPositionY + offset; y++)
+                for (int y = startPositionY; y < endPositionY; y++)
                 {
                     floorEnvironment[x, y] = EnvironmentType.Ground;
                 }
