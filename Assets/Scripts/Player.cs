@@ -29,6 +29,7 @@ public class Player : CharacterBase
 
     [SerializeField]
     public GameObject hortIndicator;
+    public Sprite orangeFlag;
 
     // Start is called before the first frame update
     public override void Start()
@@ -48,6 +49,7 @@ public class Player : CharacterBase
             if (GetTeamNumber() == 0) 
             {
                 uIManager.SetBubbleColorOrange();
+                hortIndicator.GetComponent<SpriteRenderer>().sprite = orangeFlag;
             }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
