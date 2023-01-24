@@ -75,14 +75,14 @@ public class CharacterBase : NetworkBehaviour
     [Server]
     public void deliverDiamond()
     {
-        // TODO: change appearance of dragon here
         holdsDiamond = false;
+        animator.SetBool("holdsDiamond", holdsDiamond);
     }
     [Server]
     public void collectDiamond()
     {
-        // TODO: change appearance of dragon here
         holdsDiamond = true;
+        animator.SetBool("holdsDiamond", holdsDiamond);
     }
 
     /**
@@ -96,6 +96,8 @@ public class CharacterBase : NetworkBehaviour
         isCaptured = true;
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
         CaptureStateUpdate();
+        // Player looses his diamond
+        deliverDiamond();
     }
 
     /**
