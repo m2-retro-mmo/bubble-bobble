@@ -166,6 +166,7 @@ public class GameManager : NetworkBehaviour
         bot.transform.parent = bots.transform;
 
         bot.SetTeamNumber(teamNumber);
+        bot.RandomizeInteractionWeights();
 
         if (DEBUG_BOTS)
         {

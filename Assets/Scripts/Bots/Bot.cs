@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Mirror;
 using Unity.VisualScripting;
+using System.Runtime.CompilerServices;
 
 /// <summary>
 /// the states of the InteractionID
@@ -66,6 +67,9 @@ public class Bot : CharacterBase
 
     private const float REFRESH_RATE_BUBBLE = 0.5f;
 
+    [SerializeField]
+    private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfonsU3CpscyOGBVfnnDrQxmsMqeSotW3s0gT5KUHWWzRuYnQ/formResponse";
+
     public void Awake()
     {
         botMovement = GetComponent<BotMovement>();
@@ -79,6 +83,11 @@ public class Bot : CharacterBase
 
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();
+    }
+
+    private void OnApplicationQuit()
+    {
+        Send();
     }
 
     public void ResetBot(float restartTime)
@@ -401,12 +410,45 @@ public class Bot : CharacterBase
         }
     }
 
-    // TODO: in gameManager verschieben?
-    /// <summary>
-    /// Gets the opponent team number.
-    /// </summary>
-    /// <param name="myTeamNumber">The my team number.</param>
-    /// <returns>A byte.</returns>
+    public void RandomizeInteractionWeights()
+    {
+        System.Random rand = new System.Random();
+        for(int i = 0; i < interactionWeights.Length; i++)
+        {
+            int weight = rand.Next(1, 11);
+            interactionWeights[i] = weight;
+        }
+    }
+
+    public void Send()
+    {
+        List<string> data = new List<string>();
+
+        //string interactionWeights_text = "";
+        foreach (float i in interactionWeights)
+        {
+         //   interactionWeights_text += i.ToString() + ", ";
+            data.Add(i.ToString());
+        }
+        data.Add(GetDiamondCounter().ToString());
+        data.Add(botMovement.GetOpponentCapturedCounter().ToString());
+        data.Add(GetUncapturedCounter().ToString());
+        StartCoroutine(Post(data));
+    }
+
+    IEnumerator Post(List<string> data)
+    {
+        string[] entryFields = { "entry.1555711059", "entry.2141082333", "entry.886997526", "entry.1317052357", "entry.299362154", "entry.1696318452", "entry.822962180", "entry.304877644" };
+        WWWForm form = new WWWForm();
+        for(int i = 0; i < data.Count; i++)
+        {
+            form.AddField(entryFields[i], data[i]);
+        }
+        byte[] rawData = form.data;
+        WWW www = new WWW(BASE_URL, rawData);
+        yield return www;
+    }
+
     private byte GetOpponentTeamNumber(byte myTeamNumber)
     {
         return (byte)(myTeamNumber == 0 ? 1 : 0);
