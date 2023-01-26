@@ -37,7 +37,7 @@ public class Bot : CharacterBase
     public bool detectedBubble = false;
 
     // the weights of the interactions
-    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 }; // TODO: Teammate testen
+    private float[] interactionWeights = new float[] { 2, 5, 4, 3, 1 };
 
     private float[] interactionPriorities;
 

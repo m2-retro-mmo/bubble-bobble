@@ -110,7 +110,7 @@ public class GameManager : NetworkBehaviour
             // spawn only one bot in debug mode
             if (DEBUG_BOTS)
             {
-                //drawGraph = true;
+                drawGraph = true;
             }
 
             graph = new Graph(map, drawGraph);

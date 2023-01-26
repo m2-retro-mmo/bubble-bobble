@@ -162,7 +162,7 @@ public class Map : NetworkBehaviour
 
     public int spawnedDiamonds = 0;
 
-    private int hortDeadAreaOffset = 3;
+    private int hortDeadAreaOffset = 7;
 
     [Server]
     public List<Hort> NewMap()
