@@ -141,6 +141,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIDocument
       objectReference: {fileID: 0}
+    - target: {fileID: 9052121522475689698, guid: 5e9f6686c09064daa885a7467b1692cf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9052121522475689724, guid: 5e9f6686c09064daa885a7467b1692cf,
         type: 3}
       propertyPath: m_RootOrder
@@ -388,6 +393,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MinimapCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 2952005194902861938, guid: ac8cb72a5423f22c98b8a48f71abb8de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: ac8cb72a5423f22c98b8a48f71abb8de, type: 3}
@@ -448,6 +458,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143757223152, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6831340143757223154, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
@@ -649,10 +664,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1744665208232675645, guid: 23a5f15a3049af002956091eeaa6d6cc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1744665208234916673, guid: 23a5f15a3049af002956091eeaa6d6cc,
         type: 3}
       propertyPath: m_Name
       value: MiniMapWrapper
+      objectReference: {fileID: 0}
+    - target: {fileID: 1744665208234916673, guid: 23a5f15a3049af002956091eeaa6d6cc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1744665208234916677, guid: 23a5f15a3049af002956091eeaa6d6cc,
         type: 3}
@@ -759,6 +784,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1744665208532418689, guid: 23a5f15a3049af002956091eeaa6d6cc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23a5f15a3049af002956091eeaa6d6cc, type: 3}
 --- !u!114 &2091722759 stripped
@@ -819,11 +849,10 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  startGameWithBots: 1
-  DEBUG_BOTS: 0
+  DEBUG_BOTS: 1
   botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
-  botNumber: 1
+  characterCount: 10
   gameDuration: 200
 --- !u!4 &2103473425
 Transform:
@@ -873,6 +902,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NetworkManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1190517968536407030, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1190517968536407034, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}
@@ -1007,6 +1041,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CineMachine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7399693169999953581, guid: ff82fee9b48279985814c61788dc81e9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff82fee9b48279985814c61788dc81e9, type: 3}

@@ -32,6 +32,8 @@ public class BotMovement : MonoBehaviour
 
     private GameObject goalHolder;
 
+    private int opponentCapturedCounter = 0;
+
     public void Start()
     {
         bot = GetComponent<Bot>();
@@ -202,6 +204,7 @@ public class BotMovement : MonoBehaviour
                 {
                     GetComponent<Shooting>().ShootBubble();
                     StopEverything();
+                    StartCoroutine(CheckIfOpponentCaptured(opponent));
                     break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
@@ -223,6 +226,22 @@ public class BotMovement : MonoBehaviour
             }
 
             yield return new WaitForSeconds(0.001f);
+        }
+    }
+
+    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
+    {
+        int counter = 0;
+        while(counter < 5)
+        {
+            if (opponent.GetIsCaptured())
+            {
+                opponentCapturedCounter++;
+                yield break;
+            }
+
+            yield return new WaitForSeconds(1f);
+            counter++;
         }
     }
 
@@ -430,6 +449,8 @@ public class BotMovement : MonoBehaviour
     /// </summary>
     private void CalculatePathToGoal()
     {
+        if(goal == null)
+            return;
         path = pathfinding.FindPath(transform.position, goal.position);
         currentIndex = 0;
     }
@@ -540,6 +561,11 @@ public class BotMovement : MonoBehaviour
     public void SetGoal(Transform goal)
     {
         this.goal = goal;
+    }
+
+    public int GetOpponentCapturedCounter()
+    {
+        return opponentCapturedCounter;
     }
 
     /// <summary>
