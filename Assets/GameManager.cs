@@ -12,6 +12,7 @@ This class handles:
 public class GameManager : NetworkBehaviour
 {
 
+
     public Player playerPrefab;
     public Hort hortPrefab;
     public Map map;
@@ -66,6 +67,13 @@ public class GameManager : NetworkBehaviour
             singleton = null;
     }
 
+    private GameObject bots;
+
+    private Graph graph;
+
+    private byte playerCounterTeam0 = 0;
+    private byte playerCounterTeam1 = 0;
+
     public void CreatePlayer(NetworkConnectionToClient conn)
     {
         foreach (Player player in FindObjectsOfType<Player>())
@@ -77,10 +85,29 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        Player p = Instantiate(playerPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+        Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
+
+        byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
+        byte botNumber = (byte)(teamNumber == 1 ? 0 : 1);
+
+        if(teamNumber == 0)
+        {
+            playerCounterTeam0++;
+        }
+        else
+        {
+            playerCounterTeam1++;
+        }
+
+        p.SetTeamNumber(teamNumber);
+
         map.PlaceCharacter(p);
-        p.SetTeamNumber(1);
         NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+
+        if(!DEBUG_BOTS)
+        {
+            AddBots(botNumber);
+        }
     }
 
     // Start is called before the first frame update
@@ -98,7 +125,22 @@ public class GameManager : NetworkBehaviour
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
 
-        Debug.Log("Spawn players!!!");
+
+        if (startGameWithBots)
+        {
+            bots = new GameObject("Bots");
+
+            bool drawGraph = false;
+
+            // spawn only one bot in debug mode
+            if (DEBUG_BOTS)
+            {
+                drawGraph = true;
+            }
+
+            graph = new Graph(map, drawGraph);
+        }
+
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
         {
@@ -109,47 +151,9 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (startGameWithBots)
+        if (DEBUG_BOTS)
         {
-            GameObject bots = new GameObject("Bots");
-
-            bool drawGraph = false;
-
-            // spawn only one bot in debug mode
-            if (DEBUG_BOTS)
-            {
-                botNumber = 1;
-                //drawGraph = true;
-            }
-
-            Graph graph = new Graph(map, drawGraph);
-
-
-            for (int i = 0; i < botNumber; i++)
-            {
-                // spawn a bot
-                // TODO: spawn the bot within the bounds of the map
-                Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
-                bot.transform.parent = bots.transform;
-
-                bot.SetTeamNumber(0); // TODO set team number randomly
-
-                if (DEBUG_BOTS)
-                {
-                    Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-                    Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
-                    bot.transform.position = botPos;
-                }
-                else
-                {
-                    map.PlaceCharacter(bot);
-                }
-
-                NetworkServer.Spawn(bot.gameObject);
-
-                bot.GetComponent<BotMovement>().SetGraph(graph);
-                bot.StartBot();
-            }
+            AddBots(1);
         }
 
         // handle playtime
@@ -177,6 +181,30 @@ public class GameManager : NetworkBehaviour
             }
         }
         // TODO: if new player joined place player on the map
+    }
+
+    private void AddBots(byte teamNumber)
+    {
+        Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
+        bot.transform.parent = bots.transform;
+
+        bot.SetTeamNumber(teamNumber);
+
+        if (DEBUG_BOTS)
+        {
+            Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+            Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
+            bot.transform.position = botPos;
+        }
+        else
+        {
+            map.PlaceCharacter(bot);
+        }
+
+        NetworkServer.Spawn(bot.gameObject);
+
+        bot.GetComponent<BotMovement>().SetGraph(graph);
+        bot.StartBot();
     }
 
     // helper function to get a random tile around the player (for debugging)

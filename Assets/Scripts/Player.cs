@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Mirror;
 
 public class Player : CharacterBase
 {
@@ -9,7 +11,6 @@ public class Player : CharacterBase
     private List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
     private ContactFilter2D movementFilter;
     public GameObject directionIndicator;
-    public GameObject shape;
 
     public float collisionOffset = 0.1f;
 
@@ -22,6 +23,9 @@ public class Player : CharacterBase
     public float distanceFactor = 1.5f;
 
     public float itemDuration = 0;
+
+    [SyncVar(hook = nameof(OnPlayerNameChanged))] private string playerName;
+    public TextMeshProUGUI playerNameGUI;
 
     // Start is called before the first frame update
     public override void Start()
@@ -36,13 +40,31 @@ public class Player : CharacterBase
             Cinemachine.CinemachineVirtualCamera cm = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
+
+            UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+            if (GetTeamNumber() == 0)
+            {
+                uIManager.SetBubbleColorOrange();
+            }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
         cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
 
-        LayerMask layermask = LayerMask.GetMask("Player Move Collider");
+        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground", "Hort" };
+        LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
+
+        if (isServer)
+        {
+            playerName = NameGenerator.GetRandomName();
+            playerNameGUI.text = playerName;
+        }
+    }
+
+    private void OnPlayerNameChanged(string oldName, string newName)
+    {
+        playerNameGUI.text = newName;
     }
 
     private void LookAtMouse()
@@ -67,6 +89,7 @@ public class Player : CharacterBase
     // Update is called once per frame
     void Update()
     {
+        if (!isLocalPlayer) return;
         if (Input.GetButton("Fire1"))
         {
             GetComponent<Shooting>().CmdShootBubble();

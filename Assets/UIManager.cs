@@ -12,7 +12,10 @@ public class UIManager : MonoBehaviour
     Label ping;
     Label playerName;
     Label duration;
+
     VisualElement bubbleContainer;
+    [SerializeField]
+    Sprite orangeBubble;
 
     void OnEnable()
     {
@@ -49,6 +52,14 @@ public class UIManager : MonoBehaviour
         playerName.text = name;
     }
 
+    public void SetBubbleColorOrange()
+    {
+        for (int i = 0; i < bubbleContainer.childCount; i++)
+        {
+            bubbleContainer.hierarchy.ElementAt(i).style.backgroundImage = new StyleBackground(orangeBubble);
+        }
+    }
+
     public void SetBubbleCount(int count)
     {
         for (int i = 0; i < bubbleContainer.childCount; i++)
@@ -56,7 +67,6 @@ public class UIManager : MonoBehaviour
             bubbleContainer.hierarchy.ElementAt(i).visible = (i < count);
         }
     }
-
 
     public void UpdateTeamPoints(int team, int points)
     {

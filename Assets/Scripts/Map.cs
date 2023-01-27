@@ -38,7 +38,7 @@ public struct GeneratorData
     public IntVec2[] hortLocations;
     public int probabilityObstaclesGeneral;
     public int probabilityPillar;
-    public int probabilityBushes;
+
     public int probabilityDecorations;
     public int probabilityTrees;
     public int diamondSpawnDelay;
@@ -55,12 +55,11 @@ public struct GeneratorData
         hortScale = 7;
         teams = 2;
         hortLocations = HortLocations(s, teams, width, height, hortScale);
-        probabilityObstaclesGeneral = 6;
-        probabilityPillar = 20;
-        probabilityBushes = 30;
-        probabilityDecorations = 30;
-        probabilityTrees = 20;
-        diamondSpawnDelay = 20;
+        probabilityObstaclesGeneral = 5;
+        probabilityPillar = 30;
+        probabilityDecorations = 40;
+        probabilityTrees = 30;
+        diamondSpawnDelay = 10;
         diamondSpawnCount = 30;
         diamondCount = 0;
         noiseDensity = 50;
@@ -76,7 +75,7 @@ public struct GeneratorData
         for (int i = 0; i < teams; i++)
         {
             Vector2[] sections = _GetSections(width, 8);
-            int randomY = localRan.Next(0 + hortScale, height - hortScale);
+            int randomY = localRan.Next(0 + hortScale * 2, height - hortScale * 2);
             int randomX = 0;
             switch (i)
             {
@@ -158,6 +157,13 @@ public class Map : NetworkBehaviour
     private GeneratorData generatorData;
     private System.Random ran;
 
+    public float characterSpawnOffsetX = 0.45f;
+    public float characterSpawnOffsetY = 0.8f;
+
+    public int spawnedDiamonds = 0;
+
+    private int hortDeadAreaOffset = 7;
+
     [Server]
     public List<Hort> NewMap()
     {
@@ -184,7 +190,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null && GetDiamondCount() == 0)
+        if (diamondParent != null && spawnedDiamonds == 0)
         {
             Destroy(diamondParent);
         }
@@ -207,7 +213,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        StartCoroutine("RandomDiamondSpawning");
+        StartCoroutine(RandomDiamondSpawning());
         //SetIsWalkableForObstacles();
         Vector2[] path = {
             new Vector2(0, 0),
@@ -221,6 +227,25 @@ public class Map : NetworkBehaviour
     // checks if there is water or an obstacles on the given position
     public bool TileIsFree(int x, int y)
     {
+        // check if coordinates are around the hort
+        for (int i = 0; i < generatorData.hortLocations.Length; i++)
+        {
+            IntVec2 hortLocation = generatorData.hortLocations[i];
+
+            int hortX = hortLocation.x;
+            int hortY = hortLocation.y;
+
+            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f)) - hortDeadAreaOffset;
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1) - hortDeadAreaOffset;
+            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f)) + hortDeadAreaOffset;
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1) + hortDeadAreaOffset;
+
+            if ((x > startPositionX && x < endPositionX) && (y > startPositionY && y < endPositionY))
+            {
+                return false;
+            }
+        }
+
         return floorEnvironment[x, y] == EnvironmentType.Ground && obstacleTilemap.GetTile(new Vector3Int(x, y, 0)) == null;
     }
 
@@ -323,15 +348,14 @@ public class Map : NetworkBehaviour
             int hortX = hortLocation.x;
             int hortY = hortLocation.y;
 
-            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f));
-            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1);
-            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f));
-            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1);
+            int startPositionX = (int)Math.Ceiling(hortX - (generatorData.hortScale / 2f)) - hortDeadAreaOffset;
+            int startPositionY = (int)Math.Ceiling(hortY - ((generatorData.hortScale - 3) / 2f) - 1) - hortDeadAreaOffset;
+            int endPositionX = (int)Math.Ceiling(hortX + (generatorData.hortScale / 2f)) + hortDeadAreaOffset;
+            int endPositionY = (int)Math.Ceiling(hortY + ((generatorData.hortScale - 3) / 2f) - 1) + hortDeadAreaOffset;
 
-            int offset = 3;
-            for (int x = startPositionX - offset; x < endPositionX + offset; x++)
+            for (int x = startPositionX; x < endPositionX; x++)
             {
-                for (int y = startPositionY - offset; y < endPositionY + offset; y++)
+                for (int y = startPositionY; y < endPositionY; y++)
                 {
                     floorEnvironment[x, y] = EnvironmentType.Ground;
                 }
@@ -433,7 +457,7 @@ public class Map : NetworkBehaviour
                 // check if position is water 
                 if (TileIsFree(x, y) && ran.Next(0, 100) < 6)
                 {
-                    int randomValue = ran.Next(0, generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
+                    int randomValue = ran.Next(0, generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
                     if (randomValue < generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
@@ -442,15 +466,7 @@ public class Map : NetworkBehaviour
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar)
-                    {
-                        obstacleTilemap.SetTile(new Vector3Int(x, y, 0), bushes[ran.Next(0, bushes.Length)]);
-                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
-                        counter++;
-                        isWalkable[x, y] = false;
-                        floorEnvironment[x, y] = EnvironmentType.Obstacle;
-                    }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations)
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), accessoirs[ran.Next(0, accessoirs.Length)]);
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
@@ -458,7 +474,7 @@ public class Map : NetworkBehaviour
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
-                    else if (randomValue < generatorData.probabilityBushes + generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
                     {
                         int randomTree = ran.Next(1, treePrefabs.Length);
                         GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
@@ -488,8 +504,7 @@ public class Map : NetworkBehaviour
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
-                SetDiamondCount(1);
-                NetworkServer.Spawn(item.gameObject);
+                spawnedDiamonds++;
                 count--;
             }
         }
@@ -497,13 +512,15 @@ public class Map : NetworkBehaviour
 
     IEnumerator RandomDiamondSpawning()
     {
-        int diamondCount = GetDiamondCount();
-        if (diamondCount <= generatorData.diamondSpawnCount / 2 || diamondCount == 0)
+        while (true)
         {
-            int missingDiamondCount = generatorData.diamondSpawnCount - diamondCount;
-            PlaceDiamonds(missingDiamondCount);
+            if (spawnedDiamonds < generatorData.diamondSpawnCount / 2 || spawnedDiamonds == 0)
+            {
+                int missingDiamondCount = generatorData.diamondSpawnCount - spawnedDiamonds;
+                PlaceDiamonds(missingDiamondCount);
+            }
+            yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
         }
-        yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
     }
 
     public enum Direction : int
@@ -670,7 +687,7 @@ public class Map : NetworkBehaviour
             if (TileIsFree(randomX, randomY)) break;
         }
 
-        character.transform.position = new Vector3(randomX + 0.5f, randomY + 0.5f, 0);
+        character.transform.position = new Vector3(randomX + characterSpawnOffsetX, randomY + characterSpawnOffsetY, 0);
     }
 
     public int GetWidth()
@@ -698,14 +715,9 @@ public class Map : NetworkBehaviour
         return generatorData.hortScale;
     }
 
-    public int GetDiamondCount()
+    public void UpdateSpawnedDiamond(int count)
     {
-        return this.generatorData.diamondCount;
-    }
-
-    public void SetDiamondCount(int count)
-    {
-        this.generatorData.diamondCount += count;
+        this.spawnedDiamonds += count;
         return;
     }
 }

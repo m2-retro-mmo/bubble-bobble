@@ -32,9 +32,11 @@ public class Hort : NetworkBehaviour
     public int diamonds = 0;
     [SyncVar]
     public byte team = 1;
+    [SerializeField] private Material teamBMaterial;
     public static byte scale = 1;
 
     private UIManager uIManager;
+    private Map map;
 
     [Header("UI Text")]
 
@@ -45,17 +47,33 @@ public class Hort : NetworkBehaviour
     {
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
         uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+        map = GameObject.Find("Map").GetComponent<Map>();
     }
 
+    [Server]
     public void init(byte teamNumber)
     {
         team = teamNumber;
+        updateAfterTeamChange();
+    }
+
+    public override void OnStartClient()
+    {
+        updateAfterTeamChange();
+    }
+
+    private void updateAfterTeamChange()
+    {
+        if (team != 1) {
+            GetComponent<Renderer>().material = teamBMaterial;
+        }
     }
 
     [Server]
     public void AddDiamond()
     {
         diamonds++;
+        map.UpdateSpawnedDiamond(-1);
         SpawnPlusOne();
     }
 

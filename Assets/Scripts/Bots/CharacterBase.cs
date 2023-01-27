@@ -1,21 +1,14 @@
 using UnityEngine;
 using Mirror;
 
-
 public class CharacterBase : NetworkBehaviour
 {
-
-    private GameManager gameManager;
-
     // States
     [SyncVar] public bool holdsDiamond = false;
-    // [SyncVar(hook = nameof(OnIsCapturedChanged))]
-    [SyncVar] public bool isCaptured = false;
-
-    protected bool DEBUG_BOTS;
+    [SyncVar(hook = nameof(OnCaptureChanged))] public bool isCaptured = false;
 
     // Team
-    [SyncVar][SerializeField] public byte teamNumber = 1;
+    [SyncVar] public byte teamNumber = 1;
 
     // Movement
     protected Rigidbody2D rb;
@@ -23,26 +16,41 @@ public class CharacterBase : NetworkBehaviour
 
     // Animations
     protected Animator animator;
-
+    [SerializeField] protected Renderer collideableRenderer;
+    protected GameObject shape;
+    [SerializeField] protected Material teamBMaterial;
+    [SerializeField] protected Sprite captureBobbleBSprite;
+    [SerializeField] private GameObject captureBubble;
+    public const string CAPTURED_LAYER = "CapturedPlayersLayer";
+    private string defaultLayer;
     // Constants
-    public const float BUBBLE_BREAKOUT_TIME = 5f;
+    public const float BUBBLE_BREAKOUT_TIME = 10f;
 
     // Start is called before the first frame update
     public virtual void Start()
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
-        DEBUG_BOTS = gameManager.GetDebugBots();
+        shape = transform.Find("Shape").gameObject;
+        defaultLayer = LayerMask.LayerToName(shape.layer);
+        SetTeamColor();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnStartClient()
     {
-
+        SetTeamColor();
     }
 
-    protected Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
+    void SetTeamColor()
+    {
+        if (teamNumber != 1)
+        {
+            collideableRenderer.material = teamBMaterial;
+            captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+        }
+    }
+
+    public Vector2 transformTargetNodeIntoDirection(Vector3 targetNode)
     {
         Vector2 target = targetNode;
         Vector2 moveDirection = (target - rb.position);
@@ -57,22 +65,20 @@ public class CharacterBase : NetworkBehaviour
         rb.MovePosition(rb.position + moveVector);
     }
 
-    protected void SetAnimatorMovement(Vector2 direction)
+    public void SetAnimatorMovement(Vector2 direction)
     {
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", direction.sqrMagnitude);
     }
 
-    /**
-    * removes the diamonds from the users inventory
-    */
+    [Server]
     public void deliverDiamond()
     {
         // TODO: change appearance of dragon here
         holdsDiamond = false;
     }
-
+    [Server]
     public void collectDiamond()
     {
         // TODO: change appearance of dragon here
@@ -82,65 +88,72 @@ public class CharacterBase : NetworkBehaviour
     /**
     * is triggered when the player got captured by a bubble
     */
-    public void Capture()
+    [Server]
+    public void Capture(int fromTeamNumber)
     {
-        SetIsCaptured(true);
+        if (isCaptured) return;
+        if (teamNumber == fromTeamNumber) return;
+        isCaptured = true;
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
-        animator.SetBool("isCaptured", true);
+        CaptureStateUpdate();
     }
 
     /**
     * uncaptures the dragon 
     */
+    [Server]
     public void Uncapture()
     {
-        SetIsCaptured(false);
-        animator.SetBool("isCaptured", false);
+        if (!isCaptured) return;
+        isCaptured = false;
+        CaptureStateUpdate();
     }
 
-    /**
-    * is called when the syncvar isCaptured is changed
-    */
-    public void OnIsCapturedChanged(bool newIsCaptured, bool oldIsCaptured)
+    [Client]
+    private void OnCaptureChanged(bool oldIsCaptured, bool newIsCaptured)
     {
-        // Debug.Log("Heelo, Captured changed + " + newIsCaptured);
-        SetIsCaptured(newIsCaptured);
-        animator.SetBool("isCaptured", newIsCaptured);
+        CaptureStateUpdate();
     }
 
-    public void CaptureCharacter(int teamNumber)
+    // [Both]
+    private void CaptureStateUpdate()
     {
-        if (GetTeamNumber() != teamNumber)
-        {
-            Capture();
-        }
+        animator.SetBool("isCaptured", isCaptured);
+        captureBubble.SetActive(isCaptured);
+        SetPlayerLevel(isCaptured ? CAPTURED_LAYER : defaultLayer);
     }
+
+    private void SetPlayerLevel(string levelname)
+    {
+        // player's shape needs to be set to a level, that does not collide with anything,
+        // so that the captureBubble can take over all collisions with others
+        shape.layer = LayerMask.NameToLayer(levelname);
+    }
+
     /**
     * set the team number of the player
     */
+    [Server]
     public void SetTeamNumber(byte newTeamNumber)
     {
         teamNumber = newTeamNumber;
     }
 
     /**
-    * get the players team number
+    * [Both] get the players team number
     */
     public byte GetTeamNumber()
     {
         return teamNumber;
     }
 
-    public void SetIsCaptured(bool newIsCaptured)
-    {
-        isCaptured = newIsCaptured;
-    }
-
+    // [Both]
     public bool GetIsCaptured()
     {
         return isCaptured;
     }
 
+    [Server]
     public void SetHoldsDiamond(bool newHoldsDiamond)
     {
         holdsDiamond = newHoldsDiamond;
@@ -149,5 +162,22 @@ public class CharacterBase : NetworkBehaviour
     public bool GetHoldsDiamond()
     {
         return holdsDiamond;
+    }
+
+    [Server]
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = teamNumber == 1 ? Color.red : Color.yellow;
+        Gizmos.DrawWireCube(transform.position, new Vector3(3, 3, 0));
     }
 }

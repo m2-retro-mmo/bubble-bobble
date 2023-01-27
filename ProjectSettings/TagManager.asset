@@ -11,6 +11,7 @@ TagManager:
   - Bubble
   - Hort
   - GameManager
+  - CaptureBubble
   layers:
   - Default
   - TransparentFX
@@ -28,15 +29,15 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - CapturedPlayersLayer
   - 
   - Diamond
   - Player Move Collider
   - Player HitBox
   - Bubble Layer
-  - 
-  - 
-  - 
+  - Obstacles
+  - Ground
+  - Hort
   - 
   - 
   - 
