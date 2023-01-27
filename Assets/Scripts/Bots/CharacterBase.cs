@@ -60,6 +60,10 @@ public class CharacterBase : NetworkBehaviour
 
     protected void Move(Vector2 direction)
     {
+        if (direction.magnitude > 1.0f)
+        {
+            direction.Normalize();
+        }
         Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
         SetAnimatorMovement(direction);
         rb.MovePosition(rb.position + moveVector);
