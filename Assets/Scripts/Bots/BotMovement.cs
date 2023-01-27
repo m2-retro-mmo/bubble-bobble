@@ -461,7 +461,7 @@ public class BotMovement : MonoBehaviour
         currentIndex = 0;
     }
 
-    private void StopEverything()
+    public void StopEverything()
     {
         CancelInvoke();
         StopAllCoroutines();
@@ -533,7 +533,7 @@ public class BotMovement : MonoBehaviour
         // find closest node to bot that is free
         foreach (GraphNode node in nodesAroundHort)
         {
-            if (map.TileIsFree(node.GetX(), node.GetY()))
+            if (!node.GetIsObstacle())
             {
                 goalHolder.transform.position = graph.GetWorldPosition(node.GetX(), node.GetY());
                 break;
@@ -551,6 +551,11 @@ public class BotMovement : MonoBehaviour
     public void SetGraph(Graph graph)
     {
         this.graph = graph;
+    }
+
+    public Graph GetGraph()
+    {
+        return graph;
     }
 
     public void SetGoal(Transform goal)

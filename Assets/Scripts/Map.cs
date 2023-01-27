@@ -75,7 +75,7 @@ public struct GeneratorData
         for (int i = 0; i < teams; i++)
         {
             Vector2[] sections = _GetSections(width, 8);
-            int randomY = localRan.Next(0 + hortScale, height - hortScale);
+            int randomY = localRan.Next(0 + hortScale * 2, height - hortScale * 2);
             int randomX = 0;
             switch (i)
             {
@@ -162,7 +162,7 @@ public class Map : NetworkBehaviour
 
     public int spawnedDiamonds = 0;
 
-    private int hortDeadAreaOffset = 3;
+    private int hortDeadAreaOffset = 7;
 
     [Server]
     public List<Hort> NewMap()
