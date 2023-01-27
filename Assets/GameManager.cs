@@ -73,7 +73,8 @@ public class GameManager : NetworkBehaviour
         }
         graph = new Graph(map, drawGraph);
 
-        CreateBots();
+        if(!DEBUG_BOTS)
+            CreateBots();
 
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
@@ -147,6 +148,11 @@ public class GameManager : NetworkBehaviour
         {
             RemoveBot(teamNumber);
         }
+        else 
+        {
+            byte botTeamNumber = (byte)(teamNumber == 0 ? 1 : 0);
+            AddBot(botTeamNumber);
+        }
     }
 
     private void CreateBots()
@@ -172,11 +178,11 @@ public class GameManager : NetworkBehaviour
             {
                 botCounterTeam1++;
             }
-            AddBots(teamNumber);
+            AddBot(teamNumber);
         }
     }
 
-    private void AddBots(byte teamNumber)
+    private void AddBot(byte teamNumber)
     {
         Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
         bot.transform.parent = bots.transform;
@@ -184,18 +190,16 @@ public class GameManager : NetworkBehaviour
         bot.SetTeamNumber(teamNumber);
         bot.RandomizeInteractionWeights();
 
-        // if (DEBUG_BOTS)
-        // {
-        //     Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-        //     Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
-        //     bot.transform.position = botPos;
-        // }
-        // else
-        // {
-        //     map.PlaceCharacter(bot);
-        // }
-
-        map.PlaceCharacter(bot);
+        if (DEBUG_BOTS)
+        {
+            Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+            Vector3 botPos = GetRandomTileAroundPlayer((int)playerPos.x, (int)playerPos.y);
+            bot.transform.position = botPos;
+        }
+        else
+        {
+            map.PlaceCharacter(bot); 
+        }
 
         NetworkServer.Spawn(bot.gameObject);
 

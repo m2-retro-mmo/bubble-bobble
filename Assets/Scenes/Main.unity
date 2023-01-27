@@ -849,7 +849,7 @@ MonoBehaviour:
   map: {fileID: 2091722759}
   cam: {fileID: 0}
   minimapCam: {fileID: 774985694}
-  DEBUG_BOTS: 0
+  DEBUG_BOTS: 1
   botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
   characterCount: 10
