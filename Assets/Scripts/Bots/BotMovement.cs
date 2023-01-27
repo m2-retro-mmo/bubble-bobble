@@ -449,6 +449,8 @@ public class BotMovement : MonoBehaviour
     /// </summary>
     private void CalculatePathToGoal()
     {
+        if(goal == null)
+            return;
         path = pathfinding.FindPath(transform.position, goal.position);
         currentIndex = 0;
     }
