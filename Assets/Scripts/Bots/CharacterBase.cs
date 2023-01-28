@@ -4,7 +4,7 @@ using Mirror;
 public class CharacterBase : NetworkBehaviour
 {
     // States
-    [SyncVar] public bool holdsDiamond = false;
+    [SyncVar(hook = nameof(OnHoldsDiamondChanged))] public bool holdsDiamond = false;
     [SyncVar(hook = nameof(OnCaptureChanged))] public bool isCaptured = false;
 
     // Team
@@ -95,10 +95,18 @@ public class CharacterBase : NetworkBehaviour
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
 
+    [Server]
     public void IncrementUncapturedCounter()
     {
         uncapturedCounter++;
     }
+
+    [Client]
+    private void OnHoldsDiamondChanged(bool oldHoldsDiamond, bool newHoldsDiamond)
+    {
+        animator.SetBool("holdsDiamond", newHoldsDiamond);
+    }
+
     /**
     * is triggered when the player got captured by a bubble
     */
