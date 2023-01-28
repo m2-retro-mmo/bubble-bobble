@@ -52,6 +52,7 @@ public class PlayerCollision : MonoBehaviour
                 // uncapture player if it's a teammate
                 if (player.teamNumber == capturedPlayer.GetTeamNumber())
                 {
+                    player.IncrementUncapturedCounter();
                     capturedPlayer.Uncapture();
                 }
                 break;

@@ -23,8 +23,13 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] private GameObject captureBubble;
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
+
     // Constants
     public const float BUBBLE_BREAKOUT_TIME = 10f;
+
+    // Counter 
+    private int diamondCounter = 0;
+    private int uncapturedCounter = 0;
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -80,6 +85,7 @@ public class CharacterBase : NetworkBehaviour
     public void deliverDiamond()
     {
         holdsDiamond = false;
+        diamondCounter++;
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
     [Server]
@@ -89,6 +95,10 @@ public class CharacterBase : NetworkBehaviour
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
 
+    public void IncrementUncapturedCounter()
+    {
+        uncapturedCounter++;
+    }
     /**
     * is triggered when the player got captured by a bubble
     */
@@ -179,6 +189,16 @@ public class CharacterBase : NetworkBehaviour
     public float GetSpeed()
     {
         return speed;
+    }
+
+    public int GetDiamondCounter()
+    {
+        return diamondCounter;
+    }
+
+    public int GetUncapturedCounter()
+    {
+        return uncapturedCounter;
     }
 
     void OnDrawGizmos()

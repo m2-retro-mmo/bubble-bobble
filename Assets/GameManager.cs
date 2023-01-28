@@ -11,8 +11,6 @@ This class handles:
 */
 public class GameManager : NetworkBehaviour
 {
-
-
     public Player playerPrefab;
     public Hort hortPrefab;
     public Map map;
@@ -20,10 +18,6 @@ public class GameManager : NetworkBehaviour
     public Camera minimapCam;
 
     private UIManager uIManager;
-
-    [SerializeField]
-    [Tooltip("true if the game should run with bots")]
-    private bool startGameWithBots;
 
     [SerializeField]
     [Tooltip("true if the bot should be spawned in the area of the player")]
@@ -34,13 +28,15 @@ public class GameManager : NetworkBehaviour
     private Bot botPrefab;
 
     [SerializeField]
-    [Tooltip("The number of bots the game should start with")]
-    private int botNumber;
+    [Tooltip("The number of Characters (Bots and Player) the game should start with")]
+    private int characterCount;
 
     [SerializeField]
     [Tooltip("The duration of a game")]
     private float gameDuration;
     private bool timerIsRunning;
+
+    private int botTeamNumber;
 
     private List<Hort> horts;
 
@@ -48,44 +44,11 @@ public class GameManager : NetworkBehaviour
 
     private Graph graph;
 
+    private byte botCounterTeam0 = 0;
+    private byte botCounterTeam1 = 0;
+
     private byte playerCounterTeam0 = 0;
     private byte playerCounterTeam1 = 0;
-
-    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
-    {
-        foreach (Player player in FindObjectsOfType<Player>())
-        {
-            if (player.connectionToClient == conn)
-            {
-                Debug.Log("Player already exists");
-                return;
-            }
-        }
-
-        Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
-
-        byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
-        byte botNumber = (byte)(teamNumber == 1 ? 0 : 1);
-
-        if(teamNumber == 0)
-        {
-            playerCounterTeam0++;
-        }
-        else
-        {
-            playerCounterTeam1++;
-        }
-
-        p.SetTeamNumber(teamNumber);
-
-        map.PlaceCharacter(p);
-        NetworkServer.AddPlayerForConnection(conn, p.gameObject);
-
-        if(!DEBUG_BOTS)
-        {
-            AddBots(botNumber);
-        }
-    }
 
     // Start is called before the first frame update
     [Server]
@@ -101,20 +64,17 @@ public class GameManager : NetworkBehaviour
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
 
-        if (startGameWithBots)
+        bots = new GameObject("Bots");
+        bool drawGraph = false;
+        // spawn only one bot in debug mode
+        if (DEBUG_BOTS)
         {
-            bots = new GameObject("Bots");
-
-            bool drawGraph = false;
-
-            // spawn only one bot in debug mode
-            if (DEBUG_BOTS)
-            {
-                drawGraph = true;
-            }
-
-            graph = new Graph(map, drawGraph);
+            //drawGraph = true;
         }
+        graph = new Graph(map, drawGraph);
+
+        if(!DEBUG_BOTS)
+            CreateBots();
 
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
@@ -123,11 +83,6 @@ public class GameManager : NetworkBehaviour
             {
                 CreatePlayer(conn, new CreatePlayerMessage());
             }
-        }
-
-        if (DEBUG_BOTS)
-        {
-            AddBots(1);
         }
 
         // register connection handler function
@@ -160,12 +115,80 @@ public class GameManager : NetworkBehaviour
         // TODO: if new player joined place player on the map
     }
 
-    private void AddBots(byte teamNumber)
+    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
+    {
+        foreach (Player player in FindObjectsOfType<Player>())
+        {
+            if (player.connectionToClient == conn)
+            {
+                Debug.Log("Player already exists");
+                return;
+            }
+        }
+
+        Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
+
+        byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
+        
+        if(teamNumber == 0)
+        {
+            playerCounterTeam0++;
+        }
+        else
+        {
+            playerCounterTeam1++;
+        }
+
+        p.SetTeamNumber(teamNumber);
+
+        map.PlaceCharacter(p);
+        NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+
+        if(!DEBUG_BOTS)
+        {
+            RemoveBot(teamNumber);
+        }
+        else 
+        {
+            byte botTeamNumber = (byte)(teamNumber == 0 ? 1 : 0);
+            AddBot(botTeamNumber);
+        }
+    }
+
+    private void CreateBots()
+    {
+        // check if character count is even
+        if (characterCount % 2 != 0)
+        {
+            characterCount--;
+        }
+        // check if character count is greater than 100
+        if (characterCount > 100)
+        {
+            characterCount = 100;
+        }
+        for (int i = 1; i <= characterCount; i++)
+        {
+            byte teamNumber = (byte)(i % 2 == 0 ? 0 : 1);
+            if (teamNumber == 0)
+            {
+                botCounterTeam0++;
+            }
+            else
+            {
+                botCounterTeam1++;
+            }
+            AddBot(teamNumber);
+        }
+    }
+
+    private void AddBot(byte teamNumber)
     {
         Bot bot = Instantiate(botPrefab, new Vector3(((float)22) + 0.5f, ((float)22) + 0.5f, 0), Quaternion.identity);
         bot.transform.parent = bots.transform;
 
         bot.SetTeamNumber(teamNumber);
+        bot.RandomizeInteractionWeights();
 
         if (DEBUG_BOTS)
         {
@@ -175,13 +198,34 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            map.PlaceCharacter(bot);
+            map.PlaceCharacter(bot); 
         }
 
         NetworkServer.Spawn(bot.gameObject);
 
         bot.GetComponent<BotMovement>().SetGraph(graph);
         bot.StartBot();
+    }
+
+    private void RemoveBot(byte teamNumber)
+    {
+        if (teamNumber == 0)
+        {
+            botCounterTeam0--;
+        }
+        else
+        {
+            botCounterTeam1--;
+        }  
+        // find bot with team number
+        foreach (Bot bot in FindObjectsOfType<Bot>())
+        {
+            if (bot.GetTeamNumber() == teamNumber)
+            {
+                Destroy(bot.gameObject);
+                return;
+            }
+        }
     }
 
     // helper function to get a random tile around the player (for debugging)
