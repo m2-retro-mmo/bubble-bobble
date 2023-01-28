@@ -177,6 +177,12 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public void RemovePlayer(NetworkConnectionToClient conn) {
+        Player p = conn.identity.GetComponent<Player>();
+        byte teamNumber = p.GetTeamNumber();
+        AddBot(teamNumber);
+    }
+
     private void CreateBots()
     {
         // check if character count is even

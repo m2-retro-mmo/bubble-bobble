@@ -10,7 +10,9 @@ public class BBNetworkManager : NetworkManager
     public struct ConnectionInfo
     {
         public NetworkConnectionToClient conn;
-        public GameObject playerData;
+        public int index;
+        public string username;
+        public bool readyToBegin;
     }
 
     [Header("Bubble Bobble Network Manager")]
@@ -21,8 +23,6 @@ public class BBNetworkManager : NetworkManager
 
     public int gameDuration = 60;
 
-    public BBPlayerData playerDataPrefab;
-
     private bool gameRunning = false;
 
     private List<ConnectionInfo> connectionRefs = new List<ConnectionInfo>();
@@ -30,7 +30,6 @@ public class BBNetworkManager : NetworkManager
     public override void OnStartClient()
     {
         base.OnStartClient();
-        NetworkClient.RegisterPrefab(playerDataPrefab.gameObject);
     }
 
     public override void OnStartServer()
@@ -61,13 +60,9 @@ public class BBNetworkManager : NetworkManager
             }
         }
 
-        GameObject newRoomGameObject = Instantiate(playerDataPrefab.gameObject, Vector3.zero, Quaternion.identity);
-        newRoomGameObject.GetComponent<BBPlayerData>().username = "Player " + conn.connectionId;
-        NetworkServer.Spawn(newRoomGameObject, conn);
-
-        ConnectionInfo newConnectionInfo;
+        ConnectionInfo newConnectionInfo = new ConnectionInfo();
         newConnectionInfo.conn = conn;
-        newConnectionInfo.playerData = newRoomGameObject;
+        newConnectionInfo.username = "Player " + conn.connectionId;
         connectionRefs.Add(newConnectionInfo);
     }
 
@@ -76,12 +71,13 @@ public class BBNetworkManager : NetworkManager
         if (conn.identity != null)
         {
 
+            GameManager.singleton.RemovePlayer(conn);
+
             // iterate over connectionRefs and remove the one that matches conn
             for (int i = 0; i < connectionRefs.Count; i++)
             {
                 if (connectionRefs[i].conn == conn)
                 {
-                    NetworkServer.Destroy(connectionRefs[i].playerData);
                     connectionRefs.RemoveAt(i);
                     break;
                 }
@@ -98,7 +94,8 @@ public class BBNetworkManager : NetworkManager
         ServerChangeScene(GameScene);
     }
 
-    public void returnToLobby() {
+    public void returnToLobby()
+    {
         gameRunning = false;
         ServerChangeScene(RoomScene);
     }
