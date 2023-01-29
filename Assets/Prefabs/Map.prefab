@@ -393,12 +393,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: aa14e442c407b164a9e0bba1fd35004d, type: 2}
   - {fileID: 11400000, guid: 34303d25145ab104f8fabf97fe65552d, type: 2}
   - {fileID: 11400000, guid: 57824cd7e1612d14090d617a256eca53, type: 2}
-  - {fileID: 11400000, guid: 1eb88b0997574584f9e6103018404c4c, type: 2}
-  - {fileID: 11400000, guid: fbde4feddd010b84a8e85a316d96b45e, type: 2}
   waterTile: {fileID: 11400000, guid: 179d21ad98546944b89dd263beebdaaf, type: 2}
   pillars:
   - {fileID: 11400000, guid: 3019b47c419fa62288f1ee69c4e08108, type: 2}
   - {fileID: 11400000, guid: b392e58d77907894bbb747280028c119, type: 2}
+  stones:
+  - {fileID: 11400000, guid: fbde4feddd010b84a8e85a316d96b45e, type: 2}
+  - {fileID: 11400000, guid: 1eb88b0997574584f9e6103018404c4c, type: 2}
+  - {fileID: 11400000, guid: 780dbc86f9d96cb4ea6eb80cedc5297f, type: 2}
+  - {fileID: 11400000, guid: 80d878f99cb4c7943b5c46bf5c1a6785, type: 2}
+  - {fileID: 11400000, guid: cdf8801e81d05d149ac589cebd5e1dd8, type: 2}
+  - {fileID: 11400000, guid: b582a793ebd123e4ba5f4ca704ed259e, type: 2}
+  - {fileID: 11400000, guid: 3d9dc795275adfd48af7618f29844554, type: 2}
+  - {fileID: 11400000, guid: 9d6c18cd380d5004c9f822deee6e523f, type: 2}
+  - {fileID: 11400000, guid: d85a59ea5ef7b6d488d8434610470f09, type: 2}
   bushes:
   - {fileID: 11400000, guid: bbf669d2b67dcd545a15fe757a0720ee, type: 2}
   - {fileID: 11400000, guid: 3859940d6faecf3479744a35e925043b, type: 2}
@@ -422,6 +430,9 @@ MonoBehaviour:
     type: 2}
   northWestAndSouthEast: {fileID: 11400000, guid: fe55a09b470df1c4d9a5186d9135dda6,
     type: 2}
+  characterSpawnOffsetX: 0.45
+  characterSpawnOffsetY: 0.8
+  spawnedDiamonds: 0
 --- !u!114 &2229609613089480983
 MonoBehaviour:
   m_ObjectHideFlags: 0
