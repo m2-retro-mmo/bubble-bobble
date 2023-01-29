@@ -189,6 +189,9 @@ public class BotMovement : MonoBehaviour
 
         while (true)
         {
+            if (goal == null)
+                break;
+
             float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
 
             if (path != null)

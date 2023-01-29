@@ -252,7 +252,7 @@ public class GameManager : NetworkBehaviour
         {
             if (bot.GetTeamNumber() == teamNumber)
             {
-                NetworkServer.Destroy(bot.gameObject);
+                Destroy(bot.gameObject);
                 return;
             }
         }

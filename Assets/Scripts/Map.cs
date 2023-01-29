@@ -506,6 +506,7 @@ public class Map : NetworkBehaviour
                 item.transform.parent = diamondParent.transform;
                 spawnedDiamonds++;
                 count--;
+                NetworkServer.Spawn(item.gameObject);
             }
         }
     }
