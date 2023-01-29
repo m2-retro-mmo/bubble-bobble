@@ -192,11 +192,11 @@ public class Map : NetworkBehaviour
         // create fresh diamond parent array
         if (diamondParent != null && spawnedDiamonds == 0)
         {
-            Destroy(diamondParent);
+            NetworkServer.Destroy(diamondParent);
         }
         if (treeParent != null)
         {
-            Destroy(treeParent);
+            NetworkServer.Destroy(treeParent);
         }
         diamondParent = new GameObject("Diamonds");
         treeParent = new GameObject("Trees");

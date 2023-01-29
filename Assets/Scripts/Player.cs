@@ -24,7 +24,7 @@ public class Player : CharacterBase
 
     public float itemDuration = 0;
 
-    [SyncVar(hook = nameof(OnPlayerNameChanged))] private string playerName;
+    [SyncVar(hook = nameof(OnPlayerNameChanged))] public string playerName;
     public TextMeshProUGUI playerNameGUI;
 
     // Start is called before the first frame update
@@ -57,7 +57,6 @@ public class Player : CharacterBase
 
         if (isServer)
         {
-            playerName = NameGenerator.GetRandomName();
             playerNameGUI.text = playerName;
         }
     }

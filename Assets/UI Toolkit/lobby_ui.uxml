@@ -1,18 +1,21 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; background-color: rgb(255, 255, 255); height: 100%;">
-        <ui:Label text="Bubble Bobble Extreme" display-tooltip-when-elided="true" style="font-size: 48px; color: rgb(0, 0, 0); text-shadow: 1px 1px 0 rgb(0, 0, 0);" />
-        <ui:VisualElement name="VisualElement" style="flex-direction: row; width: auto; height: 100%;">
-            <ui:VisualElement name="PlayerContainer" style="width: 70%; height: 100%;">
-                <ui:ListView focusable="true" name="ListOfPlayers" fixed-item-height="0" style="height: 100%; width: auto;" />
-            </ui:VisualElement>
-            <ui:VisualElement style="width: 300px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; right: auto; justify-content: flex-start; align-items: stretch;">
-                <ui:TextField picking-mode="Ignore" label="Enter your name" value="playerName" text="Player 1" multiline="false" name="PlayerName" style="font-size: 20px; flex-wrap: wrap; align-items: stretch; white-space: nowrap; height: auto; color: rgb(14, 14, 14); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-top: 5px; margin-bottom: 5px; flex-direction: column;" />
-                <ui:TextField picking-mode="Ignore" label="Game duration" value="Duration in seconds" text="20" name="DurationValue" max-length="50" is-delayed="false" multiline="false" style="font-size: 20px; color: rgb(12, 11, 11); flex-wrap: wrap; margin-top: 5px; flex-direction: column;" />
-                <ui:VisualElement style="margin-left: 0; margin-right: 0; margin-top: 20%; margin-bottom: 20%;">
-                    <ui:Button text="Play" display-tooltip-when-elided="true" name="PlayButton" style="align-items: auto; justify-content: flex-start;" />
-                    <ui:Button text="Exit" display-tooltip-when-elided="true" name="ExitButton" style="align-items: auto; justify-content: flex-start;" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
+    <Style src="project://database/Assets/UI%20Toolkit/stylesheet.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#stylesheet" />
+    <ui:VisualElement class="background" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; height: 100%;">
+        <ui:GroupBox style="flex-direction: row; flex-grow: 1;">
+            <ui:GroupBox style="width: 40%;">
+                <ui:GroupBox style="flex-grow: 1; width: auto;">
+                    <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 170px; height: 82px; margin-bottom: 32px;" />
+                    <ui:TextField picking-mode="Ignore" label="Name" value="filler text" text="???" name="username" />
+                    <ui:RadioButtonGroup label="Game duration" value="-1" choices="30 Seconds, 60 Seconds, 120 Seconds, 240 Seconds" name="duration" />
+                </ui:GroupBox>
+                <ui:GroupBox style="flex-direction: row;">
+                    <ui:Button text="Ready" display-tooltip-when-elided="true" name="playBtn" class="primary" />
+                    <ui:Button text="Leave" display-tooltip-when-elided="true" name="exitBtn" />
+                </ui:GroupBox>
+            </ui:GroupBox>
+            <ui:GroupBox style="flex-grow: 1;">
+                <ui:Label text="Label" display-tooltip-when-elided="true" name="playersLabel" style="flex-wrap: nowrap;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
     </ui:VisualElement>
 </ui:UXML>

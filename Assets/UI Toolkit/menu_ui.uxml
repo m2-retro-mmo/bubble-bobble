@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/stylesheet.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#stylesheet" />
+    <ui:VisualElement class="background" style="padding-left: 128px; padding-right: 128px; padding-top: 128px; padding-bottom: 128px; height: 100%; flex-direction: column; justify-content: space-around;">
+        <ui:GroupBox style="flex-direction: column; align-items: center; justify-content: space-around;">
+            <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 564px; height: 281px; -unity-background-scale-mode: stretch-to-fill;" />
+            <ui:Label text="Lost connection to game server" display-tooltip-when-elided="true" name="StatusText" style="margin-top: 32px; display: none;" />
+            <ui:GroupBox style="flex-direction: row; align-items: flex-end; margin-top: 32px;">
+                <ui:TextField picking-mode="Ignore" label="IP address" value="filler text" name="AddressField" text="localhost" style="width: 202px;" />
+                <ui:Button text="Join server" display-tooltip-when-elided="true" name="JoinBtn" class="primary" style="width: auto; flex-shrink: 0;" />
+            </ui:GroupBox>
+            <ui:GroupBox name="Debug" style="flex-direction: row; margin-top: 32px; display: none;">
+                <ui:Button text="Server" display-tooltip-when-elided="true" name="ServerBtn" style="width: auto; flex-shrink: 0; display: flex;" />
+                <ui:Button text="Server + Client" display-tooltip-when-elided="true" name="HostBtn" style="width: auto; flex-shrink: 0; display: flex; visibility: visible;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:Button text="Quit" display-tooltip-when-elided="true" name="QuitBtn" style="width: auto; flex-shrink: 0; position: absolute; top: auto; left: 20px; bottom: 20px;" />
+    </ui:VisualElement>
+</ui:UXML>

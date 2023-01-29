@@ -31,9 +31,7 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of Characters (Bots and Player) the game should start with")]
     private int characterCount;
 
-    [SerializeField]
-    [Tooltip("The duration of a game")]
-    private float gameDuration;
+    private float gameDuration = 100f;
     private bool timerIsRunning;
 
     private int botTeamNumber;
@@ -87,6 +85,8 @@ public class GameManager : NetworkBehaviour
         }
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
+
+        gameDuration = (BBNetworkManager.singleton as BBNetworkManager).gameDuration;
 
         bots = new GameObject("Bots");
         bool drawGraph = false;
@@ -149,6 +149,8 @@ public class GameManager : NetworkBehaviour
         }
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
+
+        p.playerName = (BBNetworkManager.singleton as BBNetworkManager).getPlayerName(conn);
 
         byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
         
