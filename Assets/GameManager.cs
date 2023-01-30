@@ -31,7 +31,7 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of Characters (Bots and Player) the game should start with")]
     private int characterCount;
 
-    private float gameDuration = 100f;
+    [SyncVar (hook = nameof(DurationUpdated))] private float gameDuration = 100f;
     private bool timerIsRunning;
 
     private int botTeamNumber;
@@ -70,6 +70,10 @@ public class GameManager : NetworkBehaviour
 
     private byte playerCounterTeam0 = 0;
     private byte playerCounterTeam1 = 0;
+
+    private void Start() {
+        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+    }
 
     // Start is called before the first frame update
     [Server]
@@ -110,13 +114,13 @@ public class GameManager : NetworkBehaviour
         }
 
         // handle playtime
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
         timerIsRunning = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isClientOnly) return;
         if (timerIsRunning)
         {
             if (gameDuration > 0)
@@ -134,6 +138,12 @@ public class GameManager : NetworkBehaviour
             }
         }
         // TODO: if new player joined place player on the map
+    }
+
+    private void DurationUpdated(float oldDuration, float newDuration)
+    {
+        if (uIManager != null)
+            uIManager.SetDuration(gameDuration);
     }
 
     public void CreatePlayer(NetworkConnectionToClient conn)

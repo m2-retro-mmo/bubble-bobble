@@ -1,6 +1,6 @@
 .background {
     background-color: rgb(115, 118, 28);
-    color: rgb(61, 66, 11);
+    color: rgb(255, 255, 255);
 }
 
 Button {
