@@ -168,7 +168,7 @@ public class GameManager : NetworkBehaviour
         map.PlaceCharacter(p);
 
         // check if there is already a player for the connection
-        if (conn.identity.gameObject != null)
+        if (conn.identity != null && conn.identity.gameObject != null)
         {
             // NetworkManager.Destroy(conn.identity.gameObject);
             NetworkServer.ReplacePlayerForConnection(conn.identity.connectionToClient, p.gameObject, true);

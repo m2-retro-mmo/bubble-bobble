@@ -62,3 +62,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a97fb82037344f0a0be2fe97e121558e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  emptyBubbleSprite: {fileID: 21300000, guid: 799bf4424660646fa9295298f86f86f1, type: 3}
+  purpleBubbleSprite: {fileID: 21300000, guid: 3037e9b2e003b46cfa8d208c4a51efde, type: 3}
+  orangeBubbleSprite: {fileID: 21300000, guid: 118f44496dfeb4793be3a3b0f5281794, type: 3}

@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Toolkit/stylesheet.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#stylesheet" />
+    <Style src="project://database/Assets/UI%20Toolkit/menu_style.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#menu_style" />
+    <Style src="project://database/Assets/UI%20Toolkit/global_style.uss?fileID=7433441132597879392&amp;guid=fb904d91575fe472e8389681f114936c&amp;type=3#global_style" />
     <ui:VisualElement class="background" style="padding-left: 128px; padding-right: 128px; padding-top: 128px; padding-bottom: 128px; height: 100%; flex-direction: column; justify-content: space-around;">
         <ui:GroupBox style="flex-direction: column; align-items: center; justify-content: space-around;">
             <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 564px; height: 281px; -unity-background-scale-mode: stretch-to-fill;" />

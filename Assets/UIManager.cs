@@ -13,9 +13,19 @@ public class UIManager : MonoBehaviour
     Label playerName;
     Label duration;
 
-    VisualElement bubbleContainer;
+    VisualElement bubbleIndicator;
     [SerializeField]
-    Sprite orangeBubble;
+    Sprite emptyBubbleSprite;
+    [SerializeField]
+    Sprite purpleBubbleSprite;
+    [SerializeField]
+    Sprite orangeBubbleSprite;
+
+    StyleBackground emptyBubble;
+    StyleBackground orangeBubble;
+    StyleBackground purpleBubble;
+
+    bool isPurpleTeam = true;
 
     void OnEnable()
     {
@@ -28,22 +38,22 @@ public class UIManager : MonoBehaviour
 
         // get team point labels
         VisualElement root = document.rootVisualElement;
-        labelPointsTeam0 = root.Q("PointsTeam0") as Label;
-        labelPointsTeam1 = root.Q("PointsTeam1") as Label;
+        labelPointsTeam0 = root.Q("orangeScore") as Label;
+        labelPointsTeam1 = root.Q("purpleScore") as Label;
 
-        // ping label
-        ping = root.Q("PingValue") as Label;
-        playerName = root.Q("PlayerName") as Label;
         // get bubble container
-        bubbleContainer = root.Q("BubbleContainer") as VisualElement;
+        bubbleIndicator = root.Q("bubbleIndicator") as VisualElement;
+        emptyBubble = new StyleBackground(emptyBubbleSprite);
+        orangeBubble = new StyleBackground(orangeBubbleSprite);
+        purpleBubble = new StyleBackground(purpleBubbleSprite);
+
         // duration label
-        duration = root.Q("DurationValue") as Label;
+        duration = root.Q("timer") as Label;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        SetPing(20);
         SetBubbleCount(3);
     }
 
@@ -54,17 +64,14 @@ public class UIManager : MonoBehaviour
 
     public void SetBubbleColorOrange()
     {
-        for (int i = 0; i < bubbleContainer.childCount; i++)
-        {
-            bubbleContainer.hierarchy.ElementAt(i).style.backgroundImage = new StyleBackground(orangeBubble);
-        }
+        isPurpleTeam = false;
     }
 
     public void SetBubbleCount(int count)
     {
-        for (int i = 0; i < bubbleContainer.childCount; i++)
+        for (int i = 0; i < bubbleIndicator.childCount; i++)
         {
-            bubbleContainer.hierarchy.ElementAt(i).visible = (i < count);
+            bubbleIndicator.hierarchy.ElementAt(i).style.backgroundImage = (i < count) ? (isPurpleTeam ? purpleBubble : orangeBubble) : emptyBubble;
         }
     }
 
@@ -73,10 +80,11 @@ public class UIManager : MonoBehaviour
         switch (team)
         {
             case 0:
-                labelPointsTeam0.text = points.ToString();
+                // pad with zero so there are always two digits
+                labelPointsTeam0.text = points.ToString("00");
                 break;
             case 1:
-                labelPointsTeam1.text = points.ToString();
+                labelPointsTeam1.text = points.ToString("00");
                 break;
             default:
                 Debug.LogWarning("Invalid Team given.");
@@ -84,15 +92,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void SetPing(int pingValue)
-    {
-        ping.text = pingValue.ToString() + "ms";
-    }
-
     public void SetDuration(float timeToDisplay)
     {
-        float minutes = Mathf.FloorToInt(timeToDisplay / 60);  
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        duration.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        duration.text = string.Format("{00:00}:{01:00}", minutes, seconds);
     }
 }

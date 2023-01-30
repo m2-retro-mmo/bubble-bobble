@@ -1,17 +1,3 @@
-* {
-    -unity-font: url('project://database/Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Medium.ttf?fileID=12800000&guid=a51a3aebb43ac044989270407476b208&type=3#Roboto-Medium');
-    -unity-font-definition: url('project://database/Assets/BakbakOne-Regular%20SDF.asset?fileID=11400000&guid=f4a85758cdb4146ce821c53cbec37914&type=2#BakbakOne-Regular SDF');
-    color: rgb(255, 255, 255);
-    font-size: 24px;
-}
-
-.unity-base-field__input {
-    -unity-font: url('project://database/Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Medium.ttf?fileID=12800000&guid=a51a3aebb43ac044989270407476b208&type=3#Roboto-Medium');
-    -unity-font-definition: url('project://database/Assets/BakbakOne-Regular%20SDF.asset?fileID=11400000&guid=f4a85758cdb4146ce821c53cbec37914&type=2#BakbakOne-Regular SDF');
-    color: rgb(255, 255, 255);
-    font-size: 24px;
-}
-
 .background {
     background-color: rgb(115, 118, 28);
     color: rgb(61, 66, 11);
