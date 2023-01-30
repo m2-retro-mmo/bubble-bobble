@@ -43,7 +43,7 @@ public class BBNetworkManager : NetworkManager
 
     private bool gameRunning = false;
 
-    private List<ConnectionInfo> connectionRefs = new List<ConnectionInfo>();
+    public List<ConnectionInfo> connectionRefs = new List<ConnectionInfo>();
     private Dictionary<int, GameObject> emptyPlayerObjects = new Dictionary<int, GameObject>();
 
     public GameObject emptyPlayerPrefab;
@@ -101,6 +101,7 @@ public class BBNetworkManager : NetworkManager
         }
 
         GameObject newRoomGameObject = Instantiate(emptyPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+        newRoomGameObject.GetComponent<EmptyPlayer>().serverConnectionId = conn.connectionId;
         NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
         emptyPlayerObjects.Add(conn.connectionId, newRoomGameObject);
 
@@ -170,11 +171,6 @@ public class BBNetworkManager : NetworkManager
 
     public override void OnServerSceneChanged(string sceneName)
     {
-        if (!gameRunning)
-        {
-            OnConnectionUpdated();
-        }
-
         base.OnServerSceneChanged(sceneName);
     }
 

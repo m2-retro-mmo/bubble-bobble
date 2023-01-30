@@ -5,25 +5,25 @@ using Mirror;
 
 public class LobbyUIManager : NetworkBehaviour
 {
+    public static LobbyUIManager singleton { get; internal set; }
+
+    // Synced Variables
     public readonly SyncList<BBNetworkManager.ConnectionInfo> connections = new SyncList<BBNetworkManager.ConnectionInfo>();
     [SyncVar(hook = nameof(OnGameDurationChanged))] public int gameDurationSeconds = 100;
     [SyncVar] public float countdown = 5f;
     [SyncVar(hook = nameof(OnReadyChanged))] bool allReady = false;
 
+    // Document and UI Elements
     UIDocument document;
-
     TextField username;
     RadioButtonGroup duration;
-
     Button playButton;
     Button exitButton;
-
     Label playersLabel;
 
+    // Client only
     bool ready = false;
     string currentUsername = "";
-
-    public static LobbyUIManager singleton { get; internal set; }
 
 
     [Server]
@@ -67,32 +67,6 @@ public class LobbyUIManager : NetworkBehaviour
         }
     }
 
-    bool InitializeSingleton()
-    {
-        if (singleton != null && singleton == this)
-            return true;
-
-        if (singleton != null)
-        {
-            Debug.LogError("Multiple Lobby UIs in the scene");
-            return false;
-        }
-
-        singleton = this;
-        return true;
-    }
-
-    void Start()
-    {
-        InitializeSingleton();
-    }
-
-    void OnDestroy()
-    {
-        if (singleton == this)
-            singleton = null;
-    }
-
     void OnEnable()
     {
         document = GetComponent<UIDocument>();
@@ -110,10 +84,23 @@ public class LobbyUIManager : NetworkBehaviour
         exitButton = root.Q("exitBtn") as Button;
         playersLabel = root.Q("playersLabel") as Label;
 
-        playersLabel.text = GetPlayerLobbyList();
+        connections.Callback += OnConnectionsChanged;
+    }
 
+    public override void OnStartServer()
+    {
+        var instance = BBNetworkManager.singleton as BBNetworkManager;
+        UpdateFromServer(instance.connectionRefs, instance.gameDuration);
+        SetupUI();
+    }
+    public override void OnStartClient()
+    {
+        SetupUI();
+    }
+
+    private void SetupUI()
+    {
         // Username Setup
-        UpdateUsernameText();
         username.RegisterValueChangedCallback(evt =>
         {
             if (currentUsername == evt.newValue) return;
@@ -139,35 +126,27 @@ public class LobbyUIManager : NetworkBehaviour
             duration.value = durationToIndex(gameDurationSeconds);
         });
 
-        playButton.clicked += () =>
-        {
-            var message = new BBNetworkManager.ChangeReadyMessage { ready = !ready };
-            NetworkClient.Send(message);
-        };
+        playButton.clicked += ActionPlay;
+        exitButton.clicked += ActionDisconnect;
 
-        exitButton.clicked += Disconnect;
-    }
-
-    public override void OnStartClient()
-    {
-        connections.Callback += OnConnectionsChanged;
+        GetPlayerLobbyList();
         UpdateUsernameText();
     }
 
     void OnConnectionsChanged(SyncList<BBNetworkManager.ConnectionInfo>.Operation op, int index, BBNetworkManager.ConnectionInfo oldItem, BBNetworkManager.ConnectionInfo newItem)
     {
-        playersLabel.text = GetPlayerLobbyList();
+        GetPlayerLobbyList();
         UpdateUsernameText();
     }
 
-    private string GetPlayerLobbyList()
+    private void GetPlayerLobbyList()
     {
         string playerList = "";
         foreach (BBNetworkManager.ConnectionInfo connection in connections)
         {
             playerList += connection.username + " " + (connection.readyToBegin ? "(ready)" : "(not ready)") + "\n";
         }
-        return playerList;
+        playersLabel.text = playerList;
     }
 
     private void OnGameDurationChanged(int oldValue, int newValue)
@@ -183,7 +162,12 @@ public class LobbyUIManager : NetworkBehaviour
         }
     }
 
-    private void Disconnect()
+    private void ActionPlay()
+    {
+        var message = new BBNetworkManager.ChangeReadyMessage { ready = !ready };
+        NetworkClient.Send(message);
+    }
+    private void ActionDisconnect()
     {
         if (NetworkServer.active && NetworkClient.isConnected)
         {
@@ -201,12 +185,17 @@ public class LobbyUIManager : NetworkBehaviour
         }
     }
 
+    [Client]
     private void UpdateUsernameText()
     {
+        if (!NetworkClient.active) return;
         // iterate over connections and find ours
         foreach (BBNetworkManager.ConnectionInfo connection in connections)
         {
-            if (connection.connectionId == NetworkClient.connection.connectionId)
+
+            var serverConnectionId = NetworkClient.connection.identity.gameObject.GetComponent<EmptyPlayer>().serverConnectionId;
+
+            if (connection.connectionId == serverConnectionId)
             {
                 currentUsername = connection.username;
                 username.value = connection.username;
@@ -255,5 +244,31 @@ public class LobbyUIManager : NetworkBehaviour
             default:
                 return 30;
         }
+    }
+
+    bool InitializeSingleton()
+    {
+        if (singleton != null && singleton == this)
+            return true;
+
+        if (singleton != null)
+        {
+            Debug.LogError("Multiple Lobby UIs in the scene");
+            return false;
+        }
+
+        singleton = this;
+        return true;
+    }
+
+    void Start()
+    {
+        InitializeSingleton();
+    }
+
+    void OnDestroy()
+    {
+        if (singleton == this)
+            singleton = null;
     }
 }
