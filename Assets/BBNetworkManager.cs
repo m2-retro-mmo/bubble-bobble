@@ -9,7 +9,7 @@ public class BBNetworkManager : NetworkManager
 
     public struct ConnectionInfo
     {
-        public NetworkIdentity identity;
+        public int connectionId;
         public int index;
         public string username;
         public bool readyToBegin;
@@ -44,12 +44,15 @@ public class BBNetworkManager : NetworkManager
     private bool gameRunning = false;
 
     private List<ConnectionInfo> connectionRefs = new List<ConnectionInfo>();
+    private Dictionary<int, GameObject> emptyPlayerObjects = new Dictionary<int, GameObject>();
 
     public GameObject emptyPlayerPrefab;
 
-    public override void Start() {
+    public override void Start()
+    {
         // if the current scene is the game scene, start a host game
-        if (SceneManager.GetActiveScene().path == GameScene) {
+        if (SceneManager.GetActiveScene().path == GameScene)
+        {
             gameDuration = 3600;
             gameRunning = true;
             StartHost();
@@ -84,28 +87,25 @@ public class BBNetworkManager : NetworkManager
     public override void OnServerReady(NetworkConnectionToClient conn)
     {
         base.OnServerReady(conn);
-
         // check if connection is already in connectionRefs
+        if (conn == null)
+        {
+            return;
+        }
         for (int i = 0; i < connectionRefs.Count; i++)
         {
-            if (connectionRefs[i].identity == conn.identity)
+            if (conn.identity && connectionRefs[i].connectionId == conn.connectionId)
             {
                 return;
             }
         }
 
-        if (!gameRunning)
-        {
-            GameObject newRoomGameObject = Instantiate(emptyPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
-            NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
-        }
-        else
-        {
-            GameManager.singleton.CreatePlayer(conn);
-        }
+        GameObject newRoomGameObject = Instantiate(emptyPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+        NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
+        emptyPlayerObjects.Add(conn.connectionId, newRoomGameObject);
 
         ConnectionInfo newConnectionInfo = new ConnectionInfo();
-        newConnectionInfo.identity = conn.identity;
+        newConnectionInfo.connectionId = conn.connectionId;
         newConnectionInfo.username = NameGenerator.GetRandomName();
         connectionRefs.Add(newConnectionInfo);
         OnConnectionUpdated();
@@ -115,27 +115,28 @@ public class BBNetworkManager : NetworkManager
     {
         if (conn.identity != null)
         {
-            if (GameManager.singleton != null) {
+            if (GameManager.singleton != null)
+            {
                 GameManager.singleton.RemovePlayer(conn);
             }
 
             // iterate over connectionRefs and remove the one that matches conn
             for (int i = 0; i < connectionRefs.Count; i++)
             {
-                if (connectionRefs[i].identity == conn.identity)
+                if (connectionRefs[i].connectionId == conn.connectionId)
                 {
                     connectionRefs.RemoveAt(i);
+                    emptyPlayerObjects.Remove(conn.connectionId);
                     break;
                 }
             }
-        OnConnectionUpdated();
+            OnConnectionUpdated();
         }
         base.OnServerDisconnect(conn);
     }
 
     public void OnRoomServerPlayersReady()
     {
-        // all players are readyToBegin, start the game
         gameRunning = true;
         ServerChangeScene(GameScene);
     }
@@ -148,11 +149,28 @@ public class BBNetworkManager : NetworkManager
 
     public override void ServerChangeScene(string newSceneName)
     {
+
+        if (newSceneName == RoomScene)
+        {
+            for (int i = 0; i < connectionRefs.Count; i++)
+            {
+                var connRef = connectionRefs[i];
+                var conn = NetworkServer.connections[connRef.connectionId];
+                if (conn == null) continue;
+                var oldObject = conn.identity.gameObject;
+                NetworkServer.ReplacePlayerForConnection(conn, emptyPlayerObjects[connRef.connectionId]);
+                NetworkServer.Destroy(oldObject);
+                connRef.readyToBegin = false;
+                connectionRefs[i] = connRef;
+            }
+
+        }
         base.ServerChangeScene(newSceneName);
     }
 
-    public override void OnServerSceneChanged(string sceneName) {
-        if (gameRunning)
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        if (!gameRunning)
         {
             OnConnectionUpdated();
         }
@@ -174,7 +192,7 @@ public class BBNetworkManager : NetworkManager
         // iterate over connectionRefs and update the one that matches conn
         for (int i = 0; i < connectionRefs.Count; i++)
         {
-            if (connectionRefs[i].identity == conn.identity)
+            if (connectionRefs[i].connectionId == conn.connectionId)
             {
                 var newConnectionInfo = connectionRefs[i];
                 newConnectionInfo.username = msg.newName;
@@ -190,7 +208,7 @@ public class BBNetworkManager : NetworkManager
         // iterate over connectionRefs and update the one that matches conn
         for (int i = 0; i < connectionRefs.Count; i++)
         {
-            if (connectionRefs[i].identity == conn.identity)
+            if (connectionRefs[i].connectionId == conn.connectionId)
             {
                 var newConnectionInfo = connectionRefs[i];
                 newConnectionInfo.readyToBegin = msg.ready;
@@ -225,7 +243,7 @@ public class BBNetworkManager : NetworkManager
         // iterate over connectionRefs and update the one that matches conn
         for (int i = 0; i < connectionRefs.Count; i++)
         {
-            if (connectionRefs[i].identity == conn.identity)
+            if (connectionRefs[i].connectionId == conn.connectionId)
             {
                 return connectionRefs[i].username;
             }

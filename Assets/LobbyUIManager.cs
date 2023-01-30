@@ -8,7 +8,7 @@ public class LobbyUIManager : NetworkBehaviour
     public readonly SyncList<BBNetworkManager.ConnectionInfo> connections = new SyncList<BBNetworkManager.ConnectionInfo>();
     [SyncVar(hook = nameof(OnGameDurationChanged))] public int gameDurationSeconds = 100;
     [SyncVar] public float countdown = 5f;
-    [SyncVar (hook = nameof(OnReadyChanged))] bool allReady = false;
+    [SyncVar(hook = nameof(OnReadyChanged))] bool allReady = false;
 
     UIDocument document;
 
@@ -45,12 +45,12 @@ public class LobbyUIManager : NetworkBehaviour
             }
         }
         allReady = allReady_;
-        Debug.Log("allReady: " + allReady);
     }
 
     void Update()
     {
-        if (isClient && allReady) {
+        if (isClient && allReady)
+        {
             playButton.text = "Starting in " + Mathf.FloorToInt(countdown);
         }
 
@@ -118,7 +118,7 @@ public class LobbyUIManager : NetworkBehaviour
         {
             if (currentUsername == evt.newValue) return;
             if (evt.newValue.Length < 2 || evt.newValue.Length > 25) return;
-            
+
             var message = new BBNetworkManager.ChangeNameMessage { newName = evt.newValue };
             NetworkClient.Send(message);
         });
@@ -177,7 +177,8 @@ public class LobbyUIManager : NetworkBehaviour
 
     private void OnReadyChanged(bool oldValue, bool newValue)
     {
-        if (!newValue) {
+        if (!newValue)
+        {
             playButton.text = ready ? "Waiting for others" : "Ready";
         }
     }
@@ -205,7 +206,7 @@ public class LobbyUIManager : NetworkBehaviour
         // iterate over connections and find ours
         foreach (BBNetworkManager.ConnectionInfo connection in connections)
         {
-            if (connection.identity == NetworkClient.connection.identity)
+            if (connection.connectionId == NetworkClient.connection.connectionId)
             {
                 currentUsername = connection.username;
                 username.value = connection.username;
@@ -226,7 +227,7 @@ public class LobbyUIManager : NetworkBehaviour
     {
         switch (duration)
         {
-            case 30:
+            case 5:
                 return 0;
             case 60:
                 return 1;
@@ -244,7 +245,7 @@ public class LobbyUIManager : NetworkBehaviour
         switch (index)
         {
             case 0:
-                return 30;
+                return 5;
             case 1:
                 return 60;
             case 2:

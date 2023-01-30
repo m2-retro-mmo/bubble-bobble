@@ -44,7 +44,7 @@ public class GameManager : NetworkBehaviour
     {
         if (singleton != null && singleton == this)
             return true;
-        
+
         if (singleton != null)
         {
             Debug.LogError("Multiple GameManagers in the scene");
@@ -97,13 +97,12 @@ public class GameManager : NetworkBehaviour
         }
         graph = new Graph(map, drawGraph);
 
-        if(!DEBUG_BOTS)
+        if (!DEBUG_BOTS)
             CreateBots();
 
         // get all connections and instanciate a player for each connection
         foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
         {
-            Debug.Log("Spawn player for connection: " + conn.connectionId);
             if (conn != null)
             {
                 CreatePlayer(conn);
@@ -147,14 +146,15 @@ public class GameManager : NetworkBehaviour
                 return;
             }
         }
+        Debug.Log("Create player for connection: " + conn.connectionId);
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
 
         p.playerName = (BBNetworkManager.singleton as BBNetworkManager).getPlayerName(conn);
 
         byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
-        
-        if(teamNumber == 0)
+
+        if (teamNumber == 0)
         {
             playerCounterTeam0++;
         }
@@ -166,20 +166,31 @@ public class GameManager : NetworkBehaviour
         p.SetTeamNumber(teamNumber);
 
         map.PlaceCharacter(p);
-        NetworkServer.AddPlayerForConnection(conn, p.gameObject);
 
-        if(!DEBUG_BOTS)
+        // check if there is already a player for the connection
+        if (conn.identity.gameObject != null)
+        {
+            // NetworkManager.Destroy(conn.identity.gameObject);
+            NetworkServer.ReplacePlayerForConnection(conn.identity.connectionToClient, p.gameObject, true);
+        }
+        else
+        {
+            NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+        }
+
+        if (!DEBUG_BOTS)
         {
             RemoveBot(teamNumber);
         }
-        else 
+        else
         {
             byte botTeamNumber = (byte)(teamNumber == 0 ? 1 : 0);
             AddBot(botTeamNumber);
         }
     }
 
-    public void RemovePlayer(NetworkConnectionToClient conn) {
+    public void RemovePlayer(NetworkConnectionToClient conn)
+    {
         Player p = conn.identity.GetComponent<Player>();
         byte teamNumber = p.GetTeamNumber();
         AddBot(teamNumber);
@@ -228,7 +239,7 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            map.PlaceCharacter(bot); 
+            map.PlaceCharacter(bot);
         }
 
         NetworkServer.Spawn(bot.gameObject);
@@ -246,13 +257,13 @@ public class GameManager : NetworkBehaviour
         else
         {
             botCounterTeam1--;
-        }  
+        }
         // find bot with team number
         foreach (Bot bot in FindObjectsOfType<Bot>())
         {
             if (bot.GetTeamNumber() == teamNumber)
             {
-                Destroy(bot.gameObject);
+                NetworkManager.Destroy(bot.gameObject);
                 return;
             }
         }
