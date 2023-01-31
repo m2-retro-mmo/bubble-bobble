@@ -22,7 +22,7 @@ public class Bubble : NetworkBehaviour
     public override void OnStartServer()
     {
         UpdateAppearance();
-        Destroy(gameObject, bubbleLifeTime);
+        NetworkManager.Destroy(gameObject, bubbleLifeTime);
     }
     public override void OnStartClient()
     {
@@ -49,7 +49,7 @@ public class Bubble : NetworkBehaviour
             collision.gameObject.SendMessage("Capture", teamNumber);
         }
         // destroy bubble instantly no matter which collision was detected
-        Destroy(gameObject, 0);
+        NetworkManager.Destroy(gameObject);
     }
 
     public int GetTeamNumber()

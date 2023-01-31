@@ -27,6 +27,6 @@ public class Diamond : NetworkBehaviour
     {
         this.collected = true;
         // TODO: should take the diamond, instead of destroying itas
-        Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 }

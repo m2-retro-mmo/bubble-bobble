@@ -1,0 +1,47 @@
+GroupBox {
+    padding: 0;
+    margin: 0;
+}
+
+Label {
+    padding: 0;
+    margin: 0;
+}
+
+.comboBox > GroupBox {
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 0;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    align-items: center;
+    -unity-text-align: middle-center;
+}
+
+.comboBox > GroupBox > VisualElement {
+    margin-bottom: 8px;
+}
+
+.comboBox > GroupBox.first {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.comboBox > GroupBox.last {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.orange {
+    color: rgb(244, 202, 139);
+}
+
+.purple {
+    color: rgb(246, 184, 255);
+}
+
+.bubbles > VisualElement {
+    margin-left: 4px;
+    margin-right: 4px;
+}

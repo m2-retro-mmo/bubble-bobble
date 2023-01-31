@@ -47,7 +47,6 @@ public class Hort : NetworkBehaviour
     {
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
         uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
-        map = GameObject.Find("Map").GetComponent<Map>();
     }
 
     [Server]
@@ -57,6 +56,10 @@ public class Hort : NetworkBehaviour
         updateAfterTeamChange();
     }
 
+    public override void OnStartServer()
+    {
+        map = GameObject.Find("Map").GetComponent<Map>();
+    }
     public override void OnStartClient()
     {
         updateAfterTeamChange();

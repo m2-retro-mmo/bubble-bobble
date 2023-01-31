@@ -31,14 +31,35 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of Characters (Bots and Player) the game should start with")]
     private int characterCount;
 
-    [SerializeField]
-    [Tooltip("The duration of a game")]
-    private float gameDuration;
+    [SyncVar (hook = nameof(DurationUpdated))] private float gameDuration = 100f;
     private bool timerIsRunning;
 
     private int botTeamNumber;
 
     private List<Hort> horts;
+
+    public static GameManager singleton { get; internal set; }
+
+    bool InitializeSingleton()
+    {
+        if (singleton != null && singleton == this)
+            return true;
+
+        if (singleton != null)
+        {
+            Debug.LogError("Multiple GameManagers in the scene");
+            return false;
+        }
+
+        singleton = this;
+        return true;
+    }
+
+    void OnDestroy()
+    {
+        if (singleton == this)
+            singleton = null;
+    }
 
     private GameObject bots;
 
@@ -50,10 +71,15 @@ public class GameManager : NetworkBehaviour
     private byte playerCounterTeam0 = 0;
     private byte playerCounterTeam1 = 0;
 
+    private void Start() {
+        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+    }
+
     // Start is called before the first frame update
     [Server]
-    void Start()
+    public override void OnStartServer()
     {
+        InitializeSingleton();
         if (isServerOnly)
         {
             cam = GameObject.Find("Server Camera").GetComponent<Camera>();
@@ -64,6 +90,8 @@ public class GameManager : NetworkBehaviour
         List<Hort> horts = map.NewMap();
         SetHorts(horts);
 
+        gameDuration = (BBNetworkManager.singleton as BBNetworkManager).gameDuration;
+
         bots = new GameObject("Bots");
         bool drawGraph = false;
         // spawn only one bot in debug mode
@@ -73,7 +101,7 @@ public class GameManager : NetworkBehaviour
         }
         graph = new Graph(map, drawGraph);
 
-        if(!DEBUG_BOTS)
+        if (!DEBUG_BOTS)
             CreateBots();
 
         // get all connections and instanciate a player for each connection
@@ -81,21 +109,18 @@ public class GameManager : NetworkBehaviour
         {
             if (conn != null)
             {
-                CreatePlayer(conn, new CreatePlayerMessage());
+                CreatePlayer(conn);
             }
         }
 
-        // register connection handler function
-        NetworkServer.RegisterHandler<CreatePlayerMessage>(CreatePlayer);
-
         // handle playtime
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
         timerIsRunning = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isClientOnly) return;
         if (timerIsRunning)
         {
             if (gameDuration > 0)
@@ -115,7 +140,13 @@ public class GameManager : NetworkBehaviour
         // TODO: if new player joined place player on the map
     }
 
-    private void CreatePlayer(NetworkConnectionToClient conn, CreatePlayerMessage message)
+    private void DurationUpdated(float oldDuration, float newDuration)
+    {
+        if (uIManager != null)
+            uIManager.SetDuration(gameDuration);
+    }
+
+    public void CreatePlayer(NetworkConnectionToClient conn)
     {
         foreach (Player player in FindObjectsOfType<Player>())
         {
@@ -125,12 +156,15 @@ public class GameManager : NetworkBehaviour
                 return;
             }
         }
+        Debug.Log("Create player for connection: " + conn.connectionId);
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
 
+        p.playerName = (BBNetworkManager.singleton as BBNetworkManager).getPlayerName(conn);
+
         byte teamNumber = (byte)(playerCounterTeam0 <= playerCounterTeam1 ? 0 : 1);
-        
-        if(teamNumber == 0)
+
+        if (teamNumber == 0)
         {
             playerCounterTeam0++;
         }
@@ -142,17 +176,34 @@ public class GameManager : NetworkBehaviour
         p.SetTeamNumber(teamNumber);
 
         map.PlaceCharacter(p);
-        NetworkServer.AddPlayerForConnection(conn, p.gameObject);
 
-        if(!DEBUG_BOTS)
+        // check if there is already a player for the connection
+        if (conn.identity != null && conn.identity.gameObject != null)
+        {
+            // NetworkManager.Destroy(conn.identity.gameObject);
+            NetworkServer.ReplacePlayerForConnection(conn.identity.connectionToClient, p.gameObject, true);
+        }
+        else
+        {
+            NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+        }
+
+        if (!DEBUG_BOTS)
         {
             RemoveBot(teamNumber);
         }
-        else 
+        else
         {
             byte botTeamNumber = (byte)(teamNumber == 0 ? 1 : 0);
             AddBot(botTeamNumber);
         }
+    }
+
+    public void RemovePlayer(NetworkConnectionToClient conn)
+    {
+        Player p = conn.identity.GetComponent<Player>();
+        byte teamNumber = p.GetTeamNumber();
+        AddBot(teamNumber);
     }
 
     private void CreateBots()
@@ -198,7 +249,7 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            map.PlaceCharacter(bot); 
+            map.PlaceCharacter(bot);
         }
 
         NetworkServer.Spawn(bot.gameObject);
@@ -216,13 +267,13 @@ public class GameManager : NetworkBehaviour
         else
         {
             botCounterTeam1--;
-        }  
+        }
         // find bot with team number
         foreach (Bot bot in FindObjectsOfType<Bot>())
         {
             if (bot.GetTeamNumber() == teamNumber)
             {
-                Destroy(bot.gameObject);
+                NetworkManager.Destroy(bot.gameObject);
                 return;
             }
         }
@@ -268,6 +319,7 @@ public class GameManager : NetworkBehaviour
         {
             Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
         }
+        (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
     public void SetHorts(List<Hort> horts)
