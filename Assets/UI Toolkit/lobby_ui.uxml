@@ -15,6 +15,7 @@
                 </ui:GroupBox>
             </ui:GroupBox>
             <ui:GroupBox style="flex-grow: 1;">
+                <ui:Label text="Players" display-tooltip-when-elided="true" style="font-size: 32px;" />
                 <ui:Label text="Label" display-tooltip-when-elided="true" name="playersLabel" style="flex-wrap: nowrap;" />
             </ui:GroupBox>
         </ui:GroupBox>
