@@ -162,23 +162,25 @@ public class Player : CharacterBase
 
     public void SetHortIndicator()
     {
-        // TODO: dont show if hort is in screenview
-        // Vector3 screenpos = Camera.main.WorldToScreenPoint(GetHort().position);
-        // if (screenpos.z>0 && screenpos.x>0 && screenpos.y>0 && screenpos.x<Screen.width && screenpos.y<Screen.height)
-        // {
-        //     hortIndicator.enabled = false;
-        // }
-        // else {
+        Vector3 screenPos = cam.WorldToScreenPoint(GetHort().position);
+        if (screenPos.x >= 0 && screenPos.x <= Screen.width && screenPos.y >= 0 && screenPos.y <= Screen.height)
+        {
+            // Don't show indicator if hort is in sight
+            hortIndicator.enabled = false;
+        }
+        else
+        {
+            hortIndicator.enabled = true;
             viewSpacePosition = cam.WorldToViewportPoint(GetHort().position);
             viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
             viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
             viewSpacePosition.z = Mathf.Clamp01(viewSpacePosition.z);
             RectTransform parent =  GameObject.Find("Canvas").GetComponent<RectTransform>();
             Vector2 anchoredPosition = new Vector2(
-                (viewSpacePosition.x * parent.sizeDelta.x) - (parent.sizeDelta.x * 0.5f),
-                (viewSpacePosition.y * parent.sizeDelta.y) - (parent.sizeDelta.y * 0.5f)
+                (viewSpacePosition.x * parent.sizeDelta.x) - (parent.sizeDelta.x * 0.5f) + 0.05f,
+                (viewSpacePosition.y * parent.sizeDelta.y) - (parent.sizeDelta.y * 0.5f) + 0.1f
             );
             hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
-        // }
+        }
     }
 }
