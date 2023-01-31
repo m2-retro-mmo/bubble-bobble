@@ -37,7 +37,11 @@ public class NameGenerator : MonoBehaviour
 
     public static void LoadData()
     {
-        animals = System.IO.File.ReadAllLines(animalsPath);
-        adjectives = System.IO.File.ReadAllLines(adjectivesPath);
+        // Load asset from unity assetDatabase
+        var animalsFile = Resources.Load<TextAsset>("NameGenerator/animals").text;
+        var adjectivesFile = Resources.Load<TextAsset>("NameGenerator/adjectives").text;
+
+        animals = animalsFile.Split(new string[] {System.Environment.NewLine}, System.StringSplitOptions.RemoveEmptyEntries);
+        adjectives = adjectivesFile.Split(new string[] {System.Environment.NewLine}, System.StringSplitOptions.RemoveEmptyEntries);
     }
 }
