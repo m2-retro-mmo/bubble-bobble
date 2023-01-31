@@ -5,7 +5,7 @@ using System.Linq;
 public class CharacterBase : NetworkBehaviour
 {
     // States
-    [SyncVar] public bool holdsDiamond = false;
+    [SyncVar(hook = nameof(OnHoldsDiamondChanged))] public bool holdsDiamond = false;
     [SyncVar(hook = nameof(OnCaptureChanged))] public bool isCaptured = false;
 
     // Team
@@ -25,8 +25,13 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] private GameObject captureBubble;
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
+
     // Constants
     public const float BUBBLE_BREAKOUT_TIME = 10f;
+
+    // Counter 
+    private int diamondCounter = 0;
+    private int uncapturedCounter = 0;
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -64,6 +69,10 @@ public class CharacterBase : NetworkBehaviour
 
     protected void Move(Vector2 direction)
     {
+        if (direction.magnitude > 1.0f)
+        {
+            direction.Normalize();
+        }
         Vector2 moveVector = direction * speed * Time.fixedDeltaTime;
         SetAnimatorMovement(direction);
         rb.MovePosition(rb.position + moveVector);
@@ -79,14 +88,27 @@ public class CharacterBase : NetworkBehaviour
     [Server]
     public void deliverDiamond()
     {
-        // TODO: change appearance of dragon here
         holdsDiamond = false;
+        diamondCounter++;
+        animator.SetBool("holdsDiamond", holdsDiamond);
     }
     [Server]
     public void collectDiamond()
     {
-        // TODO: change appearance of dragon here
         holdsDiamond = true;
+        animator.SetBool("holdsDiamond", holdsDiamond);
+    }
+
+    [Server]
+    public void IncrementUncapturedCounter()
+    {
+        uncapturedCounter++;
+    }
+
+    [Client]
+    private void OnHoldsDiamondChanged(bool oldHoldsDiamond, bool newHoldsDiamond)
+    {
+        animator.SetBool("holdsDiamond", newHoldsDiamond);
     }
 
     /**
@@ -100,6 +122,8 @@ public class CharacterBase : NetworkBehaviour
         isCaptured = true;
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
         CaptureStateUpdate();
+        // Player looses his diamond
+        deliverDiamond();
     }
 
     /**
@@ -177,6 +201,16 @@ public class CharacterBase : NetworkBehaviour
     public float GetSpeed()
     {
         return speed;
+    }
+
+    public int GetDiamondCounter()
+    {
+        return diamondCounter;
+    }
+
+    public int GetUncapturedCounter()
+    {
+        return uncapturedCounter;
     }
 
     void OnDrawGizmos()

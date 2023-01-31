@@ -48,7 +48,7 @@ public class Player : CharacterBase
 
             hortIndicator = GameObject.Find("HortIndicatorImage").GetComponent<Image>();
             UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
-            if (GetTeamNumber() == 0) 
+            if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();
                 hortIndicator.sprite = orangeFlag;
@@ -57,7 +57,7 @@ public class Player : CharacterBase
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
         cinemachineBrain = gameObject.GetComponentInChildren<Cinemachine.CinemachineBrain>();
 
-        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground" };
+        string[] layerNames = { "Player Move Collider", "Obstacles", "Ground", "Hort" };
         LayerMask layermask = LayerMask.GetMask(layerNames);
         movementFilter.SetLayerMask(layermask);
         movementFilter.useLayerMask = true;
