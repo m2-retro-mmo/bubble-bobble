@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Mirror;
+using UnityEngine.UI;
 
 public class Player : CharacterBase
 {
@@ -27,9 +28,9 @@ public class Player : CharacterBase
     [SyncVar(hook = nameof(OnPlayerNameChanged))] private string playerName;
     public TextMeshProUGUI playerNameGUI;
 
-    [SerializeField]
-    public GameObject hortIndicator;
+    public Image hortIndicator;
     public Sprite orangeFlag;
+    public Vector3 viewSpacePosition;
 
     // Start is called before the first frame update
     public override void Start()
@@ -45,11 +46,12 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
 
+            hortIndicator = GameObject.Find("HortIndicatorImage").GetComponent<Image>();
             UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
             if (GetTeamNumber() == 0) 
             {
                 uIManager.SetBubbleColorOrange();
-                hortIndicator.GetComponent<SpriteRenderer>().sprite = orangeFlag;
+                hortIndicator.sprite = orangeFlag;
             }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
@@ -159,29 +161,25 @@ public class Player : CharacterBase
         return true;
     }
 
-    public Vector2 calcHortIndicator()
-    {
-        Vector2 target = GetHort().position;
-        Vector2 moveDirection = (target - rb.position);
-        return (Vector2)Vector3.Normalize(moveDirection);
-    }
-
     public void SetHortIndicator()
     {
-        hortIndicator.transform.position = rb.position + calcHortIndicator();
+        // TODO: dont show if hort is in screenview
+        // Vector3 screenpos = Camera.main.WorldToScreenPoint(GetHort().position);
+        // if (screenpos.z>0 && screenpos.x>0 && screenpos.y>0 && screenpos.x<Screen.width && screenpos.y<Screen.height)
+        // {
+        //     hortIndicator.enabled = false;
+        // }
+        // else {
+            viewSpacePosition = cam.WorldToViewportPoint(GetHort().position);
+            viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
+            viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
+            viewSpacePosition.z = Mathf.Clamp01(viewSpacePosition.z);
+            RectTransform parent =  GameObject.Find("Canvas").GetComponent<RectTransform>();
+            Vector2 anchoredPosition = new Vector2(
+                (viewSpacePosition.x * parent.sizeDelta.x) - (parent.sizeDelta.x * 0.5f),
+                (viewSpacePosition.y * parent.sizeDelta.y) - (parent.sizeDelta.y * 0.5f)
+            );
+            hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
+        // }
     }
-
-    /* public void test()
-    {
-        Vector3 screenpos = Camera.main.WorldToScreenPoint(GetHort().position);
-        if (screenpos.z>0 && screenpos.x>0 && screenpos.y>0 && screenpos.x<Screen.width && screenpos.y<Screen.height)
-        {
-            // TODO: Remove Indicator if hort is in screen
-            hortIndicator.SetActive(false);
-        } else 
-        {
-            hortIndicator.SetActive(true);
-            SetHortIndicator();
-        }
-    } */
 }
