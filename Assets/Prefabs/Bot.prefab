@@ -199,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3065963813708832963}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 98.16655, y: -15.92, z: -322.2946}
+  m_LocalPosition: {x: 98.166534, y: -15.92, z: -322.2946}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -531,6 +531,7 @@ GameObject:
   - component: {fileID: 2431136168717951391}
   - component: {fileID: 6793298784149831108}
   - component: {fileID: 7747537678908669940}
+  - component: {fileID: 1628830448475612441}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Bot
@@ -748,3 +749,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goal: {fileID: 0}
+--- !u!114 &1628830448475612441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8755906794819694841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e799c12a157b4e86b073898fa879f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
