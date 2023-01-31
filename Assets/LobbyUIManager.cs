@@ -34,6 +34,13 @@ public class LobbyUIManager : NetworkBehaviour
         this.gameDurationSeconds = gameDurationSeconds;
         countdown = 5f;
 
+        // if there are no connections, then we are not ready
+        if (connections.Count == 0)
+        {
+            allReady = false;
+            return;
+        }
+
         // check if all players are ready
         bool allReady_ = true;
         foreach (var connection in connections)
