@@ -16,6 +16,11 @@ public class TrackBotPosition : MonoBehaviour
     void Start()
     {
         bot = transform.GetComponent<Bot>();
+        if (!bot.isServer) {
+            Destroy(this);
+            return;
+        }
+
         graph = transform.GetComponent<BotMovement>().GetGraph();
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();

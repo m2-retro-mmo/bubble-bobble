@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/menu_style.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#menu_style" />
+    <Style src="project://database/Assets/UI%20Toolkit/global_style.uss?fileID=7433441132597879392&amp;guid=fb904d91575fe472e8389681f114936c&amp;type=3#global_style" />
+    <ui:VisualElement class="background" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; height: 100%;">
+        <ui:GroupBox style="flex-direction: row; flex-grow: 1;">
+            <ui:GroupBox style="width: 40%;">
+                <ui:GroupBox style="flex-grow: 1; width: auto;">
+                    <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 170px; height: 82px; margin-bottom: 32px;" />
+                    <ui:TextField picking-mode="Ignore" label="Name" value="filler text" text="???" name="username" />
+                    <ui:RadioButtonGroup label="Game duration" value="-1" choices="30 Seconds, 60 Seconds, 120 Seconds, 240 Seconds" name="duration" />
+                </ui:GroupBox>
+                <ui:GroupBox style="flex-direction: row;">
+                    <ui:Button text="Ready" display-tooltip-when-elided="true" name="playBtn" class="primary" />
+                    <ui:Button text="Leave" display-tooltip-when-elided="true" name="exitBtn" />
+                </ui:GroupBox>
+            </ui:GroupBox>
+            <ui:GroupBox style="flex-grow: 1;">
+                <ui:Label text="Players" display-tooltip-when-elided="true" style="font-size: 32px;" />
+                <ui:Label text="Label" display-tooltip-when-elided="true" name="playersLabel" style="flex-wrap: nowrap;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>

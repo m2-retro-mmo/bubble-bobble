@@ -1,0 +1,83 @@
+.background {
+    background-color: rgb(115, 118, 28);
+    color: rgb(255, 255, 255);
+}
+
+Button {
+    border-radius: 16px;
+    border-color: rgb(61, 66, 11);
+    border-width: 4px;
+    background-color: rgb(83, 87, 18);
+    padding-left: 24px;
+    padding-right: 24px;
+    transition-property: background-color, border-color;
+    transition-duration: 0.05s;
+}
+
+Button:hover {
+    border-color: rgb(255, 255, 255);
+}
+
+Button.primary {
+    background-color: rgb(255, 255, 255);
+    color: rgb(61, 66, 11);
+}
+
+Button:active {
+    background-color: rgb(31, 33, 6);
+}
+
+Button.primary:active {
+    color: rgb(255, 255, 255);
+}
+
+TextField {
+    flex-direction: column;
+}
+
+RadioButtonGroup {
+    flex-direction: column;
+}
+
+TextField > .unity-label {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+RadioButtonGroup > .unity-label {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+TextField > .unity-base-field__input {
+    color: rgb(255, 255, 255);
+    background-color: rgb(83, 87, 18);
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+RadioButtonGroup > VisualElement {
+    color: rgb(255, 255, 255);
+    background-color: rgb(83, 87, 18);
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+RadioButtonGroup {
+    flex-direction: column;
+}
+
+RadioButtonGroup > VisualElement {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+RadioButtonGroup > VisualElement .unity-label {
+    margin-left: 8px;
+}
