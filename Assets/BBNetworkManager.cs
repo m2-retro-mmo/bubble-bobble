@@ -53,7 +53,7 @@ public class BBNetworkManager : NetworkManager
         // if the current scene is the game scene, start a host game
         if (SceneManager.GetActiveScene().path == GameScene)
         {
-            gameDuration = 10;
+            gameDuration = 10; // 3600;
             gameRunning = true;
             StartHost();
         }

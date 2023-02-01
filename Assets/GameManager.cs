@@ -315,13 +315,18 @@ public class GameManager : NetworkBehaviour
     public void handleGameOver()
     {
         List<TeamPoints> scores = GetTeamScores(GetHorts());
+
+        // hide menu
+        uIManager.hideMenu();
+
+        // show game over screen
         goUIManager.DisplayGameOver(
             scores.Find(res => res.GetTeam() == 0).GetPoints(),
-            scores.Find(res => res.GetTeam() == 0).GetPoints()
+            scores.Find(res => res.GetTeam() == 1).GetPoints()
         );
 
         // after countdown go back to lobby
-        StartCoroutine(LoadLobbyCountdown());
+        // StartCoroutine(LoadLobbyCountdown());
     }
 
     IEnumerator LoadLobbyCountdown()
