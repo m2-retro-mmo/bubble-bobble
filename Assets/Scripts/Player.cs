@@ -41,7 +41,7 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
 
-            UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+            UIManager uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
             if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();

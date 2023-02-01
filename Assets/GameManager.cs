@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using Mirror;
@@ -18,6 +19,7 @@ public class GameManager : NetworkBehaviour
     public Camera minimapCam;
 
     private UIManager uIManager;
+    private GameOverUIManager goUIManager;
 
     [SerializeField]
     [Tooltip("true if the bot should be spawned in the area of the player")]
@@ -31,7 +33,7 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of Characters (Bots and Player) the game should start with")]
     private int characterCount;
 
-    [SyncVar (hook = nameof(DurationUpdated))] private float gameDuration = 100f;
+    [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
     private bool timerIsRunning;
 
     private int botTeamNumber;
@@ -71,8 +73,10 @@ public class GameManager : NetworkBehaviour
     private byte playerCounterTeam0 = 0;
     private byte playerCounterTeam1 = 0;
 
-    private void Start() {
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+    private void Start()
+    {
+        uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
+        goUIManager = GameObject.Find("GameOverUI").GetComponent<GameOverUIManager>();
     }
 
     // Start is called before the first frame update
@@ -133,8 +137,7 @@ public class GameManager : NetworkBehaviour
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
                 timerIsRunning = false;
-                DetermineWinner(GetHorts());
-                // TODO: spiel beenden, display gewinnerteam in ui
+                handleGameOver();
             }
         }
         // TODO: if new player joined place player on the map
@@ -298,27 +301,32 @@ public class GameManager : NetworkBehaviour
         return botPos;
     }
 
-    public void DetermineWinner(List<Hort> horts)
+    public List<TeamPoints> GetTeamScores(List<Hort> horts)
     {
-        TeamPoints winner = new TeamPoints(0, 0);
+        List<TeamPoints> scores = new List<TeamPoints>();
         foreach (Hort hort in horts)
         {
-            Debug.Log(hort.GetTeamPoints());
             TeamPoints tp = hort.GetTeamPoints();
-            if (tp.GetPoints() > winner.GetPoints())
-            {
-                winner = tp;
-            }
+            scores.Add(tp);
         }
+        return scores;
+    }
 
-        if (winner.GetPoints() == 0)
-        {
-            Debug.Log("There is no winner!");
-        }
-        else
-        {
-            Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
-        }
+    public void handleGameOver()
+    {
+        List<TeamPoints> scores = GetTeamScores(GetHorts());
+        goUIManager.DisplayGameOver(
+            scores.Find(res => res.GetTeam() == 0).GetPoints(),
+            scores.Find(res => res.GetTeam() == 0).GetPoints()
+        );
+
+        // after countdown go back to lobby
+        StartCoroutine(LoadLobbyCountdown());
+    }
+
+    IEnumerator LoadLobbyCountdown()
+    {
+        yield return new WaitForSeconds(10);
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
