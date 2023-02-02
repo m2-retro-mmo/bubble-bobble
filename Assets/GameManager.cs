@@ -35,6 +35,7 @@ public class GameManager : NetworkBehaviour
     private bool timerIsRunning;
 
     private int botTeamNumber;
+    private byte winnerForTracking;
 
     private List<Hort> horts;
 
@@ -317,9 +318,15 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
+            winnerForTracking = (byte)winner.GetTeam();
             Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
         }
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
+    }
+
+    public byte GetWinnerForTracking()
+    {
+        return winnerForTracking;
     }
 
     public void SetHorts(List<Hort> horts)
