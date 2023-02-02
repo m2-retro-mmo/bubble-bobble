@@ -63,3 +63,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team0BannerSprite: {fileID: 2800000, guid: ba639f7ea72c36f4d992feb26eadd605, type: 3}
+  team1BannerSprite: {fileID: 2800000, guid: 88d3a214af571b24c8164f1f3abb6557, type: 3}
+  noWinnerSprite: {fileID: 2800000, guid: 6c5bb07c5038fad44a524ba6bc6ce2e1, type: 3}

@@ -13,7 +13,9 @@ public class GameOverUIManager : MonoBehaviour
     Label labelWinnerTeam;
 
     VisualElement banner;
-    public Texture2D team0BannerSprite;
+    [SerializeField] Texture2D team0BannerSprite;
+    [SerializeField] Texture2D team1BannerSprite;
+    [SerializeField] Texture2D noWinnerSprite;
 
     void OnEnable()
     {
@@ -39,15 +41,12 @@ public class GameOverUIManager : MonoBehaviour
         root.style.display = DisplayStyle.None;
     }
 
-    public void SetWinnerTeamBanner(int team)
+    public void SetBanner(Texture2D sprite)
     {
-        if (team == 0)
-        {
-            banner.style.backgroundImage = team0BannerSprite;
-        }
+        banner.style.backgroundImage = sprite;
     }
 
-    public void SetWinnerTeamName(string name)
+    public void SetTitle(string name)
     {
         labelWinnerTeam.text = name;
     }
@@ -63,24 +62,26 @@ public class GameOverUIManager : MonoBehaviour
         // show menu
         root.style.display = DisplayStyle.Flex;
 
-        // get winner team
-        int winnerScore = 0;
-        int winnerTeam;
-        if (team0Score > team1Score)
+        if (team0Score == team1Score)
         {
-            winnerScore = team0Score;
-            winnerTeam = 0;
+            // tie game
+            SetBanner(noWinnerSprite);
+            SetTitle("Tie Game");
         }
         else
         {
-            winnerScore = team1Score;
-            winnerTeam = 1;
-        };
+            if (team0Score > team1Score)
+            {
+                SetTitle("Orange wins");
+                SetBanner(team0BannerSprite);
+            }
+            else
+            {
+                SetTitle("Purple wins");
+                SetBanner(team1BannerSprite);
+            };
+        }
 
-        // set labels
-        SetWinnerTeamBanner(winnerTeam);
         SetTeamScores(team0Score, team1Score);
-        if (winnerTeam == 0) SetWinnerTeamName("Orange wins");
-        else SetWinnerTeamName("Purple wins");
     }
 }
