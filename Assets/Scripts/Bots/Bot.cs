@@ -86,9 +86,13 @@ public class Bot : CharacterBase
         DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
-    private void OnApplicationQuit()
+    private void Update()
     {
-        Send();
+        if(gameManager.HasGameEnded())
+        {
+            Debug.Log("da sind wir drin");
+            Send();
+        }
     }
 
     public void ResetBot(float restartTime)

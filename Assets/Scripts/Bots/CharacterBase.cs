@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using System.Dynamic;
 
 public class CharacterBase : NetworkBehaviour
 {
@@ -82,10 +83,13 @@ public class CharacterBase : NetworkBehaviour
     }
 
     [Server]
-    public void deliverDiamond()
+    public void deliverDiamond(bool deliveredToHort)
     {
         holdsDiamond = false;
-        diamondCounter++;
+        if(deliveredToHort)
+        {
+            diamondCounter++;
+        }
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
     [Server]
@@ -119,7 +123,7 @@ public class CharacterBase : NetworkBehaviour
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
         CaptureStateUpdate();
         // Player looses his diamond
-        deliverDiamond();
+        deliverDiamond(false);
     }
 
     /**

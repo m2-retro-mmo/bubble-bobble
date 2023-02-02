@@ -43,7 +43,7 @@ public class PlayerCollision : MonoBehaviour
                     if (player.holdsDiamond && player.teamNumber == hort.team)
                     {
                         hort.AddDiamond();
-                        player.deliverDiamond();
+                        player.deliverDiamond(true);
                     }
                 }
                 break;
