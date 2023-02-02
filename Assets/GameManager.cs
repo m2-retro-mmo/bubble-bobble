@@ -36,7 +36,7 @@ public class GameManager : NetworkBehaviour
     [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
     [SyncVar] public bool gameOver;
 
-    private int botTeamNumber;
+    [SyncVar] private int botTeamNumber;
 
     private List<Hort> horts;
 
@@ -125,11 +125,15 @@ public class GameManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isClientOnly) return;
         if (gameOver)
         {
-            visualizeGameOver();
+            var scores = GetTeamScores(GetHorts());
+            rpcVisualizeGameOver(
+                scores.Find(res => res.GetTeam() == 0).GetPoints(),
+                scores.Find(res => res.GetTeam() == 1).GetPoints()
+            );
         }
-        if (isClientOnly) return;
         if (!gameOver)
         {
             if (gameDuration > 0)
@@ -142,7 +146,8 @@ public class GameManager : NetworkBehaviour
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
                 gameOver = true;
-                RPCHandleGameOver();
+
+                handleGameOver();
             }
         }
         // TODO: if new player joined place player on the map
@@ -317,7 +322,13 @@ public class GameManager : NetworkBehaviour
         return scores;
     }
 
-    public void visualizeGameOver()
+    [ClientRpc]
+    private void rpcVisualizeGameOver(int score0, int score1)
+    {
+        visualizeGameOver(score0, score1);
+    }
+
+    public void visualizeGameOver(int score0, int score1)
     {
         // stop animators
         foreach (Animator anim in FindObjectsOfType<Animator>())
@@ -325,22 +336,11 @@ public class GameManager : NetworkBehaviour
             anim.enabled = false;
         }
 
-        // get team scores
-        List<TeamPoints> scores = GetTeamScores(GetHorts());
-
         // hide menu
         uIManager.hideMenu();
 
         // show game over screen
-        goUIManager.DisplayGameOver(
-            scores.Find(res => res.GetTeam() == 0).GetPoints(),
-            scores.Find(res => res.GetTeam() == 1).GetPoints()
-        );
-    }
-
-    [ClientRpc]
-    public void RPCHandleGameOver() {
-        handleGameOver();
+        goUIManager.DisplayGameOver(score0, score1);
     }
 
     public void handleGameOver()
