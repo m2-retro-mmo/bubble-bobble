@@ -28,7 +28,7 @@ public class PlayerCollision : MonoBehaviour
             case "Diamond":
                 // Collect Diamond if possible
                 Diamond diamond = other.GetComponent<Diamond>() as Diamond;
-                if (!player.GetHoldsDiamond() && !diamond.GetCollected())
+                if (!player.GetHoldsDiamond() && !diamond.GetCollected() && !player.isCaptured)
                 {
                     diamond.Collect();
                     player.collectDiamond();
@@ -43,7 +43,7 @@ public class PlayerCollision : MonoBehaviour
                     if (player.holdsDiamond && player.teamNumber == hort.team)
                     {
                         hort.AddDiamond();
-                        player.deliverDiamond();
+                        player.deliverDiamond(true);
                     }
                 }
                 break;

@@ -224,6 +224,15 @@ public class Map : NetworkBehaviour
         gameObject.GetComponent<PolygonCollider2D>().SetPath(0, path);
     }
 
+    [ServerCallback]
+    public void spawnDiamondAround(float x, float y)
+    {
+        Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
+        item.transform.parent = diamondParent.transform;
+        spawnedDiamonds++;
+        NetworkServer.Spawn(item.gameObject);
+    }
+
     // checks if there is water or an obstacles on the given position
     public bool TileIsFree(int x, int y)
     {
