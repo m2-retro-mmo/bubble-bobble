@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCollision : MonoBehaviour
 {
     private CharacterBase player;
+    private GameManager gameManager;
 
     private void Start()
     {
@@ -14,6 +15,7 @@ public class PlayerCollision : MonoBehaviour
         {
             Destroy(this);
         }
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     /**
@@ -23,6 +25,8 @@ public class PlayerCollision : MonoBehaviour
     {
         // check if player is set
         if (player == null) return;
+        // if gameOver do nothing
+        if (gameManager.gameOver) return;
         switch (other.gameObject.tag)
         {
             case "Diamond":

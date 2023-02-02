@@ -34,13 +34,29 @@ public class GameManager : NetworkBehaviour
     private int characterCount;
 
     [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
-    private bool timerIsRunning;
+    public bool gameOver;
 
     private int botTeamNumber;
 
     private List<Hort> horts;
 
     public static GameManager singleton { get; internal set; }
+
+    private GameObject bots;
+
+    private Graph graph;
+
+    private byte botCounterTeam0 = 0;
+    private byte botCounterTeam1 = 0;
+
+    private byte playerCounterTeam0 = 0;
+    private byte playerCounterTeam1 = 0;
+
+    private void Start()
+    {
+        uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
+        goUIManager = GameObject.Find("GameOverUI").GetComponent<GameOverUIManager>();
+    }
 
     bool InitializeSingleton()
     {
@@ -63,21 +79,6 @@ public class GameManager : NetworkBehaviour
             singleton = null;
     }
 
-    private GameObject bots;
-
-    private Graph graph;
-
-    private byte botCounterTeam0 = 0;
-    private byte botCounterTeam1 = 0;
-
-    private byte playerCounterTeam0 = 0;
-    private byte playerCounterTeam1 = 0;
-
-    private void Start()
-    {
-        uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
-        goUIManager = GameObject.Find("GameOverUI").GetComponent<GameOverUIManager>();
-    }
 
     // Start is called before the first frame update
     [Server]
@@ -117,15 +118,15 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        // handle playtime
-        timerIsRunning = true;
+        // handle gameover
+        gameOver = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (isClientOnly) return;
-        if (timerIsRunning)
+        if (!gameOver)
         {
             if (gameDuration > 0)
             {
@@ -136,7 +137,7 @@ public class GameManager : NetworkBehaviour
             {
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
-                timerIsRunning = false;
+                gameOver = true;
                 handleGameOver();
             }
         }
@@ -314,6 +315,19 @@ public class GameManager : NetworkBehaviour
 
     public void handleGameOver()
     {
+        // stop all Bot async routines
+        foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
+        {
+            bot.StopEverything();
+        }
+
+        // stop animators
+        foreach (Animator anim in FindObjectsOfType<Animator>())
+        {
+            anim.enabled = false;
+        }
+
+        // get team scores
         List<TeamPoints> scores = GetTeamScores(GetHorts());
 
         // hide menu
