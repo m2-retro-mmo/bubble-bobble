@@ -34,7 +34,7 @@ public class GameManager : NetworkBehaviour
     private int characterCount;
 
     [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
-    public bool gameOver;
+    [SyncVar] public bool gameOver;
 
     private int botTeamNumber;
 
@@ -125,6 +125,10 @@ public class GameManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameOver)
+        {
+            visualizeGameOver();
+        }
         if (isClientOnly) return;
         if (!gameOver)
         {
@@ -138,7 +142,7 @@ public class GameManager : NetworkBehaviour
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
                 gameOver = true;
-                handleGameOver();
+                RPCHandleGameOver();
             }
         }
         // TODO: if new player joined place player on the map
@@ -313,14 +317,8 @@ public class GameManager : NetworkBehaviour
         return scores;
     }
 
-    public void handleGameOver()
+    public void visualizeGameOver()
     {
-        // stop all Bot async routines
-        foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
-        {
-            bot.StopEverything();
-        }
-
         // stop animators
         foreach (Animator anim in FindObjectsOfType<Animator>())
         {
@@ -338,14 +336,31 @@ public class GameManager : NetworkBehaviour
             scores.Find(res => res.GetTeam() == 0).GetPoints(),
             scores.Find(res => res.GetTeam() == 1).GetPoints()
         );
+    }
+
+    [ClientRpc]
+    public void RPCHandleGameOver() {
+        handleGameOver();
+    }
+
+    public void handleGameOver()
+    {
+        // stop all Bot async routines
+        foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
+        {
+            bot.StopEverything();
+        }
 
         // after countdown go back to lobby
-        // StartCoroutine(LoadLobbyCountdown());
+        StartCoroutine(LoadLobbyCountdown());
     }
 
     IEnumerator LoadLobbyCountdown()
     {
-        yield return new WaitForSeconds(10);
+        Debug.Log("beginning of coroutine LoadLobby");
+        yield return new WaitForSeconds(3);
+        Debug.Log("after wait for 3 sec");
+        Debug.Log(BBNetworkManager.singleton);
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
