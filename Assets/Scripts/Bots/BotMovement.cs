@@ -146,13 +146,15 @@ public class BotMovement : MonoBehaviour
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
         while (goal != null)
         {
-            float distToGoal = GetEuclideanDistance(transform.position, goal.position);
+            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+            float distToGoal = GetEuclideanDistance(botCenter, goal.position);
 
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                Debug.Log("distNextNode: " + distNextNode);
+                if (distNextNode <= 10f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -168,12 +170,35 @@ public class BotMovement : MonoBehaviour
                 
 
                 Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                bot.SetAnimatorMovement(moveDirection);
+                Debug.Log("Move direction: " + moveDirection);
+                if(changedMoveDirection(moveDirection)){
+                    bot.SetAnimatorMovement(moveDirection);
+                    Debug.Log("Changed move direction");
+                }
             }
 
             yield return new WaitForSeconds(0.001f);
         }
         StopEverything();
+    }
+
+    private bool changedMoveDirection(Vector3 moveDirection)
+    {
+        Vector3 oldMoveDirection = new Vector3(bot.animator.GetFloat("Horizontal"), bot.animator.GetFloat("Vertical"), 0);
+
+        // return false if old x and new x are both greater than 0 or both smaller than 0
+        if (oldMoveDirection.x > 0 && moveDirection.x < 0 || oldMoveDirection.x < 0 && moveDirection.x > 0)
+        {
+            return true;
+        }
+
+        // return false if old y and new y are both greater than 0 or both smaller than 0
+        if (oldMoveDirection.y > 0 && moveDirection.y < 0 || oldMoveDirection.y < 0 && moveDirection.y > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -192,13 +217,15 @@ public class BotMovement : MonoBehaviour
             if (goal == null)
                 break;
 
-            float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
+            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+            float distToPlayer = GetEuclideanDistance(botCenter, goal.position);
 
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                Debug.Log("distNextNode: " + distNextNode);
+                if (distNextNode <= 10f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -213,7 +240,11 @@ public class BotMovement : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
 
                 Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                bot.SetAnimatorMovement(moveDirection);
+                Debug.Log("Move direction: " + moveDirection);
+                if(changedMoveDirection(moveDirection)){
+                    bot.SetAnimatorMovement(moveDirection);
+                    Debug.Log("Changed move direction");
+                }
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -260,7 +291,8 @@ public class BotMovement : MonoBehaviour
             yield break;
         }
 
-        float distToBubble = GetEuclideanDistance(transform.position, goal.position);
+        Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+        float distToBubble = GetEuclideanDistance(botCenter, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
         if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
@@ -299,13 +331,14 @@ public class BotMovement : MonoBehaviour
                     yield break;
                 }
 
-                float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
+                float distToGoal = GetEuclideanDistance(botCenter, avoidPosition);
 
                 if (path != null)
                 {
                     Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                    if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                    float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                    Debug.Log("distNextNode: " + distNextNode);
+                    if (distNextNode <= 10f && currentIndex < path.Count - 1)
                     {
                         currentIndex++;
                     }
@@ -320,7 +353,11 @@ public class BotMovement : MonoBehaviour
                     transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
 
                     Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                    bot.SetAnimatorMovement(moveDirection);
+                    Debug.Log("Move direction: " + moveDirection);
+                    if(changedMoveDirection(moveDirection)){
+                        bot.SetAnimatorMovement(moveDirection);
+                        Debug.Log("Changed move direction");
+                    }
                 }
 
                 yield return new WaitForSeconds(0.001f);

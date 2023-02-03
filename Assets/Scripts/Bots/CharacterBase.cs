@@ -15,7 +15,7 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] protected float speed = 5f;
 
     // Animations
-    protected Animator animator;
+    public Animator animator;
     [SerializeField] protected Renderer collideableRenderer;
     protected GameObject shape;
     [SerializeField] protected Material teamBMaterial;
@@ -79,6 +79,11 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", direction.sqrMagnitude);
+        if(animator.GetFloat("Speed") == 0)
+        {
+            Debug.Log("Speed is 0");
+            Debug.Log("direction: " + direction);
+        }
     }
 
     [Server]
