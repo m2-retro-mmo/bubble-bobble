@@ -130,7 +130,7 @@ public class CharacterBase : NetworkBehaviour
         if (holdsDiamond)
         {
             deliverDiamond(false);
-            map.spawnDiamondAround(rb.transform.position.x, rb.transform.position.y);
+            map.spawnDiamondAround((Vector2)rb.transform.position);
         }
     }
 

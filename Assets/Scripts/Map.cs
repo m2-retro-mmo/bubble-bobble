@@ -225,9 +225,34 @@ public class Map : NetworkBehaviour
     }
 
     [ServerCallback]
-    public void spawnDiamondAround(float x, float y)
+    public void spawnDiamondAround(Vector2 position)
     {
-        Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
+        List<Vector2> freeNeighbors = new List<Vector2>();
+        for (int j = (int)Math.Round(position.y) - 1; j <= (int)Math.Round(position.y) + 1; j++)
+        {
+            for (int k = (int)Math.Round(position.x) - 1; k <= (int)Math.Round(position.x) + 1; k++)
+            {
+                if (TileIsFree(k, j))
+                {
+                    freeNeighbors.Add(new Vector2(k, j));
+                }
+            }
+        }
+
+        Vector2 finalPosition;
+        if (freeNeighbors.Count <= 0)
+        {
+            finalPosition = position;
+        }
+        else
+        {
+            int randomPos = ran.Next(0, freeNeighbors.Count);
+            Debug.Log("randomPos: " + randomPos);
+            finalPosition = freeNeighbors[randomPos];
+        }
+        Debug.Log("free NeightborCount: " + freeNeighbors.Count);
+
+        Diamond item = Instantiate(diamondPrefab, new Vector3(((float)finalPosition.x + 0.5f), ((float)finalPosition.y + 0.5f), 0), Quaternion.identity);
         item.transform.parent = diamondParent.transform;
         spawnedDiamonds++;
         NetworkServer.Spawn(item.gameObject);
@@ -255,7 +280,15 @@ public class Map : NetworkBehaviour
             }
         }
 
-        return floorEnvironment[x, y] == EnvironmentType.Ground && obstacleTilemap.GetTile(new Vector3Int(x, y, 0)) == null;
+        // check if x,y is out of bounds
+        try
+        {
+            return floorEnvironment[x, y] == EnvironmentType.Ground && obstacleTilemap.GetTile(new Vector3Int(x, y, 0)) == null;
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
     }
 
     // Step 1
