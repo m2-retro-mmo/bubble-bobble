@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using Mirror;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class Player : CharacterBase
 {
@@ -24,6 +25,8 @@ public class Player : CharacterBase
     public float distanceFactor = 1.5f;
 
     public float itemDuration = 0;
+
+    public float arrowDistance = 34f;
 
     [SyncVar(hook = nameof(OnPlayerNameChanged))] public string playerName;
     public TextMeshProUGUI playerNameGUI;
@@ -176,18 +179,30 @@ public class Player : CharacterBase
         {
             hortIndicator.enabled = true;
             hortIndicatorArrow.enabled = true;
+
+            // Cinemachine.CinemachineVirtualCamera virtualCamera = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+            // Vector3 cameraSpacePosition = virtualCamera.transform.InverseTransformPoint(GetHort().position);
+            // viewSpacePosition = cam.WorldToViewportPoint(cameraSpacePosition);
+
             viewSpacePosition = cam.WorldToViewportPoint(GetHort().position);
+
             viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
             viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
             viewSpacePosition.z = Mathf.Clamp01(viewSpacePosition.z);
+
             RectTransform parent = GameObject.Find("Canvas").GetComponent<RectTransform>();
             Vector2 anchoredPosition = new Vector2(
                 (viewSpacePosition.x * parent.rect.width) - (parent.rect.width * 0.5f),
                 (viewSpacePosition.y * parent.rect.height) - (parent.rect.height * 0.5f)
             );
+
+            anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, -(parent.rect.width * 0.5f - hortIndicator.rectTransform.rect.width * 0.5f), parent.rect.width * 0.5f - hortIndicator.rectTransform.rect.width * 0.5f);
+            anchoredPosition.y = Mathf.Clamp(anchoredPosition.y, -(parent.rect.height * 0.5f - hortIndicator.rectTransform.rect.height * 0.5f), parent.rect.height * 0.5f - hortIndicator.rectTransform.rect.height * 0.5f);
+
             hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
 
             float angle = Mathf.Atan2(anchoredPosition.y, anchoredPosition.x) * Mathf.Rad2Deg;
+            hortIndicatorArrow.transform.position = (Vector2)hortIndicator.transform.position + anchoredPosition.normalized * arrowDistance;
             hortIndicatorArrow.rectTransform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         }
     }

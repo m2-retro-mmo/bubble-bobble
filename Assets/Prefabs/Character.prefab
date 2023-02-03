@@ -781,6 +781,7 @@ MonoBehaviour:
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
   itemDuration: 0
+  arrowDistance: 34
   playerName: 
   playerNameGUI: {fileID: 529653101480904807}
   hortIndicator: {fileID: 0}
