@@ -3,6 +3,8 @@ using Mirror;
 
 public class CharacterBase : NetworkBehaviour
 {
+    protected GameManager gameManager;
+
     // States
     [SyncVar(hook = nameof(OnHoldsDiamondChanged))] public bool holdsDiamond = false;
     [SyncVar(hook = nameof(OnCaptureChanged))] public bool isCaptured = false;
@@ -37,6 +39,7 @@ public class CharacterBase : NetworkBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         map = GameObject.Find("Map").GetComponent<Map>();

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using Mirror;
@@ -18,6 +19,7 @@ public class GameManager : NetworkBehaviour
     public Camera minimapCam;
 
     private UIManager uIManager;
+    private GameOverUIManager goUIManager;
 
     [SerializeField]
     [Tooltip("true if the bot should be spawned in the area of the player")]
@@ -31,14 +33,30 @@ public class GameManager : NetworkBehaviour
     [Tooltip("The number of Characters (Bots and Player) the game should start with")]
     private int characterCount;
 
-    [SyncVar (hook = nameof(DurationUpdated))] private float gameDuration = 100f;
-    private bool timerIsRunning;
+    [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
+    [SyncVar] public bool gameOver;
 
-    private int botTeamNumber;
+    [SyncVar] private int botTeamNumber;
 
     private List<Hort> horts;
 
     public static GameManager singleton { get; internal set; }
+
+    private GameObject bots;
+
+    private Graph graph;
+
+    private byte botCounterTeam0 = 0;
+    private byte botCounterTeam1 = 0;
+
+    private byte playerCounterTeam0 = 0;
+    private byte playerCounterTeam1 = 0;
+
+    private void Start()
+    {
+        uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
+        goUIManager = GameObject.Find("GameOverUI").GetComponent<GameOverUIManager>();
+    }
 
     bool InitializeSingleton()
     {
@@ -61,19 +79,6 @@ public class GameManager : NetworkBehaviour
             singleton = null;
     }
 
-    private GameObject bots;
-
-    private Graph graph;
-
-    private byte botCounterTeam0 = 0;
-    private byte botCounterTeam1 = 0;
-
-    private byte playerCounterTeam0 = 0;
-    private byte playerCounterTeam1 = 0;
-
-    private void Start() {
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
-    }
 
     // Start is called before the first frame update
     [Server]
@@ -113,15 +118,23 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        // handle playtime
-        timerIsRunning = true;
+        // handle gameover
+        gameOver = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (isClientOnly) return;
-        if (timerIsRunning)
+        if (gameOver)
+        {
+            var scores = GetTeamScores(GetHorts());
+            rpcVisualizeGameOver(
+                scores.Find(res => res.GetTeam() == 0).GetPoints(),
+                scores.Find(res => res.GetTeam() == 1).GetPoints()
+            );
+        }
+        if (!gameOver)
         {
             if (gameDuration > 0)
             {
@@ -132,9 +145,9 @@ public class GameManager : NetworkBehaviour
             {
                 Debug.Log("Time is finished");
                 uIManager.SetDuration(0);
-                timerIsRunning = false;
-                DetermineWinner(GetHorts());
-                // TODO: spiel beenden, display gewinnerteam in ui
+                gameOver = true;
+
+                handleGameOver();
             }
         }
         // TODO: if new player joined place player on the map
@@ -298,27 +311,53 @@ public class GameManager : NetworkBehaviour
         return botPos;
     }
 
-    public void DetermineWinner(List<Hort> horts)
+    public List<TeamPoints> GetTeamScores(List<Hort> horts)
     {
-        TeamPoints winner = new TeamPoints(0, 0);
+        List<TeamPoints> scores = new List<TeamPoints>();
         foreach (Hort hort in horts)
         {
-            Debug.Log(hort.GetTeamPoints());
             TeamPoints tp = hort.GetTeamPoints();
-            if (tp.GetPoints() > winner.GetPoints())
-            {
-                winner = tp;
-            }
+            scores.Add(tp);
+        }
+        return scores;
+    }
+
+    [ClientRpc]
+    private void rpcVisualizeGameOver(int score0, int score1)
+    {
+        visualizeGameOver(score0, score1);
+    }
+
+    public void visualizeGameOver(int score0, int score1)
+    {
+        // stop animators
+        foreach (Animator anim in FindObjectsOfType<Animator>())
+        {
+            anim.enabled = false;
         }
 
-        if (winner.GetPoints() == 0)
+        // hide menu
+        uIManager.hideMenu();
+
+        // show game over screen
+        goUIManager.DisplayGameOver(score0, score1);
+    }
+
+    public void handleGameOver()
+    {
+        // stop all Bot async routines
+        foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
         {
-            Debug.Log("There is no winner!");
+            bot.StopEverything();
         }
-        else
-        {
-            Debug.Log("The winner is team " + winner.GetTeam() + " with " + winner.GetPoints() + " points!");
-        }
+
+        // after countdown go back to lobby
+        StartCoroutine(LoadLobbyCountdown());
+    }
+
+    IEnumerator LoadLobbyCountdown()
+    {
+        yield return new WaitForSeconds(5);
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
