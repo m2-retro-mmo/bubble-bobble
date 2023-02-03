@@ -168,8 +168,7 @@ public class Player : CharacterBase
 
     public void SetHortIndicator()
     {
-        Vector3 screenPos = cam.WorldToScreenPoint(GetHort().position);
-        if (screenPos.x >= 0 && screenPos.x <= Screen.width && screenPos.y >= 0 && screenPos.y <= Screen.height)
+        if (GetHort().GetComponent<Renderer>().isVisible)
         {
             // Don't show indicator if hort is in sight
             hortIndicator.enabled = false;
@@ -180,11 +179,7 @@ public class Player : CharacterBase
             hortIndicator.enabled = true;
             hortIndicatorArrow.enabled = true;
 
-            // Cinemachine.CinemachineVirtualCamera virtualCamera = GameObject.Find("CineMachine").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-            // Vector3 cameraSpacePosition = virtualCamera.transform.InverseTransformPoint(GetHort().position);
-            // viewSpacePosition = cam.WorldToViewportPoint(cameraSpacePosition);
-
-            viewSpacePosition = cam.WorldToViewportPoint(GetHort().position);
+            viewSpacePosition = cam.WorldToViewportPoint(GetHort().position - cinemachineBrain.CurrentCameraState.PositionCorrection);
 
             viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
             viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
@@ -201,8 +196,9 @@ public class Player : CharacterBase
 
             hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
 
-            float angle = Mathf.Atan2(anchoredPosition.y, anchoredPosition.x) * Mathf.Rad2Deg;
-            hortIndicatorArrow.transform.position = (Vector2)hortIndicator.transform.position + anchoredPosition.normalized * arrowDistance;
+            Vector2 playerHortDirection = GetHort().position - gameObject.transform.position;
+            float angle = Mathf.Atan2(playerHortDirection.y, playerHortDirection.x) * Mathf.Rad2Deg;
+            hortIndicatorArrow.transform.position = (Vector2)hortIndicator.transform.position + playerHortDirection.normalized * arrowDistance;
             hortIndicatorArrow.rectTransform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         }
     }
