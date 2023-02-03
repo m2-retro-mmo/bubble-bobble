@@ -357,10 +357,7 @@ public class GameManager : NetworkBehaviour
 
     IEnumerator LoadLobbyCountdown()
     {
-        Debug.Log("beginning of coroutine LoadLobby");
-        yield return new WaitForSeconds(3);
-        Debug.Log("after wait for 3 sec");
-        Debug.Log(BBNetworkManager.singleton);
+        yield return new WaitForSeconds(5);
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
     }
 
