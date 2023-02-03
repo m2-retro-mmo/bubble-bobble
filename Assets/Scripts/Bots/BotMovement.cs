@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using Unity.VisualScripting;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
@@ -154,9 +155,9 @@ public class BotMovement : MonoBehaviour
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
+                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
-                Debug.Log("distNextNode: " + distNextNode);
+                // Debug.Log("distNextNode: " + distNextNode);
                 if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
@@ -169,15 +170,7 @@ public class BotMovement : MonoBehaviour
                         Debug.Log("Bot Reached goal");
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-                
-
-                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                Debug.Log("Move direction: " + moveDirection);
-                if(changedMoveDirection(moveDirection)){
-                    bot.SetAnimatorMovement(moveDirection);
-                    Debug.Log("Changed move direction");
-                }
+                MoveTowards(nextNode);
             }
 
             yield return new WaitForSeconds(0.01f);
@@ -223,24 +216,20 @@ public class BotMovement : MonoBehaviour
     /// <returns>An IEnumerator.</returns>
     IEnumerator FollowOpponent()
     {
+        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>();
+
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
-
-        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>(); 
-
-        while (true)
+        while (goal != null)
         {
-            if (goal == null)
-                break;
-
             Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
             float distToPlayer = GetEuclideanDistance(botCenter, goal.position);
 
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
+                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
-                Debug.Log("distNextNode: " + distNextNode);
+                // Debug.Log("distNextNode: " + distNextNode);
                 if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
@@ -253,14 +242,7 @@ public class BotMovement : MonoBehaviour
                     StartCoroutine(CheckIfOpponentCaptured(opponent));
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-
-                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                Debug.Log("Move direction: " + moveDirection);
-                if(changedMoveDirection(moveDirection)){
-                    bot.SetAnimatorMovement(moveDirection);
-                    Debug.Log("Changed move direction");
-                }
+                MoveTowards(nextNode);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -277,6 +259,7 @@ public class BotMovement : MonoBehaviour
 
             yield return new WaitForSeconds(0.01f);
         }
+        StopEverything();
     }
 
     IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
@@ -366,14 +349,7 @@ public class BotMovement : MonoBehaviour
                         StopEverything();
                         break;
                     }
-                    transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-
-                    Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                    Debug.Log("Move direction: " + moveDirection);
-                    if(changedMoveDirection(moveDirection)){
-                        bot.SetAnimatorMovement(moveDirection);
-                        Debug.Log("Changed move direction");
-                    }
+                    MoveTowards(nextNode);
                 }
 
                 yield return new WaitForSeconds(0.001f);
@@ -390,7 +366,20 @@ public class BotMovement : MonoBehaviour
                 Debug.Log("Shot Bubble");
             StopEverything();
         }
+    }
+
+    private void MoveTowards(Vector3 nextNode)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
+
+        Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
+        Debug.Log("Move direction: " + moveDirection);
+        if (changedMoveDirection(moveDirection))
+        {
+            bot.SetAnimatorMovement(moveDirection);
+            Debug.Log("Changed move direction");
         }
+    }
 
     private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
     {
