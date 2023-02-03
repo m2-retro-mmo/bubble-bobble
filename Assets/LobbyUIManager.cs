@@ -10,7 +10,7 @@ public class LobbyUIManager : NetworkBehaviour
     // Synced Variables
     public readonly SyncList<BBNetworkManager.ConnectionInfo> connections = new SyncList<BBNetworkManager.ConnectionInfo>();
     [SyncVar(hook = nameof(OnGameDurationChanged))] public int gameDurationSeconds = 100;
-    [SyncVar] public float countdown = 500f;
+    [SyncVar] public float countdown = 5f;
     [SyncVar(hook = nameof(OnReadyChanged))] bool allReady = false;
 
     // Document and UI Elements
@@ -32,7 +32,7 @@ public class LobbyUIManager : NetworkBehaviour
         this.connections.Clear();
         this.connections.AddRange(connections);
         this.gameDurationSeconds = gameDurationSeconds;
-        countdown = 500f;
+        countdown = 5f;
 
         // if there are no connections, then we are not ready
         if (connections.Count == 0)
