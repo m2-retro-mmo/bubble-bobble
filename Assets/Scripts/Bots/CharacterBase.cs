@@ -21,6 +21,9 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] protected Material teamBMaterial;
     [SerializeField] protected Sprite captureBobbleBSprite;
     [SerializeField] private GameObject captureBubble;
+    private Map map;
+
+
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
 
@@ -36,6 +39,7 @@ public class CharacterBase : NetworkBehaviour
     {
         rb = GetComponentInChildren<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        map = GameObject.Find("Map").GetComponent<Map>();
         shape = transform.Find("Shape").gameObject;
         defaultLayer = LayerMask.LayerToName(shape.layer);
         SetTeamColor();
@@ -81,11 +85,15 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Speed", direction.sqrMagnitude);
     }
 
+    // @param toHort true if delivered to Hort, false when f.e. just dropped by captured
     [Server]
-    public void deliverDiamond()
+    public void deliverDiamond(bool toHort = true)
     {
         holdsDiamond = false;
-        diamondCounter++;
+        if (toHort)
+        {
+            diamondCounter++;
+        }
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
     [Server]
@@ -119,7 +127,11 @@ public class CharacterBase : NetworkBehaviour
         Invoke("Uncapture", BUBBLE_BREAKOUT_TIME);
         CaptureStateUpdate();
         // Player looses his diamond
-        deliverDiamond();
+        if (holdsDiamond)
+        {
+            deliverDiamond(false);
+            map.spawnDiamondAround((Vector2)rb.transform.position);
+        }
     }
 
     /**
