@@ -154,7 +154,7 @@ public class BotMovement : MonoBehaviour
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
                 Debug.Log("distNextNode: " + distNextNode);
-                if (distNextNode <= 10f && currentIndex < path.Count - 1)
+                if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -187,13 +187,13 @@ public class BotMovement : MonoBehaviour
         Vector3 oldMoveDirection = new Vector3(bot.animator.GetFloat("Horizontal"), bot.animator.GetFloat("Vertical"), 0);
 
         // return false if old x and new x are both greater than 0 or both smaller than 0
-        if (oldMoveDirection.x > 0 && moveDirection.x < 0 || oldMoveDirection.x < 0 && moveDirection.x > 0)
+        if (oldMoveDirection.x >= 0 && moveDirection.x < 0 || oldMoveDirection.x <= 0 && moveDirection.x > 0)
         {
             return true;
         }
 
         // return false if old y and new y are both greater than 0 or both smaller than 0
-        if (oldMoveDirection.y > 0 && moveDirection.y < 0 || oldMoveDirection.y < 0 && moveDirection.y > 0)
+        if (oldMoveDirection.y >= 0 && moveDirection.y < 0 || oldMoveDirection.y <= 0 && moveDirection.y > 0)
         {
             return true;
         }
@@ -225,7 +225,7 @@ public class BotMovement : MonoBehaviour
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
                 Debug.Log("distNextNode: " + distNextNode);
-                if (distNextNode <= 10f && currentIndex < path.Count - 1)
+                if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -338,7 +338,7 @@ public class BotMovement : MonoBehaviour
                     Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
                     float distNextNode = GetEuclideanDistance(botCenter, nextNode);
                     Debug.Log("distNextNode: " + distNextNode);
-                    if (distNextNode <= 10f && currentIndex < path.Count - 1)
+                    if (distNextNode <= 20f && currentIndex < path.Count - 1)
                     {
                         currentIndex++;
                     }
@@ -503,6 +503,7 @@ public class BotMovement : MonoBehaviour
 
     public void StopEverything()
     {
+        bot.SetAnimatorMovement(Vector2.zero);
         CancelInvoke();
         StopAllCoroutines();
         bot.ResetBot(0f);
