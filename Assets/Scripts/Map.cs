@@ -258,8 +258,7 @@ public class Map : NetworkBehaviour
         NetworkServer.Spawn(item.gameObject);
     }
 
-    // checks if there is water or an obstacles on the given position
-    public bool TileIsFree(int x, int y)
+    public bool isInHortRange(int x, int y)
     {
         // check if coordinates are around the hort
         for (int i = 0; i < generatorData.hortLocations.Length; i++)
@@ -276,10 +275,15 @@ public class Map : NetworkBehaviour
 
             if ((x > startPositionX && x < endPositionX) && (y > startPositionY && y < endPositionY))
             {
-                return false;
+                return true;
             }
         }
+        return false;
+    }
 
+    // checks if there is water or an obstacles on the given position
+    public bool TileIsFree(int x, int y)
+    {
         // check if x,y is out of bounds
         try
         {
@@ -496,8 +500,8 @@ public class Map : NetworkBehaviour
         {
             for (int y = 0; y < generatorData.height; y++)
             {
-                // check if position is water 
-                if (TileIsFree(x, y) && ran.Next(0, 100) < 6)
+                // check if position is free 
+                if (TileIsFree(x, y) && !isInHortRange(x, y) && ran.Next(0, 100) < 6)
                 {
                     int randomValue = ran.Next(0, generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
                     if (randomValue < generatorData.probabilityPillar)
@@ -542,7 +546,7 @@ public class Map : NetworkBehaviour
         {
             int x = ran.Next(0, generatorData.width);
             int y = ran.Next(0, generatorData.height);
-            if (TileIsFree(x, y))
+            if (TileIsFree(x, y) && !isInHortRange(x, y))
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
