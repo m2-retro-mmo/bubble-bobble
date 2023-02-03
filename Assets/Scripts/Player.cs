@@ -29,7 +29,9 @@ public class Player : CharacterBase
     public TextMeshProUGUI playerNameGUI;
 
     public Image hortIndicator;
+    public Image hortIndicatorArrow;
     public Sprite orangeFlag;
+    public Sprite orangeIndicator;
     public Vector3 viewSpacePosition;
 
     // Start is called before the first frame update
@@ -47,11 +49,12 @@ public class Player : CharacterBase
             cm.m_Lens.OrthographicSize = 10;
 
             hortIndicator = GameObject.Find("HortIndicatorImage").GetComponent<Image>();
+            hortIndicatorArrow = GameObject.Find("HortIndicatorArrow").GetComponent<Image>();
             UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
             if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();
-                hortIndicator.sprite = orangeFlag;
+                hortIndicator.sprite = orangeIndicator;
             }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
@@ -167,20 +170,27 @@ public class Player : CharacterBase
         {
             // Don't show indicator if hort is in sight
             hortIndicator.enabled = false;
+            hortIndicatorArrow.enabled = false;
         }
         else
         {
             hortIndicator.enabled = true;
+            hortIndicatorArrow.enabled = true;
             viewSpacePosition = cam.WorldToViewportPoint(GetHort().position);
-            viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
-            viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
-            viewSpacePosition.z = Mathf.Clamp01(viewSpacePosition.z);
+            viewSpacePosition.x = Mathf.Clamp(viewSpacePosition.x, 0, 0.5f);
+            viewSpacePosition.y = Mathf.Clamp(viewSpacePosition.y, 0, 0.5f);
+            viewSpacePosition.z = Mathf.Clamp(viewSpacePosition.z, 0, 0.5f);
             RectTransform parent =  GameObject.Find("Canvas").GetComponent<RectTransform>();
             Vector2 anchoredPosition = new Vector2(
                 (viewSpacePosition.x * parent.sizeDelta.x) - (parent.sizeDelta.x * 0.5f) + 0.05f,
                 (viewSpacePosition.y * parent.sizeDelta.y) - (parent.sizeDelta.y * 0.5f) + 0.1f
             );
             hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
+            hortIndicator.rectTransform.pivot = new Vector2(-0.2f, -0.2f);
+
+            float angle = Mathf.Atan2(anchoredPosition.y, anchoredPosition.x) * Mathf.Rad2Deg;
+            // hortIndicatorArrow.rectTransform.anchoredPosition = anchoredPosition;
+            hortIndicatorArrow.rectTransform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         }
     }
 }
