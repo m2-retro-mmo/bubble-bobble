@@ -99,7 +99,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3065963813708832963}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 98.16655, y: -15.92, z: -322.2946}
+  m_LocalPosition: {x: 98.166534, y: -15.92, z: -322.2946}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -115,8 +115,8 @@ Camera:
   m_GameObject: {fileID: 3065963813708832963}
   m_Enabled: 0
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.5568628, g: 0.5686275, b: 0.10196079, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -780,6 +780,7 @@ MonoBehaviour:
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
   itemDuration: 0
+  playerName: 
   playerNameGUI: {fileID: 529653101480904807}
 --- !u!114 &8755906794819694818
 MonoBehaviour:
