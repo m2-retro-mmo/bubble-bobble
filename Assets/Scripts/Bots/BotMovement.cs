@@ -34,6 +34,8 @@ public class BotMovement : MonoBehaviour
 
     private int opponentCapturedCounter = 0;
 
+    private bool hasChangedDirection = false;
+
     public void Start()
     {
         bot = GetComponent<Bot>();
@@ -152,6 +154,7 @@ public class BotMovement : MonoBehaviour
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
                 Debug.Log("distNextNode: " + distNextNode);
                 if (distNextNode <= 20f && currentIndex < path.Count - 1)
@@ -177,7 +180,7 @@ public class BotMovement : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForSeconds(0.01f);
         }
         StopEverything();
     }
@@ -189,13 +192,25 @@ public class BotMovement : MonoBehaviour
         // return false if old x and new x are both greater than 0 or both smaller than 0
         if (oldMoveDirection.x >= 0 && moveDirection.x < 0 || oldMoveDirection.x <= 0 && moveDirection.x > 0)
         {
-            return true;
+            if(hasChangedDirection)
+            {
+                hasChangedDirection = false;
+                return true;
+            }
+            else
+                hasChangedDirection = true;
         }
 
         // return false if old y and new y are both greater than 0 or both smaller than 0
         if (oldMoveDirection.y >= 0 && moveDirection.y < 0 || oldMoveDirection.y <= 0 && moveDirection.y > 0)
         {
-            return true;
+            if(hasChangedDirection)
+            {
+                hasChangedDirection = false;
+                return true;
+            }
+            else
+                hasChangedDirection = true;
         }
 
         return false;
@@ -223,6 +238,7 @@ public class BotMovement : MonoBehaviour
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
+                Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
                 float distNextNode = GetEuclideanDistance(botCenter, nextNode);
                 Debug.Log("distNextNode: " + distNextNode);
                 if (distNextNode <= 20f && currentIndex < path.Count - 1)
@@ -259,7 +275,7 @@ public class BotMovement : MonoBehaviour
                 break;
             }
 
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForSeconds(0.01f);
         }
     }
 
