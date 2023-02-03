@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Tilemaps;
 using Mirror;
 
 /**
@@ -169,7 +168,7 @@ public class GameManager : NetworkBehaviour
                 return;
             }
         }
-        Debug.Log("Create player for connection: " + conn.connectionId);
+        Debug.Log($"[CP {conn.connectionId}] Create Player");
 
         Player p = Instantiate(playerPrefab, new Vector3(((float)22), ((float)22), 0), Quaternion.identity);
 
@@ -195,10 +194,12 @@ public class GameManager : NetworkBehaviour
         {
             // NetworkManager.Destroy(conn.identity.gameObject);
             NetworkServer.ReplacePlayerForConnection(conn.identity.connectionToClient, p.gameObject, true);
+            Debug.Log($"[CP {conn.connectionId}] FIRST");
         }
         else
         {
             NetworkServer.AddPlayerForConnection(conn, p.gameObject);
+            Debug.Log($"[CP {conn.connectionId}] SECOND");
         }
 
         if (!DEBUG_BOTS)
