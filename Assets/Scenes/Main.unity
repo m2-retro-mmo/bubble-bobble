@@ -660,6 +660,11 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1108362006
       objectReference: {fileID: 0}
+    - target: {fileID: 2229609613089480983, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: visible
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6831340143348627993, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: m_Layer
@@ -1278,6 +1283,16 @@ PrefabInstance:
     - target: {fileID: 1190517968536407034, guid: 1c093c34385054d0ab333c3a758c19e7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2262578479361372241, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: visRange
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2262578479361372241, guid: 1c093c34385054d0ab333c3a758c19e7,
+        type: 3}
+      propertyPath: showSlider
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
