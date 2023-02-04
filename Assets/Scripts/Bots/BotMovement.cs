@@ -376,11 +376,11 @@ public class BotMovement : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
 
         Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-        Debug.Log("Move direction: " + moveDirection);
+        // Debug.Log("Move direction: " + moveDirection);
         if (changedMoveDirection(moveDirection))
         {
             bot.SetAnimatorMovement(moveDirection);
-            Debug.Log("Changed move direction");
+            // Debug.Log("Changed move direction");
         }
     }
 

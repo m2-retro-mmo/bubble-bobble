@@ -86,11 +86,11 @@ public class CharacterBase : NetworkBehaviour
         animator.SetFloat("Horizontal", direction.x);
         animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", direction.sqrMagnitude);
-        if(animator.GetFloat("Speed") == 0)
+        /*if(animator.GetFloat("Speed") == 0)
         {
             Debug.Log("Speed is 0");
             Debug.Log("direction: " + direction);
-        }
+        }*/
     }
 
     // @param toHort true if delivered to Hort, false when f.e. just dropped by captured
