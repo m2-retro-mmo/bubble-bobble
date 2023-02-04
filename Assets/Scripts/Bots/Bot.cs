@@ -58,8 +58,6 @@ public class Bot : CharacterBase
 
     private Transform hort;
 
-    private GameManager gameManager;
-
     private bool DEBUG_BOTS;
 
     private const float PRIORITY_THRESHOLD = 1f;
@@ -81,8 +79,6 @@ public class Bot : CharacterBase
         base.Start();
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
-
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
         DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
@@ -246,7 +242,7 @@ public class Bot : CharacterBase
                     detectedBubble = true;
                     bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
                     botMovement.SetGoal(bubble.transform);
-                    if(DEBUG_BOTS)
+                    if (DEBUG_BOTS)
                     {
                         Debug.Log("set goal to bubble");
                     }
@@ -353,7 +349,7 @@ public class Bot : CharacterBase
             c.gameObject.CompareTag("Bot")) &&
             (c.TryGetComponent(out CharacterBase characterBase)
             && characterBase.GetTeamNumber() == teamNumber)).ToArray();
-        
+
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
@@ -383,7 +379,7 @@ public class Bot : CharacterBase
             // check: did we find a new interactionId that is higher prioritized the old interaction
             if (foundInteractionID != interactionID && priorityDifference >= PRIORITY_THRESHOLD) // only change id if according priority is a given amount higher than priority of old id
             {
-                if(DEBUG_BOTS)
+                if (DEBUG_BOTS)
                 {
                     Debug.Log("all interaction priorities: \n" +
                         "Opponent: " + interactionPriorities[0] + " \n" +
@@ -409,7 +405,7 @@ public class Bot : CharacterBase
     public void RandomizeInteractionWeights()
     {
         System.Random rand = new System.Random();
-        for(int i = 0; i < interactionWeights.Length; i++)
+        for (int i = 0; i < interactionWeights.Length; i++)
         {
             int weight = rand.Next(1, 11);
             interactionWeights[i] = weight;
@@ -424,7 +420,7 @@ public class Bot : CharacterBase
         //string interactionWeights_text = "";
         foreach (float i in interactionWeights)
         {
-         //   interactionWeights_text += i.ToString() + ", ";
+            //   interactionWeights_text += i.ToString() + ", ";
             data.Add(i.ToString());
         }
         data.Add(GetDiamondCounter().ToString());
@@ -438,7 +434,7 @@ public class Bot : CharacterBase
     {
         string[] entryFields = { "entry.1555711059", "entry.2141082333", "entry.886997526", "entry.1317052357", "entry.299362154", "entry.1696318452", "entry.822962180", "entry.304877644", "entry.2077812130" };
         WWWForm form = new WWWForm();
-        for(int i = 0; i < data.Count; i++)
+        for (int i = 0; i < data.Count; i++)
         {
             form.AddField(entryFields[i], data[i]);
         }

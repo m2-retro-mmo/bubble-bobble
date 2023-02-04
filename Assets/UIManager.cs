@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class UIManager : MonoBehaviour
 {
     UIDocument document;
+    VisualElement root;
     Label labelPointsTeam0;
     Label labelPointsTeam1;
 
@@ -37,7 +38,7 @@ public class UIManager : MonoBehaviour
         }
 
         // get team point labels
-        VisualElement root = document.rootVisualElement;
+        root = document.rootVisualElement;
         labelPointsTeam0 = root.Q("orangeScore") as Label;
         labelPointsTeam1 = root.Q("purpleScore") as Label;
 
@@ -49,6 +50,9 @@ public class UIManager : MonoBehaviour
 
         // duration label
         duration = root.Q("timer") as Label;
+
+        // show menu
+        root.style.display = DisplayStyle.Flex;
     }
 
     // Start is called before the first frame update
@@ -97,5 +101,10 @@ public class UIManager : MonoBehaviour
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         duration.text = string.Format("{00:00}:{01:00}", minutes, seconds);
+    }
+
+    public void hideMenu()
+    {
+        root.style.display = DisplayStyle.None;
     }
 }

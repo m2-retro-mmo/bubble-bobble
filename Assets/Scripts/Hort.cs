@@ -5,7 +5,8 @@ using TMPro;
 using Mirror;
 using UnityEngine.UIElements;
 
-public class TeamPoints {
+public class TeamPoints
+{
     private int team;
     private int points;
 
@@ -46,7 +47,7 @@ public class Hort : NetworkBehaviour
     public void Awake()
     {
         gameObject.transform.localScale = new Vector3(scale, scale, 0);
-        uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+        uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
     }
 
     [Server]
@@ -67,7 +68,8 @@ public class Hort : NetworkBehaviour
 
     private void updateAfterTeamChange()
     {
-        if (team != 1) {
+        if (team != 1)
+        {
             GetComponent<Renderer>().material = teamBMaterial;
         }
     }
