@@ -5,6 +5,7 @@ using UnityEngine;
 using Mirror;
 using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
+using static UnityEngine.EventSystems.EventTrigger;
 
 /// <summary>
 /// the states of the InteractionID
@@ -79,11 +80,6 @@ public class Bot : CharacterBase
 
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
         DEBUG_BOTS = gameManager.GetDebugBots();
-    }
-
-    private void OnApplicationQuit()
-    {
-        Send();
     }
 
     public void ResetBot(float restartTime)
@@ -418,6 +414,7 @@ public class Bot : CharacterBase
 
     public void Send()
     {
+        bool teamWon = gameManager.GetWinnerForTracking() == teamNumber;
         List<string> data = new List<string>();
 
         //string interactionWeights_text = "";
@@ -429,12 +426,13 @@ public class Bot : CharacterBase
         data.Add(GetDiamondCounter().ToString());
         data.Add(botMovement.GetOpponentCapturedCounter().ToString());
         data.Add(GetUncapturedCounter().ToString());
+        data.Add(teamWon.ToString());
         StartCoroutine(Post(data));
     }
 
     IEnumerator Post(List<string> data)
     {
-        string[] entryFields = { "entry.1555711059", "entry.2141082333", "entry.886997526", "entry.1317052357", "entry.299362154", "entry.1696318452", "entry.822962180", "entry.304877644" };
+        string[] entryFields = { "entry.1555711059", "entry.2141082333", "entry.886997526", "entry.1317052357", "entry.299362154", "entry.1696318452", "entry.822962180", "entry.304877644", "entry.2077812130" };
         WWWForm form = new WWWForm();
         for (int i = 0; i < data.Count; i++)
         {

@@ -34,8 +34,10 @@ public class GameManager : NetworkBehaviour
 
     [SyncVar(hook = nameof(DurationUpdated))] private float gameDuration = 100.0f;
     [SyncVar] public bool gameOver;
-
     [SyncVar] private int botTeamNumber;
+
+    private byte winnerForTracking;
+
 
     private List<Hort> horts;
 
@@ -124,32 +126,28 @@ public class GameManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isClientOnly) return;
-        if (gameOver)
+        if (isClientOnly || gameOver) return;
+
+        if (gameDuration > 0)
         {
+            gameDuration -= Time.deltaTime;
+            uIManager.SetDuration(gameDuration);
+        }
+        else
+        {
+            Debug.Log("Time is finished");
+            uIManager.SetDuration(0);
+            gameOver = true;
+
             var scores = GetTeamScores(GetHorts());
+            handleGameOver(scores);
+
             rpcVisualizeGameOver(
                 scores.Find(res => res.GetTeam() == 0).GetPoints(),
                 scores.Find(res => res.GetTeam() == 1).GetPoints()
             );
         }
-        if (!gameOver)
-        {
-            if (gameDuration > 0)
-            {
-                gameDuration -= Time.deltaTime;
-                uIManager.SetDuration(gameDuration);
-            }
-            else
-            {
-                Debug.Log("Time is finished");
-                uIManager.SetDuration(0);
-                gameOver = true;
 
-                handleGameOver();
-            }
-        }
-        // TODO: if new player joined place player on the map
     }
 
     private void DurationUpdated(float oldDuration, float newDuration)
@@ -344,8 +342,28 @@ public class GameManager : NetworkBehaviour
         goUIManager.DisplayGameOver(score0, score1);
     }
 
-    public void handleGameOver()
+    public void handleGameOver(List<TeamPoints> scores)
     {
+
+        // set winnerForTracking based on the scores. Set it to -1 if there is a tie
+        if (scores[0].GetPoints() > scores[1].GetPoints())
+        {
+            winnerForTracking = 0;
+        }
+        else if (scores[0].GetPoints() < scores[1].GetPoints())
+        {
+            winnerForTracking = 1;
+        }
+        else
+        {
+            winnerForTracking = 255;
+        }
+        // Send bot information for tracking
+        foreach (Bot bot in FindObjectsOfType<Bot>())
+        {
+            bot.Send();
+        }
+
         // stop all Bot async routines
         foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
         {
@@ -360,6 +378,11 @@ public class GameManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(5);
         (BBNetworkManager.singleton as BBNetworkManager).returnToLobby();
+    }
+
+    public byte GetWinnerForTracking()
+    {
+        return winnerForTracking;
     }
 
     public void SetHorts(List<Hort> horts)
