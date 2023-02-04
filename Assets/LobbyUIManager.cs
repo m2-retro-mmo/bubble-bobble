@@ -58,7 +58,7 @@ public class LobbyUIManager : NetworkBehaviour
     {
         if (isClient && allReady)
         {
-            playButton.text = "Starting in " + Mathf.FloorToInt(countdown);
+            playButton.text = "Starting in " + Mathf.FloorToInt(Mathf.Max(0, countdown));
         }
 
         if (!isServer) return;
