@@ -120,4 +120,4 @@ MonoBehaviour:
   visRange: 30
   rebuildInterval: 1
   checkMethod: 1
-  showSlider: 1
+  showSlider: 0
