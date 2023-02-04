@@ -43,7 +43,7 @@ public class BotMovement : MonoBehaviour
         goalHolder = new GameObject();
         goalHolder.hideFlags = HideFlags.HideInHierarchy;
 
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent(typeof(GameManager)) as GameManager;
+        gameManager = FindObjectOfType<GameManager>();
         DEBUG_BOTS = gameManager.GetDebugBots();
     }
 
@@ -52,11 +52,14 @@ public class BotMovement : MonoBehaviour
         // return if not server
         if (!bot.isServer) return;
 
+        // stop doing stuff on gameOver
+        if (gameManager.gameOver) return;
+
         if (bot.GetDetectedBubble())
         {
             if (DEBUG_BOTS)
                 Debug.Log("Bubble was detected - start avoiding");
-            
+
             bot.ResetBot(3f);
 
             path = null;
@@ -124,10 +127,10 @@ public class BotMovement : MonoBehaviour
                 break;
             case InteractionID.Hort:
                 if (DEBUG_BOTS)
-                    Debug.Log("Start follow hort"); 
+                    Debug.Log("Start follow hort");
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
-                StartCoroutine(FollowGoal()); 
+                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Item:
                 if (DEBUG_BOTS)
@@ -165,7 +168,7 @@ public class BotMovement : MonoBehaviour
                     break;
                 }
                 transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-                
+
 
                 Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
                 bot.SetAnimatorMovement(moveDirection);
@@ -185,7 +188,7 @@ public class BotMovement : MonoBehaviour
     {
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
 
-        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>(); 
+        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>();
 
         while (true)
         {
@@ -235,7 +238,7 @@ public class BotMovement : MonoBehaviour
     IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
     {
         int counter = 0;
-        while(counter < 5)
+        while (counter < 5)
         {
             if (opponent.GetIsCaptured())
             {
@@ -276,7 +279,7 @@ public class BotMovement : MonoBehaviour
                     Debug.Log("Goal is null");
                 StopEverything();
                 yield break;
-            } 
+            }
             Vector3 newBubblePos = goal.position;
 
             Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
@@ -313,7 +316,7 @@ public class BotMovement : MonoBehaviour
                     if (distToGoal <= 0.25f)
                     {
                         if (DEBUG_BOTS)
-                            Debug.Log("Bot avoided Bubble"); 
+                            Debug.Log("Bot avoided Bubble");
                         StopEverything();
                         break;
                     }
@@ -337,7 +340,7 @@ public class BotMovement : MonoBehaviour
                 Debug.Log("Shot Bubble");
             StopEverything();
         }
-        }
+    }
 
     private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
     {
@@ -444,7 +447,7 @@ public class BotMovement : MonoBehaviour
         }
 
         return freeTileAroundTile;
-    } 
+    }
 
     /// <summary>
     /// Calculates the path to goal and resets the path index.
@@ -452,7 +455,7 @@ public class BotMovement : MonoBehaviour
     /// </summary>
     private void CalculatePathToGoal()
     {
-        if(goal == null)
+        if (goal == null)
             return;
         path = pathfinding.FindPath(transform.position, goal.position);
         currentIndex = 0;
