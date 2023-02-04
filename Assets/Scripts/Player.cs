@@ -41,7 +41,7 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
 
-            UIManager uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+            UIManager uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
             if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();
@@ -88,7 +88,7 @@ public class Player : CharacterBase
     // Update is called once per frame
     void Update()
     {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer || gameManager.gameOver) return;
         if (Input.GetButton("Fire1"))
         {
             GetComponent<Shooting>().CmdShootBubble();
@@ -104,7 +104,7 @@ public class Player : CharacterBase
 
     private void FixedUpdate()
     {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer || gameManager.gameOver) return;
         if (!isCaptured)
         {
             bool success = MovePlayer(moveInput);
@@ -123,7 +123,7 @@ public class Player : CharacterBase
 
     private void LateUpdate()
     {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer || gameManager.gameOver) return;
         LookAtMouse();
     }
 

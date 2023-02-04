@@ -7,9 +7,6 @@ public class NameGenerator : MonoBehaviour
     private static string[] animals;
     private static string[] adjectives;
 
-    private static string animalsPath = "Assets/Resources/NameGenerator/animals.txt";
-    private static string adjectivesPath = "Assets/Resources/NameGenerator/adjectives.txt";
-
     private void Start()
     {
         // read the file

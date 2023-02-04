@@ -55,7 +55,7 @@ public class Shooting : NetworkBehaviour
         characterBase = character.GetComponent<CharacterBase>();
         if (character.tag == "Player")
         {
-            uIManager = GameObject.Find("UIDocument").GetComponent<UIManager>();
+            uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
         }
     }
 

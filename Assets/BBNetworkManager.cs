@@ -81,11 +81,6 @@ public class BBNetworkManager : NetworkManager
     public override void OnServerConnect(NetworkConnectionToClient conn)
     {
         base.OnServerConnect(conn);
-
-        if (GameManager.singleton != null)
-        {
-            GameManager.singleton.CreatePlayer(conn);
-        }
     }
 
     public override void OnServerReady(NetworkConnectionToClient conn)
@@ -114,6 +109,11 @@ public class BBNetworkManager : NetworkManager
         newConnectionInfo.username = NameGenerator.GetRandomName();
         connectionRefs.Add(newConnectionInfo);
         OnConnectionUpdated();
+
+        if (GameManager.singleton != null)
+        {
+            GameManager.singleton.CreatePlayer(conn);
+        }
     }
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
