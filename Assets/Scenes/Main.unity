@@ -768,9 +768,79 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
+      propertyPath: stones.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: stones.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 1eb88b0997574584f9e6103018404c4c,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: stones.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: fbde4feddd010b84a8e85a316d96b45e,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: stones.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d261fa57a186304eb7c71bcd3920f52,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: stones.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2576b2060c95e454e9ce0fb19d18f4b9,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: stones.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: 32a9ac03c75f1f34991a1ef854a8eb4a,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.size
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
       propertyPath: treePrefabs.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[6]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5451d01092d6a0947a1059da45c09ebe,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[7]
+      value: 
+      objectReference: {fileID: 11400000, guid: 162b2c3c7ed3c8240995ad1799a0339a,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[8]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2367cb1fa5ebd9d4d9082b473634a906,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[9]
+      value: 
+      objectReference: {fileID: 11400000, guid: 57b6fab8e8adf24478f260a85ba4fa71,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[10]
+      value: 
+      objectReference: {fileID: 11400000, guid: 70b8e49e6af191c4c987c778977a5dba,
+        type: 2}
     - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: treePrefabs.Array.data[0]
@@ -1169,7 +1239,8 @@ MonoBehaviour:
   DEBUG_BOTS: 1
   botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
-  characterCount: 2
+  characterCount: 10
+  gameOver: 0
 --- !u!4 &2103473425
 Transform:
   m_ObjectHideFlags: 0

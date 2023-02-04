@@ -38,7 +38,7 @@ public struct GeneratorData
     public IntVec2[] hortLocations;
     public int probabilityObstaclesGeneral;
     public int probabilityPillar;
-
+    public int probabilityStones;
     public int probabilityDecorations;
     public int probabilityTrees;
     public int diamondSpawnDelay;
@@ -55,10 +55,11 @@ public struct GeneratorData
         hortScale = 7;
         teams = 2;
         hortLocations = HortLocations(s, teams, width, height, hortScale);
-        probabilityObstaclesGeneral = 5;
-        probabilityPillar = 30;
-        probabilityDecorations = 40;
-        probabilityTrees = 30;
+        probabilityObstaclesGeneral = 6;
+        probabilityPillar = 20;
+        probabilityStones = 35;
+        probabilityDecorations = 10;
+        probabilityTrees = 45;
         diamondSpawnDelay = 10;
         diamondSpawnCount = 30;
         diamondCount = 0;
@@ -127,6 +128,7 @@ public class Map : NetworkBehaviour
     [Header("Obstacle Settings")]
     public Tile[] pillars;
     public Tile[] bushes;
+    public Tile[] stones;
     public Tile[] accessoirs;
 
     [Header("Standard Water Tiles")]
@@ -503,8 +505,7 @@ public class Map : NetworkBehaviour
                 // check if position is free 
                 if (TileIsFree(x, y) && !isInHortRange(x, y) && ran.Next(0, 100) < 6)
                 {
-                    int randomValue = ran.Next(0, generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees);
-                    if (randomValue < generatorData.probabilityPillar)
+                    int randomValue = ran.Next(0, generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityStones + generatorData.probabilityTrees);                    if (randomValue < generatorData.probabilityPillar)
                     {
                         obstacleTilemap.SetTile(new Vector3Int(x, y, 0), pillars[ran.Next(0, pillars.Length)]);
                         obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
@@ -520,7 +521,13 @@ public class Map : NetworkBehaviour
                         isWalkable[x, y] = false;
                         floorEnvironment[x, y] = EnvironmentType.Obstacle;
                     }
-                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityTrees)
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityStones)
+                    {
+                        obstacleTilemap.SetTile(new Vector3Int(x, y, 0), stones[ran.Next(0, stones.Length)]);
+                        obstacleTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        counter++;
+                    }
+                    else if (randomValue < generatorData.probabilityPillar + generatorData.probabilityDecorations + generatorData.probabilityStones + generatorData.probabilityTrees)
                     {
                         int randomTree = ran.Next(1, treePrefabs.Length);
                         GameObject tree = Instantiate(treePrefabs[randomTree], new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
