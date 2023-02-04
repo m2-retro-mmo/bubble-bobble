@@ -1,6 +1,5 @@
 using UnityEngine;
 using Mirror;
-using System.Dynamic;
 
 public class CharacterBase : NetworkBehaviour
 {
