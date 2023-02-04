@@ -56,8 +56,6 @@ public class Bot : CharacterBase
 
     private float prevPriorityValue = 0;
 
-    private GameManager gameManager;
-
     private bool DEBUG_BOTS;
 
     private const float PRIORITY_THRESHOLD = 1f;
