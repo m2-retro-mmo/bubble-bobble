@@ -56,8 +56,6 @@ public class Bot : CharacterBase
 
     private float prevPriorityValue = 0;
 
-    private Transform hort;
-
     private bool DEBUG_BOTS;
 
     private const float PRIORITY_THRESHOLD = 1f;
@@ -466,11 +464,6 @@ public class Bot : CharacterBase
     public void SetInteractionID(InteractionID newInteractionID)
     {
         interactionID = newInteractionID;
-    }
-
-    public Transform GetHort()
-    {
-        return hort;
     }
 
     public bool GetDetectedBubble()

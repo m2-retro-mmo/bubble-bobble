@@ -766,7 +766,8 @@ MonoBehaviour:
   syncInterval: 0.1
   holdsDiamond: 0
   isCaptured: 0
-  teamNumber: 1
+  teamNumber: 0
+  hort: {fileID: 0}
   speed: 5
   collideableRenderer: {fileID: 5786438884688892800}
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
@@ -780,8 +781,14 @@ MonoBehaviour:
   mousePosScreen: {x: 0, y: 0, z: 0}
   distanceFactor: 2
   itemDuration: 0
+  arrowDistance: 34
   playerName: 
   playerNameGUI: {fileID: 529653101480904807}
+  hortIndicator: {fileID: 0}
+  hortIndicatorArrow: {fileID: 0}
+  orangeFlag: {fileID: 21300000, guid: 9fc8c8f51d2724ddcb34f629f3c30769, type: 3}
+  orangeIndicator: {fileID: 21300000, guid: de631ecddbb884de2a4f0ac3c9165d35, type: 3}
+  viewSpacePosition: {x: 0, y: 0, z: 0}
 --- !u!114 &8755906794819694818
 MonoBehaviour:
   m_ObjectHideFlags: 0
