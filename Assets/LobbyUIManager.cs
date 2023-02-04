@@ -167,9 +167,6 @@ public class LobbyUIManager : NetworkBehaviour
         {
             playButton.text = ready ? "Waiting for others" : "Ready";
         }
-
-        username.SetEnabled(!newValue);
-        duration.SetEnabled(!newValue);
     }
 
     private void ActionPlay()
@@ -207,10 +204,12 @@ public class LobbyUIManager : NetworkBehaviour
 
             if (connection.connectionId == serverConnectionId)
             {
+                currentUsername = connection.username;
                 username.value = connection.username;
-                if (username.panel.focusController.focusedElement != username)
+                //if focused set cursor to end
+                if (username.panel.focusController.focusedElement == username)
                 {
-                    username.value = connection.username;
+                    username.SelectRange(username.value.Length, username.value.Length);
                 }
                 ready = connection.readyToBegin;
                 break;
