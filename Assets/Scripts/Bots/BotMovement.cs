@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using Unity.VisualScripting;
 
 /// <summary>
 /// This class moves the bot according to the Interaction ID that is set in the BotBehavior class
@@ -33,6 +34,8 @@ public class BotMovement : MonoBehaviour
     private GameObject goalHolder;
 
     private int opponentCapturedCounter = 0;
+
+    private bool hasChangedDirection = false;
 
     public void Start()
     {
@@ -149,13 +152,16 @@ public class BotMovement : MonoBehaviour
         InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
         while (goal != null)
         {
-            float distToGoal = GetEuclideanDistance(transform.position, goal.position);
+            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+            float distToGoal = GetEuclideanDistance(botCenter, goal.position);
 
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
+                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                // Debug.Log("distNextNode: " + distNextNode);
+                if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -167,14 +173,10 @@ public class BotMovement : MonoBehaviour
                         Debug.Log("Bot Reached goal");
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-
-
-                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                bot.SetAnimatorMovement(moveDirection);
+                MoveTowards(nextNode);
             }
 
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForSeconds(0.01f);
         }
         StopEverything();
     }
@@ -186,22 +188,21 @@ public class BotMovement : MonoBehaviour
     /// <returns>An IEnumerator.</returns>
     IEnumerator FollowOpponent()
     {
-        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
-
         CharacterBase opponent = goal.parent.GetComponent<CharacterBase>();
 
-        while (true)
+        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
+        while (goal != null)
         {
-            if (goal == null)
-                break;
-
-            float distToPlayer = GetEuclideanDistance(transform.position, goal.position);
+            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+            float distToPlayer = GetEuclideanDistance(botCenter, goal.position);
 
             if (path != null)
             {
                 Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
+                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                // Debug.Log("distNextNode: " + distNextNode);
+                if (distNextNode <= 20f && currentIndex < path.Count - 1)
                 {
                     currentIndex++;
                 }
@@ -213,10 +214,7 @@ public class BotMovement : MonoBehaviour
                     StartCoroutine(CheckIfOpponentCaptured(opponent));
                     break;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-
-                Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                bot.SetAnimatorMovement(moveDirection);
+                MoveTowards(nextNode);
             }
             else if (distToPlayer >= (shootRange + 5f))
             {
@@ -231,24 +229,9 @@ public class BotMovement : MonoBehaviour
                 break;
             }
 
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForSeconds(0.01f);
         }
-    }
-
-    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
-    {
-        int counter = 0;
-        while (counter < 5)
-        {
-            if (opponent.GetIsCaptured())
-            {
-                opponentCapturedCounter++;
-                yield break;
-            }
-
-            yield return new WaitForSeconds(1f);
-            counter++;
-        }
+        StopEverything();
     }
 
     IEnumerator AvoidOpponentBubble()
@@ -263,7 +246,8 @@ public class BotMovement : MonoBehaviour
             yield break;
         }
 
-        float distToBubble = GetEuclideanDistance(transform.position, goal.position);
+        Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
+        float distToBubble = GetEuclideanDistance(botCenter, goal.position);
 
         // if the bubble is closer than shootRange move away from it 
         if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
@@ -302,13 +286,14 @@ public class BotMovement : MonoBehaviour
                     yield break;
                 }
 
-                float distToGoal = GetEuclideanDistance(transform.position, avoidPosition);
+                float distToGoal = GetEuclideanDistance(botCenter, avoidPosition);
 
                 if (path != null)
                 {
                     Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                    float distNextNode = GetEuclideanDistance(transform.position, nextNode);
-                    if (distNextNode <= 0.01f && currentIndex < path.Count - 1)
+                    float distNextNode = GetEuclideanDistance(botCenter, nextNode);
+                    Debug.Log("distNextNode: " + distNextNode);
+                    if (distNextNode <= 20f && currentIndex < path.Count - 1)
                     {
                         currentIndex++;
                     }
@@ -320,10 +305,7 @@ public class BotMovement : MonoBehaviour
                         StopEverything();
                         break;
                     }
-                    transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
-
-                    Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-                    bot.SetAnimatorMovement(moveDirection);
+                    MoveTowards(nextNode);
                 }
 
                 yield return new WaitForSeconds(0.001f);
@@ -340,6 +322,66 @@ public class BotMovement : MonoBehaviour
                 Debug.Log("Shot Bubble");
             StopEverything();
         }
+    }
+    
+    private void MoveTowards(Vector3 nextNode)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
+
+        Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
+        // Debug.Log("Move direction: " + moveDirection);
+        if (ChangedMoveDirection(moveDirection))
+        {
+            bot.SetAnimatorMovement(moveDirection);
+            // Debug.Log("Changed move direction");
+        }
+    }
+
+    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
+    {
+        int counter = 0;
+        while (counter < 5)
+        {
+            if (opponent.GetIsCaptured())
+            {
+                opponentCapturedCounter++;
+                yield break;
+            }
+
+            yield return new WaitForSeconds(1f);
+            counter++;
+        }
+    }
+
+    private bool ChangedMoveDirection(Vector3 moveDirection)
+    {
+        Vector3 oldMoveDirection = new Vector3(bot.animator.GetFloat("Horizontal"), bot.animator.GetFloat("Vertical"), 0);
+
+        // return false if old x and new x are both greater than 0 or both smaller than 0
+        if (oldMoveDirection.x >= 0 && moveDirection.x < 0 || oldMoveDirection.x <= 0 && moveDirection.x > 0)
+        {
+            if(hasChangedDirection)
+            {
+                hasChangedDirection = false;
+                return true;
+            }
+            else
+                hasChangedDirection = true;
+        }
+
+        // return false if old y and new y are both greater than 0 or both smaller than 0
+        if (oldMoveDirection.y >= 0 && moveDirection.y < 0 || oldMoveDirection.y <= 0 && moveDirection.y > 0)
+        {
+            if(hasChangedDirection)
+            {
+                hasChangedDirection = false;
+                return true;
+            }
+            else
+                hasChangedDirection = true;
+        }
+
+        return false;
     }
 
     private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
@@ -393,13 +435,11 @@ public class BotMovement : MonoBehaviour
         return transform.position;
     }
 
-    // determines whether a point is left of a line
-    public bool IsLeft(Vector2 a, Vector2 b, Vector2 c)
-    {
-        //a = line point 1; b = line point 2; c = point
-        return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
-    }
-
+    /// <summary>
+    /// gets a free tile around the given tile in a 3x3 grid
+    /// </summary>
+    /// <param name="tile">the tile as a Vector2</param>
+    /// <returns>a free tile around the given tile</returns>
     public Vector2 GetFreeTileAroundPosition(Vector2 tile)
     {
         Map map = GameObject.Find("Map").GetComponent<Map>();
@@ -449,59 +489,11 @@ public class BotMovement : MonoBehaviour
         return freeTileAroundTile;
     }
 
-    /// <summary>
-    /// Calculates the path to goal and resets the path index.
-    /// gets invoked
+     /// <summary>
+    /// gets a free tile around the hort within the hort radius (circle collider)
     /// </summary>
-    private void CalculatePathToGoal()
-    {
-        if (goal == null)
-            return;
-        path = pathfinding.FindPath(transform.position, goal.position);
-        currentIndex = 0;
-    }
-
-    private void CalculatePathToGoal(Vector3 goalPos)
-    {
-        path = pathfinding.FindPath(transform.position, goalPos);
-        currentIndex = 0;
-    }
-
-    public void StopEverything()
-    {
-        CancelInvoke();
-        StopAllCoroutines();
-        bot.ResetBot(0f);
-        path = null;
-    }
-
-
-    /// <summary>
-    /// Gets the euclidean distance.
-    /// </summary>
-    /// <param name="start">The start.</param>
-    /// <param name="end">The end.</param>
-    /// <returns>A float.</returns>
-    private float GetEuclideanDistance(Vector3 start, Vector3 end)
-    {
-        return Mathf.Pow(
-            Mathf.Pow(end.x - start.x, 2) +
-            Mathf.Pow(end.y - start.y, 2) +
-            Mathf.Pow(end.z - start.z, 2), 2);
-    }
-
-    /// <summary>
-    /// rotates the direction indicator around the bot to look at the goal.
-    /// </summary>
-    private void LookAtGoal()
-    {
-        Vector3 lookDir = goal.position - transform.position;
-        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
-
-        directionIndicator.position = transform.position + lookDir.normalized * 2f;
-        directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
-    }
-
+    /// <param name="hortCenter"> the center of the hort</param>
+    /// <returns>the transform of the goal</returns>
     private Transform GetFreeTileAroundHort(Vector2 hortCenter)
     {
         Map map = GameObject.Find("Map").GetComponent<Map>();
@@ -547,6 +539,66 @@ public class BotMovement : MonoBehaviour
         }
 
         return goalHolder.transform;
+    }
+
+    /// <summary>
+    /// Calculates the path to goal and resets the path index.
+    /// gets invoked
+    /// </summary>
+    private void CalculatePathToGoal()
+    {
+        if (goal == null)
+            return;
+        path = pathfinding.FindPath(transform.position, goal.position);
+        currentIndex = 0;
+    }
+
+    private void CalculatePathToGoal(Vector3 goalPos)
+    {
+        path = pathfinding.FindPath(transform.position, goalPos);
+        currentIndex = 0;
+    }
+
+    public void StopEverything()
+    {
+        bot.SetAnimatorMovement(Vector2.zero);
+        CancelInvoke();
+        StopAllCoroutines();
+        bot.ResetBot(0f);
+        path = null;
+    }
+
+    // determines whether a point is left of a line
+    public bool IsLeft(Vector2 a, Vector2 b, Vector2 c)
+    {
+        //a = line point 1; b = line point 2; c = point
+        return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
+    }
+
+    /// <summary>
+    /// Gets the euclidean distance.
+    /// </summary>
+    /// <param name="start">The start.</param>
+    /// <param name="end">The end.</param>
+    /// <returns>A float.</returns>
+    private float GetEuclideanDistance(Vector3 start, Vector3 end)
+    {
+        return Mathf.Pow(
+            Mathf.Pow(end.x - start.x, 2) +
+            Mathf.Pow(end.y - start.y, 2) +
+            Mathf.Pow(end.z - start.z, 2), 2);
+    }
+
+    /// <summary>
+    /// rotates the direction indicator around the bot to look at the goal.
+    /// </summary>
+    private void LookAtGoal()
+    {
+        Vector3 lookDir = goal.position - transform.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
+
+        directionIndicator.position = transform.position + lookDir.normalized * 2f;
+        directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector3 GetPosition()
