@@ -216,18 +216,6 @@ public class BotMovement : MonoBehaviour
                 }
                 MoveTowards(nextNode);
             }
-            else if (distToPlayer >= (shootRange + 5f))
-            {
-                InvokeRepeating("CalculatePathToGoal", 0.1f, 0.5f);
-            }
-
-            if (opponent.GetIsCaptured())
-            {
-                if (DEBUG_BOTS)
-                    Debug.Log("Opponent captured");
-                StopEverything();
-                break;
-            }
 
             yield return new WaitForSeconds(0.01f);
         }
