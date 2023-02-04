@@ -167,6 +167,9 @@ public class LobbyUIManager : NetworkBehaviour
         {
             playButton.text = ready ? "Waiting for others" : "Ready";
         }
+
+        username.SetEnabled(!newValue);
+        duration.SetEnabled(!newValue);
     }
 
     private void ActionPlay()
