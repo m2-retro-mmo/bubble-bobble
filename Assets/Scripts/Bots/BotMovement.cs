@@ -89,4 +89,27 @@ public class BotMovement : MonoBehaviour
     {
         return graph;
     }
+
+    /// <summary>
+    /// draws the path in the scene view
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            for (int i = currentIndex; i < path.Count; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(graph.GetWorldPosition(path[i]), Vector3.one * 0.5f);
+                if (i == currentIndex)
+                {
+                    Gizmos.DrawLine(GetPosition(), graph.GetWorldPosition(path[i]));
+                }
+                else
+                {
+                    Gizmos.DrawLine(graph.GetWorldPosition(path[i - 1]), graph.GetWorldPosition(path[i]));
+                }
+            }
+        }
+    }
 }

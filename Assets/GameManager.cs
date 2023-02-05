@@ -267,6 +267,7 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(bot.gameObject);
 
         bot.GetComponent<BotController>().SetGraph(graph);
+        bot.GetComponent<BotMovement>().SetGraph(graph);
         bot.StartBot();
     }
 
