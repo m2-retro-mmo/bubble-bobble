@@ -268,7 +268,7 @@ public class GameManager : NetworkBehaviour
 
         bot.GetComponent<BotController>().SetGraph(graph);
         bot.GetComponent<BotMovement>().SetGraph(graph);
-        bot.StartBot();
+        //bot.StartBot();
     }
 
     private void RemoveBot(byte teamNumber)

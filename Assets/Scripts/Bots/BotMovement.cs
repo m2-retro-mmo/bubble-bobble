@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class BotMovement : MonoBehaviour
 {
+    public delegate void GoalReachedEventHandler();
+    
+    public static event GoalReachedEventHandler OnGoalReached;
+
     private Bot bot;
 
     private Graph graph;

@@ -48,7 +48,7 @@ public class Bot : CharacterBase
 
     private Collider2D[] interactionColliders;
 
-    private BotController botMovement;
+    private BotController botController;
 
     private float prevPriorityValue = 0;
 
@@ -63,17 +63,17 @@ public class Bot : CharacterBase
     [SerializeField]
     private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfonsU3CpscyOGBVfnnDrQxmsMqeSotW3s0gT5KUHWWzRuYnQ/formResponse";
 
-    public void Awake()
-    {
-        botMovement = GetComponent<BotController>();
-    }
-
     public override void Start()
     {
         base.Start();
 
+        botController = GetComponent<BotController>();
+
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
+
         DEBUG_BOTS = gameManager.GetDebugBots();
+
+        StartBot();
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class Bot : CharacterBase
     public void StartBot()
     {
         StartCoroutine(CheckAreaOfInterest());
-        StartCoroutine(CheckForBubbles());
+        //StartCoroutine(CheckForBubbles());
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public class Bot : CharacterBase
                 {
                     detectedBubble = true;
                     bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
-                    botMovement.SetGoal(bubble.transform);
+                    botController.SetGoal(bubble.transform);
                     if (DEBUG_BOTS)
                     {
                         Debug.Log("set goal to bubble");
@@ -335,7 +335,7 @@ public class Bot : CharacterBase
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
-                botMovement.SetGoal(interactionGoals[highestPriorityIndex]);
+                botController.SetGoal(interactionGoals[highestPriorityIndex]);
             }
         }
         else // if no interaction was found, increase the radius
@@ -412,7 +412,7 @@ public class Bot : CharacterBase
         }
         // add the number of collected diamonds, captured and uncaptured characters
         data.Add(GetDiamondCounter().ToString());
-        data.Add(botMovement.GetOpponentCapturedCounter().ToString());
+        data.Add(botController.GetOpponentCapturedCounter().ToString());
         data.Add(GetUncapturedCounter().ToString());
         data.Add(teamWon.ToString());
         StartCoroutine(Post(data));
