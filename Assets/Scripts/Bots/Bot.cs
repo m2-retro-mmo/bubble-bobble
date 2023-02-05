@@ -48,7 +48,7 @@ public class Bot : CharacterBase
 
     private Collider2D[] interactionColliders;
 
-    private BotMovement botMovement;
+    private BotController botMovement;
 
     private float prevPriorityValue = 0;
 
@@ -65,7 +65,7 @@ public class Bot : CharacterBase
 
     public void Awake()
     {
-        botMovement = GetComponent<BotMovement>();
+        botMovement = GetComponent<BotController>();
     }
 
     public override void Start()
