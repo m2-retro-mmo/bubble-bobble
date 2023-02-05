@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Mirror;
+using UnityEngine.UI;
+using Cinemachine;
 
 public class Player : CharacterBase
 {
@@ -24,8 +26,16 @@ public class Player : CharacterBase
 
     public float itemDuration = 0;
 
+    public float arrowDistance = 34f;
+
     [SyncVar(hook = nameof(OnPlayerNameChanged))] public string playerName;
     public TextMeshProUGUI playerNameGUI;
+
+    public Image hortIndicator;
+    public Image hortIndicatorArrow;
+    public Sprite orangeFlag;
+    public Sprite orangeIndicator;
+    public Vector3 viewSpacePosition;
 
     // Start is called before the first frame update
     public override void Start()
@@ -41,10 +51,13 @@ public class Player : CharacterBase
             cm.Follow = shape.transform;
             cm.m_Lens.OrthographicSize = 10;
 
+            hortIndicator = GameObject.Find("HortIndicatorImage").GetComponent<Image>();
+            hortIndicatorArrow = GameObject.Find("HortIndicatorArrow").GetComponent<Image>();
             UIManager uIManager = GameObject.Find("MainUI").GetComponent<UIManager>();
             if (GetTeamNumber() == 0)
             {
                 uIManager.SetBubbleColorOrange();
+                hortIndicator.sprite = orangeIndicator;
             }
         }
         col = gameObject.GetComponentInChildren<CapsuleCollider2D>();
@@ -100,6 +113,8 @@ public class Player : CharacterBase
         Rigidbody2D rb2 = GetComponent<Rigidbody2D>();
         rb2.transform.position = rb.transform.position;
         cam.transform.position = rb.transform.position;
+
+        SetHortIndicator();
     }
 
     private void FixedUpdate()
@@ -149,5 +164,42 @@ public class Player : CharacterBase
 
         Move(direction);
         return true;
+    }
+
+    public void SetHortIndicator()
+    {
+        if (GetHort().GetComponent<Renderer>().isVisible)
+        {
+            // Don't show indicator if hort is in sight
+            hortIndicator.enabled = false;
+            hortIndicatorArrow.enabled = false;
+        }
+        else
+        {
+            hortIndicator.enabled = true;
+            hortIndicatorArrow.enabled = true;
+
+            viewSpacePosition = cam.WorldToViewportPoint(GetHort().position - cinemachineBrain.CurrentCameraState.PositionCorrection);
+
+            viewSpacePosition.x = Mathf.Clamp01(viewSpacePosition.x);
+            viewSpacePosition.y = Mathf.Clamp01(viewSpacePosition.y);
+            viewSpacePosition.z = Mathf.Clamp01(viewSpacePosition.z);
+
+            RectTransform parent = GameObject.Find("Canvas").GetComponent<RectTransform>();
+            Vector2 anchoredPosition = new Vector2(
+                (viewSpacePosition.x * parent.rect.width) - (parent.rect.width * 0.5f),
+                (viewSpacePosition.y * parent.rect.height) - (parent.rect.height * 0.5f)
+            );
+
+            anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, -(parent.rect.width * 0.5f - hortIndicator.rectTransform.rect.width * 0.5f), parent.rect.width * 0.5f - hortIndicator.rectTransform.rect.width * 0.5f);
+            anchoredPosition.y = Mathf.Clamp(anchoredPosition.y, -(parent.rect.height * 0.5f - hortIndicator.rectTransform.rect.height * 0.5f), parent.rect.height * 0.5f - hortIndicator.rectTransform.rect.height * 0.5f);
+
+            hortIndicator.rectTransform.anchoredPosition = anchoredPosition;
+
+            Vector2 playerHortDirection = GetHort().position - gameObject.transform.position;
+            float angle = Mathf.Atan2(playerHortDirection.y, playerHortDirection.x) * Mathf.Rad2Deg;
+            hortIndicatorArrow.transform.position = (Vector2)hortIndicator.transform.position + playerHortDirection.normalized * arrowDistance;
+            hortIndicatorArrow.rectTransform.rotation = Quaternion.Euler(0, 0, angle + 90f);
+        }
     }
 }

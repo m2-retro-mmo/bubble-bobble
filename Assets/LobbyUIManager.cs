@@ -58,7 +58,7 @@ public class LobbyUIManager : NetworkBehaviour
     {
         if (isClient && allReady)
         {
-            playButton.text = "Starting in " + Mathf.FloorToInt(countdown);
+            playButton.text = "Starting in " + Mathf.FloorToInt(Mathf.Max(0, countdown));
         }
 
         if (!isServer) return;
@@ -207,10 +207,12 @@ public class LobbyUIManager : NetworkBehaviour
 
             if (connection.connectionId == serverConnectionId)
             {
+                currentUsername = connection.username;
                 username.value = connection.username;
-                if (username.panel.focusController.focusedElement != username)
+                //if focused set cursor to end
+                if (username.panel.focusController.focusedElement == username)
                 {
-                    username.value = connection.username;
+                    username.SelectRange(username.value.Length, username.value.Length);
                 }
                 ready = connection.readyToBegin;
                 break;
