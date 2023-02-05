@@ -196,16 +196,19 @@ public class Bot : CharacterBase
         // if there are no opponents do nothing
         if (opponentColliders.Length > 0)
         {
+            int index = 0;
             // loop through all opponents 
-            foreach (Collider2D collider in opponentColliders)
+            while (index < opponentColliders.Length)
             {
-                CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
+                CharacterBase opponent = opponentColliders[index].gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured())
                 {
                     ApplyInteractionPriority(InteractionID.Opponent, opponentPriority, opponent.transform.Find("Shape").transform);
+                    break; // break the loop if an opponent is found
                 }
+                index++;
             }
         }
     }
@@ -221,16 +224,19 @@ public class Bot : CharacterBase
         // if there are no teammates do nothing
         if (teammateColliders.Length > 0)
         {
-            // loop through all teammates
-            foreach (Collider2D collider in teammateColliders)
+            int index = 0;
+            // loop through all teammates until a teammate is found who is captured
+            while (index < teammateColliders.Length)
             {
-                CharacterBase teammate = collider.gameObject.GetComponent<CharacterBase>();
+                CharacterBase teammate = teammateColliders[index].gameObject.GetComponent<CharacterBase>();
 
                 // check if the teammate is captured - if he is, free teammate
                 if (teammate.GetIsCaptured())
                 {
                     ApplyInteractionPriority(InteractionID.Teammate, 1f, teammate.transform);
+                    break; // break the loop if a teammate is found
                 }
+                index++;
             }
         }
     }
@@ -253,12 +259,9 @@ public class Bot : CharacterBase
         // are there diamonds near by
         if (diamondColliders.Length > 0)
         {
-            // loop through all opponents 
-            foreach (Collider2D collider in diamondColliders)
-            {
-                Diamond diamond = collider.gameObject.GetComponent<Diamond>();
-                ApplyInteractionPriority(InteractionID.Diamond, 1f, diamond.transform);
-            }
+            // get the first diamond
+            Diamond diamond = diamondColliders[0].gameObject.GetComponent<Diamond>();
+            ApplyInteractionPriority(InteractionID.Diamond, 1f, diamond.transform);
         }
     }
 

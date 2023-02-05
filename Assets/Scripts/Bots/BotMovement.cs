@@ -1,11 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BotMovement : MonoBehaviour
 {
-    public delegate void GoalReachedEventHandler();
-    
-    public static event GoalReachedEventHandler OnGoalReached;
+    public event Action OnGoalReached;
 
     private Bot bot;
 
@@ -50,7 +49,8 @@ public class BotMovement : MonoBehaviour
                 {
                     StopMoving();
                     bot.SetAnimatorMovement(Vector3.zero);
-                    // hier event trigger dass der bot angekommen ist
+                    // raise the event that the goal has been reached
+                    OnGoalReached?.Invoke();
                 }
             }
         }

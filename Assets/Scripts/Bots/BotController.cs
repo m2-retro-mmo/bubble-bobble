@@ -41,6 +41,7 @@ public class BotController : MonoBehaviour
     {
         bot = GetComponent<Bot>();
         botMovement = GetComponent<BotMovement>();
+        botMovement.OnGoalReached += CalculateNewGoal;
         directionIndicator = transform.Find("Triangle");
 
         // object holder for the transform of the goal if the interactionId is hort
@@ -55,10 +56,17 @@ public class BotController : MonoBehaviour
     {
         if (bot.GetChangedInteractionID())
         {
+            Debug.Log("set new goal to " + bot.GetInteractionID().ToString());
             botMovement.SetTargetPosition(goal.position);
 
             bot.SetChangedInteractionID(false);
         }
+    }
+
+    private void CalculateNewGoal()
+    {
+        Debug.Log("EVENT TRIGGERED: Calculate new goal");
+        bot.ResetBot(0f);
     }
 
     // private void Update()
