@@ -72,7 +72,7 @@ public class BotMovement : MonoBehaviour
         }
     }
 
-    private void StopMoving()
+    public void StopMoving()
     {
         path = null;
         graph.ResetGraph();

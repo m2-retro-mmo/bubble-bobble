@@ -99,12 +99,14 @@ public class BotController : MonoBehaviour
     private void RestartBotNow()
     {
         Debug.Log("EVENT TRIGGERED: Calculate new goal");
+        botMovement.StopMoving();
         bot.ResetBot(0f);
     }
 
     private void RestartBotLater()
     {
         Debug.Log("EVENT TRIGGERED: start Bot later");
+        botMovement.StopMoving();
         bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
     }
 
