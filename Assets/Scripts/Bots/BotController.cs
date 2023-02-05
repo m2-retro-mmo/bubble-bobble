@@ -40,8 +40,19 @@ public class BotController : MonoBehaviour
     public void Start()
     {
         bot = GetComponent<Bot>();
+
+        // register to the events of the bot 
+        // if the bot is captured, the bot will be reset after a certain time
+        bot.OnCaptured += RestartBotLater;
+        // if the bot is uncaptured, the bot will be reset immediately
+        bot.OnUncaptured += RestartBotNow;
+
         botMovement = GetComponent<BotMovement>();
-        botMovement.OnGoalReached += CalculateNewGoal;
+
+        // register to the event of the bot movement
+        // if the bot reaches the goal, the bot will be reset immediately
+        botMovement.OnGoalReached += RestartBotNow;
+
         directionIndicator = transform.Find("Triangle");
 
         // object holder for the transform of the goal if the interactionId is hort
@@ -85,10 +96,16 @@ public class BotController : MonoBehaviour
         }
     }
 
-    private void CalculateNewGoal()
+    private void RestartBotNow()
     {
         Debug.Log("EVENT TRIGGERED: Calculate new goal");
         bot.ResetBot(0f);
+    }
+
+    private void RestartBotLater()
+    {
+        Debug.Log("EVENT TRIGGERED: start Bot later");
+        bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
     }
 
     // private void Update()

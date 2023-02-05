@@ -95,6 +95,7 @@ public class Bot : CharacterBase
     {
         prevPriorityValue = 0;
         StopAllCoroutines();
+        CancelInvoke();
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
 
