@@ -16,14 +16,12 @@ public class BotMovement : MonoBehaviour
 
     private int currentIndex;
 
-    // Start is called before the first frame update
     void Start()
     {
         bot = GetComponent<Bot>();
         pathfinding = new Pathfinding(graph);
     }
 
-    // Update is called once per frame
     void Update()
     {
         HandleMovement();
@@ -34,7 +32,7 @@ public class BotMovement : MonoBehaviour
         if (path != null)
         {
             Vector3 targetPosition = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-            if (Vector3.Distance(transform.position, targetPosition) > 1f)// hier euklidische distanz
+            if (Vector3.Distance(transform.position, targetPosition) > 1f)
             {
                 Vector3 moveDir = (targetPosition - transform.position).normalized;
 
@@ -56,11 +54,11 @@ public class BotMovement : MonoBehaviour
         }
         else
         {
-            bot.SetAnimatorMovement(Vector3.zero); // hier wird wieder in den idle state gewechselt
+            bot.SetAnimatorMovement(Vector3.zero); // change back to idle animation
         }
     }
 
-    public void SetTargetPosition(Vector3 targetPosition)
+    public void SetTargetPosition(Vector3 targetPosition, int rangeOffset = 0)
     {
         currentIndex = 0;
         path = pathfinding.FindPath(GetPosition(), targetPosition);
@@ -69,6 +67,12 @@ public class BotMovement : MonoBehaviour
         if (path != null && path.Count > 1)
         {
             path.RemoveAt(0);
+        }
+
+        // remove last 20 nodes, because they are too close to the target
+        if (path != null && path.Count > rangeOffset)
+        {
+            path.RemoveRange(path.Count - rangeOffset, rangeOffset);
         }
     }
 

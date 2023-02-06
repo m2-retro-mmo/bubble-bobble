@@ -51,7 +51,7 @@ public class BotController : MonoBehaviour
 
         // register to the event of the bot movement
         // if the bot reaches the goal, the bot will be reset immediately
-        botMovement.OnGoalReached += RestartBotNow;
+        botMovement.OnGoalReached += EndInteraction;
 
         directionIndicator = transform.Find("Triangle");
 
@@ -77,12 +77,8 @@ public class BotController : MonoBehaviour
             {
                 Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
             }
-            if(bot.GetInteractionID() == InteractionID.Hort) // TODO iwo anders machen? 
-            {
-                Transform hortGoal = GetFreeTileAroundHort(goal.position);
-                SetGoal(hortGoal);
-            }
-            botMovement.SetTargetPosition(goal.position);
+            
+            StartInteraction();
 
             bot.SetChangedInteractionID(false);
         }
@@ -171,40 +167,49 @@ public class BotController : MonoBehaviour
     /// </summary>
     private void StartInteraction()
     {
+        int rangeOffset = 0;
+
         switch (bot.GetInteractionID())
         {
             case InteractionID.Opponent:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow opponent");
-                StartCoroutine(FollowOpponent());
+                // the opponent should be shot, so the bot needs to stop before the actual goal
+                rangeOffset = 5;
                 break;
             case InteractionID.Teammate:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow teammate");
-                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Diamond:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow diamond");
-                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Hort:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow hort");
+                // to deliver a diamond to the hort, the goal has to be a tile within the hitbox innstead of the center of the hort
                 Transform hortGoal = GetFreeTileAroundHort(goal.position);
                 SetGoal(hortGoal);
-                StartCoroutine(FollowGoal());
                 break;
             case InteractionID.Item:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow item");
-                StartCoroutine(FollowGoal());
-                break;
-            case InteractionID.None:
-                if (DEBUG_BOTS)
-                    Debug.Log("Start follow with nothing");
                 break;
         }
+
+        botMovement.SetTargetPosition(goal.position, rangeOffset);
+    }
+
+    private void EndInteraction()
+    {
+        switch (bot.GetInteractionID())
+        {
+            case InteractionID.Opponent:
+                CharacterBase opponent = goal.parent.GetComponent<CharacterBase>();
+                GetComponent<Shooting>().ShootBubble();
+                StartCoroutine(CheckIfOpponentCaptured(opponent));
+                break;
+            case InteractionID.Teammate:
+                break;
+            case InteractionID.Diamond:
+                break;
+            case InteractionID.Hort:
+                break;
+            case InteractionID.Item:
+                break;
+        }
+        RestartBotNow();
     }
 
     IEnumerator FollowGoal()
