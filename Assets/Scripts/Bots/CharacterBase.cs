@@ -133,6 +133,11 @@ public class CharacterBase : NetworkBehaviour
     [Server]
     public void Capture(int fromTeamNumber)
     {
+        if (isCaptured)
+        {
+            return;
+        }
+
         if (isCaptured) return;
         if (teamNumber == fromTeamNumber) return;
         isCaptured = true;
