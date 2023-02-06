@@ -111,62 +111,6 @@ public class BotController : MonoBehaviour
         bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
     }
 
-    // private void Update()
-    // {
-    //     // return if not server
-    //     if (!bot.isServer) return;
-
-    //     // stop doing stuff on gameOver
-    //     if (gameManager.gameOver) return;
-
-    //     if (bot.GetDetectedBubble())
-    //     {
-    //         if (DEBUG_BOTS)
-    //             Debug.Log("Bubble was detected - start avoiding");
-
-    //         bot.ResetBot(3f);
-
-    //         path = null;
-    //         graph.ResetGraph();
-    //         pathfinding = new Pathfinding(graph);
-    //         CancelInvoke();
-    //         StopAllCoroutines();
-
-    //         StartCoroutine(AvoidOpponentBubble());
-
-    //         bot.SetDetectedBubble(false);
-    //     }
-    //     // if the Interaction ID was changed stop everything and start new interaction
-    //     else if (bot.GetChangedInteractionID())
-    //     {
-    //         if (DEBUG_BOTS)
-    //         {
-    //             Debug.Log("Interaction changed to " + bot.GetInteractionID().ToString());
-    //         }
-
-    //         // reset everythin for new interaction
-    //         path = null;
-    //         graph.ResetGraph();
-    //         pathfinding = new Pathfinding(graph);
-    //         StopAllCoroutines();
-
-    //         StartInteraction();
-
-    //         bot.SetChangedInteractionID(false);
-    //     }
-    //     if (goal != null)
-    //     {
-    //         LookAtGoal();
-    //     }
-
-    //     if (bot.GetIsCaptured()) // TODO iwas machen zum stoppen wen bot gefangen
-    //     {
-    //         CancelInvoke();
-    //         StopAllCoroutines();
-    //         bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
-    //     }
-    // }
-
     /// <summary>
     /// Starts the interaction according to the Interaction ID.
     /// </summary>
@@ -247,7 +191,7 @@ public class BotController : MonoBehaviour
     /// are captured, increment the opponentCapturedCounter variable by 1 and stop the coroutine.
     /// </summary>
     /// <param name="CharacterBase">the Characterbase of the opponent</param>
-    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
+    private IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
     {
         int counter = 0;
         while (counter < 5)
@@ -284,120 +228,76 @@ public class BotController : MonoBehaviour
         botMovement.SetTargetPosition(avoidPosition);
     }
 
-    private IEnumerator CalculateShootDirection(Transform bubble)
-    {
-        Vector3 oldBubblePos = bubble.position;
-        yield return new WaitForSeconds(0.01f);
-        if (bubble == null)
-        {
-            if (DEBUG_BOTS)
-                Debug.Log("Goal is null");
-            StopEverything();
-            yield break;
-        }
-        Vector3 newBubblePos = bubble.position;
+    // private IEnumerator CalculateShootDirection(Transform bubble)
+    // {
+    //     Vector3 oldBubblePos = bubble.position;
+    //     yield return new WaitForSeconds(0.01f);
+    //     if (bubble == null)
+    //     {
+    //         if (DEBUG_BOTS)
+    //             Debug.Log("Goal is null");
+    //         StopEverything();
+    //         yield break;
+    //     }
+    //     Vector3 newBubblePos = bubble.position;
 
-        Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
+    //     Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
-        Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
+    //     Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
 
-        botMovement.SetTargetPosition(avoidPosition);
-    }
-    
-    private void MoveTowards(Vector3 nextNode)
-    {
-        transform.position = Vector3.MoveTowards(transform.position, nextNode, bot.GetSpeed() * Time.deltaTime);
+    //     botMovement.SetTargetPosition(avoidPosition);
+    // }
 
-        Vector2 moveDirection = bot.transformTargetNodeIntoDirection(nextNode);
-        // Debug.Log("Move direction: " + moveDirection);
-        if (ChangedMoveDirection(moveDirection))
-        {
-            bot.SetAnimatorMovement(moveDirection);
-            // Debug.Log("Changed move direction");
-        }
-    }
+    // private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
+    // {
+    //     Vector2 botPos = new Vector2(transform.position.x, transform.position.y);
+    //     // VECTOR
+    //     Vector2 optimalShoot = oldBubblePos - botPos;
+    //     float lengthOptimalShoot = optimalShoot.magnitude;
 
-    private bool ChangedMoveDirection(Vector3 moveDirection)
-    {
-        Vector3 oldMoveDirection = new Vector3(bot.animator.GetFloat("Horizontal"), bot.animator.GetFloat("Vertical"), 0);
+    //     // VECTOR calculate where the bubble will be with the length of the optimal shoot
+    //     Vector2 shootDir = newBubblePos - oldBubblePos;
+    //     // make sure the shootDir has the same length as the optimalShoot
+    //     shootDir = shootDir.normalized * lengthOptimalShoot;
 
-        // return false if old x and new x are both greater than 0 or both smaller than 0
-        if (oldMoveDirection.x >= 0 && moveDirection.x < 0 || oldMoveDirection.x <= 0 && moveDirection.x > 0)
-        {
-            if(hasChangedDirection)
-            {
-                hasChangedDirection = false;
-                return true;
-            }
-            else
-                hasChangedDirection = true;
-        }
+    //     // POINT the point on shootDir at height of the bot
+    //     Vector2 shootGoal = shootDir + oldBubblePos;
 
-        // return false if old y and new y are both greater than 0 or both smaller than 0
-        if (oldMoveDirection.y >= 0 && moveDirection.y < 0 || oldMoveDirection.y <= 0 && moveDirection.y > 0)
-        {
-            if(hasChangedDirection)
-            {
-                hasChangedDirection = false;
-                return true;
-            }
-            else
-                hasChangedDirection = true;
-        }
+    //     // avoid bubble if distance between bot and calculated shoot path is smaller than x
+    //     if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
+    //     {
+    //         Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
 
-        return false;
-    }
+    //         // VECTOR 
+    //         Vector2 orthogonal = Vector2.Perpendicular(shootDir);
 
-    private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
-    {
-        Vector2 botPos = new Vector2(transform.position.x, transform.position.y);
-        // VECTOR
-        Vector2 optimalShoot = oldBubblePos - botPos;
-        float lengthOptimalShoot = optimalShoot.magnitude;
+    //         Vector2 orthoGoal = orthogonal + oldBubblePos;
 
-        // VECTOR calculate where the bubble will be with the length of the optimal shoot
-        Vector2 shootDir = newBubblePos - oldBubblePos;
-        // make sure the shootDir has the same length as the optimalShoot
-        shootDir = shootDir.normalized * lengthOptimalShoot;
+    //         // check if bot is on the same side of the shootDir vector as the orthoGoal
+    //         bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
 
-        // POINT the point on shootDir at height of the bot
-        Vector2 shootGoal = shootDir + oldBubblePos;
+    //         if (!sameSide)
+    //         {
+    //             if (DEBUG_BOTS)
+    //                 Debug.Log("bot is on the right of shootDir");
+    //             orthogonal = -orthogonal;
+    //         }
 
-        // avoid bubble if distance between bot and calculated shoot path is smaller than x
-        if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
-        {
-            Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
+    //         Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
 
-            // VECTOR 
-            Vector2 orthogonal = Vector2.Perpendicular(shootDir);
+    //         Vector2 botGoal = orthogonal + shootGoal;
 
-            Vector2 orthoGoal = orthogonal + oldBubblePos;
+    //         Debug.DrawLine(botPos, botGoal, Color.red, 5f);
 
-            // check if bot is on the same side of the shootDir vector as the orthoGoal
-            bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
+    //         // TODO check if goal is free tile
+    //         botGoal = GetFreeTileAroundPosition(botGoal);
 
-            if (!sameSide)
-            {
-                if (DEBUG_BOTS)
-                    Debug.Log("bot is on the right of shootDir");
-                orthogonal = -orthogonal;
-            }
+    //         // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
 
-            Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
-
-            Vector2 botGoal = orthogonal + shootGoal;
-
-            Debug.DrawLine(botPos, botGoal, Color.red, 5f);
-
-            // TODO check if goal is free tile
-            botGoal = GetFreeTileAroundPosition(botGoal);
-
-            // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
-
-            return botGoal;
-        }
-        return transform.position;
-    }
+    //         return botGoal;
+    //     }
+    //     return transform.position;
+    // }
 
     /// <summary>
     /// gets a free tile around the given tile in a 3x3 grid
@@ -506,30 +406,15 @@ public class BotController : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the path to goal and resets the path index.
-    /// gets invoked
+    /// rotates the direction indicator around the bot to look at the goal.
     /// </summary>
-    private void CalculatePathToGoal()
+    private void LookAtGoal()
     {
-        if (goal == null)
-            return;
-        path = pathfinding.FindPath(transform.position, goal.position);
-        currentIndex = 0;
-    }
+        Vector3 lookDir = goal.position - transform.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
-    private void CalculatePathToGoal(Vector3 goalPos)
-    {
-        path = pathfinding.FindPath(transform.position, goalPos);
-        currentIndex = 0;
-    }
-
-    public void StopEverything()
-    {
-        bot.SetAnimatorMovement(Vector2.zero);
-        CancelInvoke();
-        StopAllCoroutines();
-        bot.ResetBot(0f);
-        path = null;
+        directionIndicator.position = transform.position + lookDir.normalized * 2f;
+        directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     // determines whether a point is left of a line
@@ -551,18 +436,6 @@ public class BotController : MonoBehaviour
             Mathf.Pow(end.x - start.x, 2) +
             Mathf.Pow(end.y - start.y, 2) +
             Mathf.Pow(end.z - start.z, 2), 2);
-    }
-
-    /// <summary>
-    /// rotates the direction indicator around the bot to look at the goal.
-    /// </summary>
-    private void LookAtGoal()
-    {
-        Vector3 lookDir = goal.position - transform.position;
-        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
-
-        directionIndicator.position = transform.position + lookDir.normalized * 2f;
-        directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
     private Vector3 GetPosition()

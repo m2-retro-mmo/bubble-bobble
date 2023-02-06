@@ -24,7 +24,10 @@ public class BotMovement : MonoBehaviour
 
     void Update()
     {
-        HandleMovement();
+        if(!bot.GetIsCaptured())
+        {
+            HandleMovement();
+        }
     }
 
     private void HandleMovement()

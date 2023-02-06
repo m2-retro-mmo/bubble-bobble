@@ -58,8 +58,6 @@ public class Bot : CharacterBase
 
     private const float REFRESH_RATE_GOAL = 10f;
 
-    private const float REFRESH_RATE_BUBBLE = 0.5f;
-
     [SerializeField]
     private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfonsU3CpscyOGBVfnnDrQxmsMqeSotW3s0gT5KUHWWzRuYnQ/formResponse";
 
@@ -82,7 +80,6 @@ public class Bot : CharacterBase
     public void StartBot()
     {
         StartCoroutine(CheckAreaOfInterest());
-        //StartCoroutine(CheckForBubbles());
     }
 
     /// <summary>
@@ -100,46 +97,6 @@ public class Bot : CharacterBase
         SetChangedInteractionID(false);
 
         Invoke("StartBot", restartTime);
-    }
-
-    IEnumerator CheckForBubbles()
-    {
-        while (true)
-        {
-            botPosition = transform.position;
-            // get all colliders in a radius around the bot
-            interactionColliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
-
-            CheckForOpponentBubbles();
-
-            yield return new WaitForSeconds(REFRESH_RATE_BUBBLE);
-        }
-    }
-
-    /// <summary>
-    /// Checks for bubbles of opponents in the area around the player.
-    /// </summary>
-    private void CheckForOpponentBubbles()
-    {
-        // get all opponent bubbles in the area 
-        Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble").Where(b => b.GetComponent<Bubble>().GetTeamNumber() == GetOpponentTeamNumber(teamNumber)).ToArray();
-
-        if (opponentBubbleColliders.Length > 0)
-        {
-            foreach (Collider2D bubble in opponentBubbleColliders)
-            {
-                if (!bubble.GetComponent<Bubble>().GetAvoidedByBot())
-                {
-                    detectedBubble = true;
-                    bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
-                    botController.SetGoal(bubble.transform);
-                    if (DEBUG_BOTS)
-                    {
-                        Debug.Log("set goal to bubble");
-                    }
-                }
-            }
-        }
     }
 
     /// <summary>
