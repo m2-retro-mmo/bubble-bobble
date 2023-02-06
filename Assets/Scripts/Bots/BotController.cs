@@ -267,8 +267,10 @@ public class BotController : MonoBehaviour
     {
         RestartBotLater();
         Vector3 direction = bubble.GetComponent<Rigidbody2D>().velocity.normalized;
-        Vector3 orthogonal = Vector3.Cross(direction, Vector3.up);
+        Vector3 orthogonal = Vector2.Perpendicular(direction);
         Vector3 avoidPosition = transform.position + orthogonal + Random.onUnitSphere * 1;
+        // TODO improve this 
+        // TODO maybe add isLeft 
 
         avoidPosition = GetFreeTileAroundPosition(avoidPosition);
 
