@@ -94,14 +94,12 @@ public class BotController : MonoBehaviour
 
     private void RestartBotNow()
     {
-        Debug.Log("EVENT TRIGGERED: Calculate new goal");
         botMovement.StopMoving();
         bot.ResetBot(0f);
     }
 
     private void RestartBotLater()
     {
-        Debug.Log("EVENT TRIGGERED: start Bot later");
         botMovement.StopMoving();
         bot.ResetBot(CharacterBase.BUBBLE_BREAKOUT_TIME);
     }
@@ -174,6 +172,7 @@ public class BotController : MonoBehaviour
             case InteractionID.Opponent:
                 // the opponent should be shot, so the bot needs to stop before the actual goal
                 rangeOffset = 5;
+                StartCoroutine(CheckIfOpponentMoved());
                 break;
             case InteractionID.Teammate:
                 break;
@@ -185,6 +184,9 @@ public class BotController : MonoBehaviour
                 SetGoal(hortGoal);
                 break;
             case InteractionID.Item:
+                break;
+            case InteractionID.None:
+                RestartBotNow();
                 break;
         }
 
@@ -212,79 +214,46 @@ public class BotController : MonoBehaviour
         RestartBotNow();
     }
 
-    IEnumerator FollowGoal()
+    /// <summary>
+    /// the bot is following the opponent, check every second if the opponent has moved, 
+    /// and if so, restart the bot moving with new position.
+    /// </summary>
+    private IEnumerator CheckIfOpponentMoved()
     {
-        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
-        while (goal != null)
+        Vector3 lastPosition = goal.position;
+        // while the interaction id is still opponent
+        while (bot.GetInteractionID() == InteractionID.Opponent)
         {
-            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
-            float distToGoal = GetEuclideanDistance(botCenter, goal.position);
-
-            if (path != null)
+            Vector3 newPosition = goal.position;
+            // if the opponent moved, restart the bot with the new position
+            if (newPosition != lastPosition)
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
-                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
-                // Debug.Log("distNextNode: " + distNextNode);
-                if (distNextNode <= 20f && currentIndex < path.Count - 1)
-                {
-                    currentIndex++;
-                }
-
-                if (distToGoal <= 0.01f)
-                {
-                    StopEverything();
-                    if (DEBUG_BOTS)
-                        Debug.Log("Bot Reached goal");
-                    break;
-                }
-                MoveTowards(nextNode);
+                botMovement.SetTargetPosition(newPosition, 5);
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(1f);
         }
-        StopEverything();
     }
 
     /// <summary>
-    /// Follows the opponent.
-    /// if opponent is in shooting range, shoot opponent.
+    /// Check if the opponent is captured every second for 5 seconds, if they
+    /// are captured, increment the opponentCapturedCounter variable by 1 and stop the coroutine.
     /// </summary>
-    /// <returns>An IEnumerator.</returns>
-    IEnumerator FollowOpponent()
+    /// <param name="CharacterBase">the Characterbase of the opponent</param>
+    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
     {
-        CharacterBase opponent = goal.parent.GetComponent<CharacterBase>();
-
-        InvokeRepeating("CalculatePathToGoal", 1.0f, 0.5f);
-        while (goal != null)
+        int counter = 0;
+        while (counter < 5)
         {
-            Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
-            float distToPlayer = GetEuclideanDistance(botCenter, goal.position);
-
-            if (path != null)
+            if (opponent.GetIsCaptured())
             {
-                Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                // Debug.Log("Next node: " + nextNode.x + " " + nextNode.y);
-                float distNextNode = GetEuclideanDistance(botCenter, nextNode);
-                // Debug.Log("distNextNode: " + distNextNode);
-                if (distNextNode <= 20f && currentIndex < path.Count - 1)
-                {
-                    currentIndex++;
-                }
-
-                if (distToPlayer <= shootRange) // TODO: check if player is captured, if so find new goal
-                {
-                    GetComponent<Shooting>().ShootBubble();
-                    StopEverything();
-                    StartCoroutine(CheckIfOpponentCaptured(opponent));
-                    break;
-                }
-                MoveTowards(nextNode);
+                opponentCapturedCounter++;
+                yield break;
             }
 
-            yield return new WaitForSeconds(0.01f);
+            counter++;
+            yield return new WaitForSeconds(1f);
         }
-        StopEverything();
     }
 
     IEnumerator AvoidOpponentBubble()
@@ -387,22 +356,6 @@ public class BotController : MonoBehaviour
         {
             bot.SetAnimatorMovement(moveDirection);
             // Debug.Log("Changed move direction");
-        }
-    }
-
-    IEnumerator CheckIfOpponentCaptured(CharacterBase opponent)
-    {
-        int counter = 0;
-        while (counter < 5)
-        {
-            if (opponent.GetIsCaptured())
-            {
-                opponentCapturedCounter++;
-                yield break;
-            }
-
-            yield return new WaitForSeconds(1f);
-            counter++;
         }
     }
 
