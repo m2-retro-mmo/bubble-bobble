@@ -198,9 +198,16 @@ public class Bot : CharacterBase
         if (opponentColliders.Length > 0)
         {
             int index = 0;
+            // shuffle the opponents array to get a random opponent
+            opponentColliders = RandomizeGoalArray(opponentColliders);
+
             // loop through all opponents 
             while (index < opponentColliders.Length)
             {
+                // // add a random value to the index to get a random opponent
+                // // this is done to avoid that all the bots always targets the same opponent
+                // index += Random.Range(0, 5);
+
                 CharacterBase opponent = opponentColliders[index].gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
@@ -226,6 +233,9 @@ public class Bot : CharacterBase
         if (teammateColliders.Length > 0)
         {
             int index = 0;
+            // shuffle the teammates array to get a random teammate
+            teammateColliders = RandomizeGoalArray(teammateColliders);
+            
             // loop through all teammates until a teammate is found who is captured
             while (index < teammateColliders.Length)
             {
@@ -260,6 +270,8 @@ public class Bot : CharacterBase
         // are there diamonds near by
         if (diamondColliders.Length > 0)
         {
+            diamondColliders = RandomizeGoalArray(diamondColliders, 3);
+
             // get the first diamond
             Diamond diamond = diamondColliders[0].gameObject.GetComponent<Diamond>();
             ApplyInteractionPriority(InteractionID.Diamond, 1f, diamond.transform);
@@ -357,7 +369,7 @@ public class Bot : CharacterBase
     private Collider2D[] GetCollidersByTag(string tagName)
     {
         Collider2D[] colliders = interactionColliders.Where(c => c.gameObject.tag == tagName).ToArray();
-        
+
         // order by distance
         colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
 
@@ -385,6 +397,32 @@ public class Bot : CharacterBase
     }
 
     /// <summary>
+    /// It takes an array of colliders, shuffles the first half of the array, and returns the array
+    /// </summary>
+    /// <param name="colliders">The array of colliders to randomize</param>
+    /// <param name="arrayPart">The part of the array that should be randomized</param>
+    /// <returns>
+    /// The colliders array is being returned.
+    /// </returns>
+    public Collider2D[] RandomizeGoalArray(Collider2D[] colliders, int arrayPart = 2)
+    {
+        if (colliders.Length > 0)
+        {
+            // Shuffle the first half of the array to randomize the order
+            // This is done to prevent bots from always choosing the same target
+            int halfLength = colliders.Length / arrayPart;
+            for (int i = 0; i < halfLength; i++)
+            {
+                int randomIndex = Random.Range(i, halfLength);
+                Collider2D temp = colliders[i];
+                colliders[i] = colliders[randomIndex];
+                colliders[randomIndex] = temp;
+            }
+        }
+        return colliders;
+    }
+
+    /// <summary>
     /// this method is called when a new bot is created and sets the interaction weights to random values
     /// </summary>
     public void RandomizeInteractionWeights()
@@ -398,7 +436,7 @@ public class Bot : CharacterBase
         }
     }
 
-   
+
     /// <summary>
     /// The function prepares the data to be sent to the google form
     /// tracking data like the interaction weights, the number of collected  diamonds, captured and uncaptured characters
