@@ -21,6 +21,8 @@ public class BotController : MonoBehaviour
 
     private BotMovement botMovement;
 
+    private BotCollisionDetector botCollisionDetector;
+
     private Pathfinding pathfinding;
 
     private List<GraphNode> path;
@@ -52,6 +54,11 @@ public class BotController : MonoBehaviour
         // register to the event of the bot movement
         // if the bot reaches the goal, the bot will be reset immediately
         botMovement.OnGoalReached += EndInteraction;
+
+        botCollisionDetector = GetComponentInChildren<BotCollisionDetector>();
+
+        // register to the event of the bot collision detector
+        botCollisionDetector.OnOpponentBubbbleDetected += AvoidOpponentBubble;
 
         directionIndicator = transform.Find("Triangle");
 
@@ -256,94 +263,43 @@ public class BotController : MonoBehaviour
         }
     }
 
-    IEnumerator AvoidOpponentBubble()
+    private void AvoidOpponentBubble(Transform bubble)
     {
-        if (DEBUG_BOTS)
-            Debug.Log("Avoid opponent bubble");
+        RestartBotLater();
+        Vector3 direction = bubble.GetComponent<Rigidbody2D>().velocity.normalized;
+        Vector3 orthogonal = Vector3.Cross(direction, Vector3.up);
+        Vector3 avoidPosition = transform.position + orthogonal + Random.onUnitSphere * 1;
 
-        if (goal == null)
+        avoidPosition = GetFreeTileAroundPosition(avoidPosition);
+
+        if(DEBUG_BOTS)
+        {
+            Debug.DrawLine(transform.position, direction, Color.red, 5f);
+            Debug.DrawLine(transform.position, orthogonal, Color.blue, 5f);
+            Debug.DrawLine(transform.position, avoidPosition, Color.green, 5f);
+        }
+
+        botMovement.SetTargetPosition(avoidPosition);
+    }
+
+    private IEnumerator CalculateShootDirection(Transform bubble)
+    {
+        Vector3 oldBubblePos = bubble.position;
+        yield return new WaitForSeconds(0.01f);
+        if (bubble == null)
         {
             if (DEBUG_BOTS)
                 Debug.Log("Goal is null");
+            StopEverything();
             yield break;
         }
+        Vector3 newBubblePos = bubble.position;
 
-        Vector3 botCenter = transform.Find("Collideable").GetComponent<SpriteRenderer>().bounds.center;
-        float distToBubble = GetEuclideanDistance(botCenter, goal.position);
+        Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
-        // if the bubble is closer than shootRange move away from it 
-        if (distToBubble < (shootRange + 200f))// TODO: evtl hier den Bereich kleiner machen
-        {
-            if (DEBUG_BOTS)
-                Debug.Log("Bubble is closer than shoot range");
+        Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
 
-            Vector3 oldBubblePos = goal.position;
-            yield return new WaitForSeconds(0.01f);
-            if (goal == null)
-            {
-                if (DEBUG_BOTS)
-                    Debug.Log("Goal is null");
-                StopEverything();
-                yield break;
-            }
-            Vector3 newBubblePos = goal.position;
-
-            Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
-
-            if (DEBUG_BOTS)
-                Debug.Log("Goal to avoid bubble: " + avoidPosition.ToString());
-
-            Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
-
-            CalculatePathToGoal(avoidPosition);
-
-
-            while (true)
-            {
-                if (goal == null)
-                {
-                    if (DEBUG_BOTS)
-                        Debug.Log("Goal is null");
-                    StopEverything();
-                    yield break;
-                }
-
-                float distToGoal = GetEuclideanDistance(botCenter, avoidPosition);
-
-                if (path != null)
-                {
-                    Vector3 nextNode = pathfinding.GetGraph().GetWorldPosition((int)path[currentIndex].GetX(), (int)path[currentIndex].GetY());
-                    float distNextNode = GetEuclideanDistance(botCenter, nextNode);
-                    Debug.Log("distNextNode: " + distNextNode);
-                    if (distNextNode <= 20f && currentIndex < path.Count - 1)
-                    {
-                        currentIndex++;
-                    }
-
-                    if (distToGoal <= 0.25f)
-                    {
-                        if (DEBUG_BOTS)
-                            Debug.Log("Bot avoided Bubble");
-                        StopEverything();
-                        break;
-                    }
-                    MoveTowards(nextNode);
-                }
-
-                yield return new WaitForSeconds(0.001f);
-            }
-        }
-        // if the bubble is further away than shootRange shoot it 
-        else
-        {
-            if (DEBUG_BOTS)
-                Debug.Log("Bubble is further away than shoot range");
-            GetComponent<Shooting>().ShootBubble(); // TODO bubble schießt manchmal in falsche richtung
-
-            if (DEBUG_BOTS)
-                Debug.Log("Shot Bubble");
-            StopEverything();
-        }
+        botMovement.SetTargetPosition(avoidPosition);
     }
     
     private void MoveTowards(Vector3 nextNode)
