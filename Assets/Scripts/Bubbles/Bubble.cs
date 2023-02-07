@@ -43,13 +43,19 @@ public class Bubble : NetworkBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isServer) return;
+        NetworkManager.Destroy(gameObject);
+    }
 
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Bot")
-        {
-            collision.gameObject.SendMessage("Capture", teamNumber);
-        }
+    public void hitPlayer(CharacterBase character)
+    {
+        if (!isServer) return;
+
+
+        character.SendMessage("Capture", teamNumber);
+
         // destroy bubble instantly no matter which collision was detected
         NetworkManager.Destroy(gameObject);
+
     }
 
     public int GetTeamNumber()

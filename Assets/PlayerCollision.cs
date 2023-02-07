@@ -60,6 +60,11 @@ public class PlayerCollision : MonoBehaviour
                     capturedPlayer.Uncapture();
                 }
                 break;
+
+            case "Bubble":
+                Bubble bubble = other.gameObject.GetComponent<Bubble>();
+                bubble.hitPlayer(player);
+                break;
             default:
                 break;
         }
