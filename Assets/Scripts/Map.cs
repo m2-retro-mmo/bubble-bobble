@@ -185,7 +185,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null && this.spawnedDiamonds == 0)
+        if (diamondParent != null)
         {
             Destroy(diamondParent);
         }
@@ -208,7 +208,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        PlaceDiamonds(generatorData.diamondSpawnCount);
+        PlaceDiamonds(generatorData.diamondSpawnCount, true);
         Vector2[] path = {
             new Vector2(0, 0),
             new Vector2(0, generatorData.height),
@@ -532,8 +532,9 @@ public class Map : NetworkBehaviour
 
     // Step 9 (Server only)
     [ServerCallback]
-    void PlaceDiamonds(int count)
+    void PlaceDiamonds(int count, bool init)
     {
+        // Debug.LogWarning("called with " + count + " diamonds and init: " + init);
         while (count > 0)
         {
             int x = ran.Next(0, generatorData.width);
@@ -542,11 +543,13 @@ public class Map : NetworkBehaviour
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
-                UpdateSpawnedDiamond(1);
+                if (init) this.spawnedDiamonds++;
+                else UpdateSpawnedDiamond(1);
                 count--;
                 NetworkServer.Spawn(item.gameObject);
             }
         }
+        // Debug.LogWarning("placed " + this.spawnedDiamonds + " diamonds");
     }
 
     public enum Direction : int
@@ -748,7 +751,7 @@ public class Map : NetworkBehaviour
         {
             int missingDiamondCount = this.generatorData.diamondSpawnCount - this.spawnedDiamonds;
             // Debug.LogWarning("missing: " + missingDiamondCount + ", calc: " + this.generatorData.diamondSpawnCount + " - " + this.spawnedDiamonds);
-            PlaceDiamonds(missingDiamondCount);
+            PlaceDiamonds(missingDiamondCount, false);
         }
         return;
     }
