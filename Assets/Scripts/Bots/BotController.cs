@@ -209,6 +209,7 @@ public class BotController : MonoBehaviour
 
     private void AvoidOpponentBubble(Transform bubble)
     {
+        if (bot.isClient) return;
         RestartBotLater();
         Vector3 direction = bubble.GetComponent<Rigidbody2D>().velocity.normalized;
         Vector3 orthogonal = Vector2.Perpendicular(direction);

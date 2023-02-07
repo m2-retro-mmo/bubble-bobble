@@ -675,7 +675,7 @@ MonoBehaviour:
   teamNumber: 1
   hort: {fileID: 0}
   speed: 5
-  animator: {fileID: 0}
+  animator: {fileID: 5314135511303204197}
   collideableRenderer: {fileID: 5786438884688892800}
   teamBMaterial: {fileID: 2100000, guid: 809a45963efe50e4abe8a333b013e377, type: 2}
   captureBobbleBSprite: {fileID: 21300000, guid: 91f4c3e388659514a812236d430bc489,
