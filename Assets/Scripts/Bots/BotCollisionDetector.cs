@@ -13,7 +13,6 @@ public class BotCollisionDetector : MonoBehaviour
         int botTeamNumber = transform.parent.GetComponent<Bot>().GetTeamNumber();
         if (bubbleTeamNumber != botTeamNumber)
         {
-            Debug.Log("Opponent Bubble detected");
             OnOpponentBubbbleDetected?.Invoke(other.transform);
         }
     }
