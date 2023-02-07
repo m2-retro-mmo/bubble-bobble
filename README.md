@@ -2,6 +2,8 @@
 
 Bubble Bobble is an Massive Multiplayer online game that was developed by a Team of 6 people during a student project at the HTW.
 
+![Logo](Assets/Resources/Logo_12.png)
+
 # Features
 
 Bubble Bobble is an MMO Game created with Unity.
