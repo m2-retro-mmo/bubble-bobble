@@ -747,7 +747,7 @@ public class Map : NetworkBehaviour
     public void UpdateSpawnedDiamond(int count)
     {
         this.spawnedDiamonds += count;
-        if (this.spawnedDiamonds < this.generatorData.diamondSpawnCount / 2)
+        if (this.spawnedDiamonds < this.generatorData.diamondSpawnCount)
         {
             int missingDiamondCount = this.generatorData.diamondSpawnCount - this.spawnedDiamonds;
             // Debug.LogWarning("missing: " + missingDiamondCount + ", calc: " + this.generatorData.diamondSpawnCount + " - " + this.spawnedDiamonds);
