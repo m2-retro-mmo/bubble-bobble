@@ -11,7 +11,6 @@ public enum EnvironmentType
     Water,
     Shelter,
     Obstacle
-    // Bridge
 }
 
 // Custom Integer Vec2 struct for serialization
@@ -41,7 +40,6 @@ public struct GeneratorData
 
     public int probabilityDecorations;
     public int probabilityTrees;
-    public int diamondSpawnDelay;
     public int diamondSpawnCount;
     public int diamondCount;
     public float noiseDensity;
@@ -59,8 +57,7 @@ public struct GeneratorData
         probabilityPillar = 30;
         probabilityDecorations = 40;
         probabilityTrees = 30;
-        diamondSpawnDelay = 10;
-        diamondSpawnCount = 30;
+        diamondSpawnCount = 50;
         diamondCount = 0;
         noiseDensity = 50;
         iterations = 3;
@@ -190,7 +187,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null && spawnedDiamonds == 0)
+        if (diamondParent != null && this.spawnedDiamonds == 0)
         {
             Destroy(diamondParent);
         }
@@ -213,8 +210,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        StartCoroutine(RandomDiamondSpawning());
-        //SetIsWalkableForObstacles();
+        PlaceDiamonds(generatorData.diamondSpawnCount);
         Vector2[] path = {
             new Vector2(0, 0),
             new Vector2(0, generatorData.height),
@@ -247,14 +243,12 @@ public class Map : NetworkBehaviour
         else
         {
             int randomPos = ran.Next(0, freeNeighbors.Count);
-            Debug.Log("randomPos: " + randomPos);
             finalPosition = freeNeighbors[randomPos];
         }
-        Debug.Log("free NeightborCount: " + freeNeighbors.Count);
 
         Diamond item = Instantiate(diamondPrefab, new Vector3(((float)finalPosition.x + 0.5f), ((float)finalPosition.y + 0.5f), 0), Quaternion.identity);
         item.transform.parent = diamondParent.transform;
-        spawnedDiamonds++;
+        UpdateSpawnedDiamond(1);
         NetworkServer.Spawn(item.gameObject);
     }
 
@@ -550,23 +544,10 @@ public class Map : NetworkBehaviour
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
-                spawnedDiamonds++;
+                UpdateSpawnedDiamond(1);
                 count--;
                 NetworkServer.Spawn(item.gameObject);
             }
-        }
-    }
-
-    IEnumerator RandomDiamondSpawning()
-    {
-        while (true)
-        {
-            if (spawnedDiamonds < generatorData.diamondSpawnCount / 2 || spawnedDiamonds == 0)
-            {
-                int missingDiamondCount = generatorData.diamondSpawnCount - spawnedDiamonds;
-                PlaceDiamonds(missingDiamondCount);
-            }
-            yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
         }
     }
 
@@ -765,6 +746,11 @@ public class Map : NetworkBehaviour
     public void UpdateSpawnedDiamond(int count)
     {
         this.spawnedDiamonds += count;
+        if (this.spawnedDiamonds < this.generatorData.diamondSpawnCount / 2)
+        {
+            int missingDiamondCount = this.generatorData.diamondSpawnCount - this.spawnedDiamonds;
+            PlaceDiamonds(missingDiamondCount);
+        }
         return;
     }
 }

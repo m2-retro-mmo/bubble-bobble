@@ -112,6 +112,7 @@ public class CharacterBase : NetworkBehaviour
     public void collectDiamond()
     {
         holdsDiamond = true;
+        map.UpdateSpawnedDiamond(-1);
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
 
