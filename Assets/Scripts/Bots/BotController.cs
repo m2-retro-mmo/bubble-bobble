@@ -215,12 +215,12 @@ public class BotController : MonoBehaviour
         Vector3 orthogonal = Vector2.Perpendicular(direction);
         // bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
 
-        if (!sameSide)
-        {
-            if (DEBUG_BOTS)
-                Debug.Log("bot is on the right of shootDir");
-            orthogonal = -orthogonal;
-        }
+        // if (!sameSide)
+        // {
+        //     if (DEBUG_BOTS)
+        //         Debug.Log("bot is on the right of shootDir");
+        //     orthogonal = -orthogonal;
+        // }
 
 
         Vector3 avoidPosition = transform.position + orthogonal + Random.onUnitSphere * 1;
