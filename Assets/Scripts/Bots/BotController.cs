@@ -215,6 +215,7 @@ public class BotController : MonoBehaviour
         Vector3 avoidPosition = transform.position + orthogonal + Random.onUnitSphere * 1;
         // TODO improve this 
         // TODO maybe add isLeft 
+        // Todo Shoot bubble in direction of the opponent
 
         avoidPosition = GetFreeTileAroundPosition(avoidPosition);
 
