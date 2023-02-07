@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using System;
 
 public class CharacterBase : NetworkBehaviour
 {
@@ -27,6 +28,8 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] private GameObject captureBubble;
     private Map map;
 
+    public event Action OnCaptured;
+    public event Action OnUncaptured;
 
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
@@ -149,6 +152,7 @@ public class CharacterBase : NetworkBehaviour
             deliverDiamond(false);
             map.spawnDiamondAround((Vector2)rb.transform.position);
         }
+        OnCaptured?.Invoke();
     }
 
     /**
@@ -160,6 +164,7 @@ public class CharacterBase : NetworkBehaviour
         if (!isCaptured) return;
         isCaptured = false;
         CaptureStateUpdate();
+        OnUncaptured?.Invoke();
     }
 
     [Client]
