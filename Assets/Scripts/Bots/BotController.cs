@@ -210,8 +210,19 @@ public class BotController : MonoBehaviour
     private void AvoidOpponentBubble(Transform bubble)
     {
         RestartBotLater();
+
         Vector3 direction = bubble.GetComponent<Rigidbody2D>().velocity.normalized;
         Vector3 orthogonal = Vector2.Perpendicular(direction);
+        // bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
+
+        if (!sameSide)
+        {
+            if (DEBUG_BOTS)
+                Debug.Log("bot is on the right of shootDir");
+            orthogonal = -orthogonal;
+        }
+
+
         Vector3 avoidPosition = transform.position + orthogonal + Random.onUnitSphere * 1;
         // TODO improve this 
         // TODO maybe add isLeft 
@@ -229,76 +240,78 @@ public class BotController : MonoBehaviour
         botMovement.SetTargetPosition(avoidPosition);
     }
 
-    // private IEnumerator CalculateShootDirection(Transform bubble)
-    // {
-    //     Vector3 oldBubblePos = bubble.position;
-    //     yield return new WaitForSeconds(0.01f);
-    //     if (bubble == null)
-    //     {
-    //         if (DEBUG_BOTS)
-    //             Debug.Log("Goal is null");
-    //         StopEverything();
-    //         yield break;
-    //     }
-    //     Vector3 newBubblePos = bubble.position;
+    //--------------------------------------------------
+    private IEnumerator CalculateShootDirection(Transform bubble)
+    {
+        Vector3 oldBubblePos = bubble.position;
+        yield return new WaitForSeconds(0.01f);
+        if (bubble == null)
+        {
+            if (DEBUG_BOTS)
+                Debug.Log("Goal is null");
+            //StopEverything();
+            yield break;
+        }
+        Vector3 newBubblePos = bubble.position;
 
-    //     Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
+        Vector3 avoidPosition = CalculateAvoidPosition(oldBubblePos, newBubblePos);
 
-    //     Debug.DrawLine(transform.position, avoidPosition, Color.magenta, 5f);
+        Debug.DrawLine(transform.position, avoidPosition, Color.black, 10f);
 
-    //     botMovement.SetTargetPosition(avoidPosition);
-    // }
+        botMovement.SetTargetPosition(avoidPosition);
+    }
 
-    // private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
-    // {
-    //     Vector2 botPos = new Vector2(transform.position.x, transform.position.y);
-    //     // VECTOR
-    //     Vector2 optimalShoot = oldBubblePos - botPos;
-    //     float lengthOptimalShoot = optimalShoot.magnitude;
+    private Vector3 CalculateAvoidPosition(Vector2 oldBubblePos, Vector2 newBubblePos)
+    {
+        Vector2 botPos = new Vector2(transform.position.x, transform.position.y);
+        // VECTOR
+        Vector2 optimalShoot = oldBubblePos - botPos;
+        float lengthOptimalShoot = optimalShoot.magnitude;
 
-    //     // VECTOR calculate where the bubble will be with the length of the optimal shoot
-    //     Vector2 shootDir = newBubblePos - oldBubblePos;
-    //     // make sure the shootDir has the same length as the optimalShoot
-    //     shootDir = shootDir.normalized * lengthOptimalShoot;
+        // VECTOR calculate where the bubble will be with the length of the optimal shoot
+        Vector2 shootDir = newBubblePos - oldBubblePos;
+        // make sure the shootDir has the same length as the optimalShoot
+        shootDir = shootDir.normalized * lengthOptimalShoot;
 
-    //     // POINT the point on shootDir at height of the bot
-    //     Vector2 shootGoal = shootDir + oldBubblePos;
+        // POINT the point on shootDir at height of the bot
+        Vector2 shootGoal = shootDir + oldBubblePos;
 
-    //     // avoid bubble if distance between bot and calculated shoot path is smaller than x
-    //     if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
-    //     {
-    //         Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
+        // avoid bubble if distance between bot and calculated shoot path is smaller than x
+        if (GetEuclideanDistance((Vector3)shootGoal, (Vector3)botPos) <= 5f)// TODO: check if float distance = (optimalShoot + shootDir).magnitude is better
+        {
+            Debug.DrawLine(oldBubblePos, shootGoal, Color.green, 5f);
 
-    //         // VECTOR 
-    //         Vector2 orthogonal = Vector2.Perpendicular(shootDir);
+            // VECTOR 
+            Vector2 orthogonal = Vector2.Perpendicular(shootDir);
 
-    //         Vector2 orthoGoal = orthogonal + oldBubblePos;
+            Vector2 orthoGoal = orthogonal + oldBubblePos;
 
-    //         // check if bot is on the same side of the shootDir vector as the orthoGoal
-    //         bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
+            // check if bot is on the same side of the shootDir vector as the orthoGoal
+            bool sameSide = (IsLeft(oldBubblePos, shootGoal, botPos) == IsLeft(oldBubblePos, shootGoal, orthoGoal));
 
-    //         if (!sameSide)
-    //         {
-    //             if (DEBUG_BOTS)
-    //                 Debug.Log("bot is on the right of shootDir");
-    //             orthogonal = -orthogonal;
-    //         }
+            if (!sameSide)
+            {
+                if (DEBUG_BOTS)
+                    Debug.Log("bot is on the right of shootDir");
+                orthogonal = -orthogonal;
+            }
 
-    //         Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
+            Debug.DrawLine(oldBubblePos, orthoGoal, Color.blue, 5f);
 
-    //         Vector2 botGoal = orthogonal + shootGoal;
+            Vector2 botGoal = orthogonal + shootGoal;
 
-    //         Debug.DrawLine(botPos, botGoal, Color.red, 5f);
+            Debug.DrawLine(botPos, botGoal, Color.red, 5f);
 
-    //         // TODO check if goal is free tile
-    //         botGoal = GetFreeTileAroundPosition(botGoal);
+            // TODO check if goal is free tile
+            botGoal = GetFreeTileAroundPosition(botGoal);
 
-    //         // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
+            // TODO randomness draufrechnen damit bot nicht immer in gleiche richtung ausweicht
 
-    //         return botGoal;
-    //     }
-    //     return transform.position;
-    // }
+            return botGoal;
+        }
+        return transform.position;
+    }
+    //--------------------------------------------------
 
     /// <summary>
     /// gets a free tile around the given tile in a 3x3 grid
@@ -418,7 +431,15 @@ public class BotController : MonoBehaviour
         directionIndicator.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 
-    // determines whether a point is left of a line
+    /// <summary>
+    /// If the point is to the left of the line, return true
+    /// </summary>
+    /// <param name="Vector2">a = line point 1; b = line point 2; c = point</param>
+    /// <param name="Vector2">a = line point 1; b = line point 2; c = point</param>
+    /// <param name="Vector2">a = line point 1; b = line point 2; c = point</param>
+    /// <returns>
+    /// The return value is a boolean.
+    /// </returns>
     public bool IsLeft(Vector2 a, Vector2 b, Vector2 c)
     {
         //a = line point 1; b = line point 2; c = point

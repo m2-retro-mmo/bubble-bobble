@@ -26,7 +26,7 @@ public class BotMovement : MonoBehaviour
     {
         if(!bot.GetIsCaptured())
         {
-            HandleMovement();
+            HandleMovement(); // TODO random movement zu random free tile, dafür trackinng if bbot in range für länger als x sekunden
         }
     }
 
