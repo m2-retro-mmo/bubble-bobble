@@ -41,7 +41,6 @@ public struct GeneratorData
     public int probabilityDecorations;
     public int probabilityTrees;
     public int diamondSpawnCount;
-    public int diamondCount;
     public float noiseDensity;
     public int iterations;
 
@@ -58,7 +57,6 @@ public struct GeneratorData
         probabilityDecorations = 40;
         probabilityTrees = 30;
         diamondSpawnCount = 50;
-        diamondCount = 0;
         noiseDensity = 50;
         iterations = 3;
     }
@@ -749,6 +747,7 @@ public class Map : NetworkBehaviour
         if (this.spawnedDiamonds < this.generatorData.diamondSpawnCount / 2)
         {
             int missingDiamondCount = this.generatorData.diamondSpawnCount - this.spawnedDiamonds;
+            // Debug.LogWarning("missing: " + missingDiamondCount + ", calc: " + this.generatorData.diamondSpawnCount + " - " + this.spawnedDiamonds);
             PlaceDiamonds(missingDiamondCount);
         }
         return;
