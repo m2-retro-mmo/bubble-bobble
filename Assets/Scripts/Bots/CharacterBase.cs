@@ -62,10 +62,16 @@ public class CharacterBase : NetworkBehaviour
 
     void SetTeamColor()
     {
-        if (teamNumber != 1)
+        switch (teamNumber)
         {
-            collideableRenderer.material = teamBMaterial;
-            captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+            case 0:
+                collideableRenderer.material = teamBMaterial;
+                break;
+            case 1:
+                captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+                break;
+            default:
+                break;
         }
     }
 
