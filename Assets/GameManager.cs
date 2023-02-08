@@ -15,7 +15,6 @@ public class GameManager : NetworkBehaviour
     public Hort hortPrefab;
     public Map map;
     public Camera cam;
-    public Camera minimapCam;
 
     private UIManager uIManager;
     private GameOverUIManager goUIManager;
