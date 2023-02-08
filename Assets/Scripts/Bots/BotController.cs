@@ -23,12 +23,6 @@ public class BotController : MonoBehaviour
 
     private BotCollisionDetector botCollisionDetector;
 
-    private Pathfinding pathfinding;
-
-    private List<GraphNode> path;
-
-    private int currentIndex;
-
     private Transform directionIndicator;
 
     private Graph graph;
@@ -36,8 +30,6 @@ public class BotController : MonoBehaviour
     private GameObject goalHolder;
 
     private int opponentCapturedCounter = 0;
-
-    private bool hasChangedDirection = false;
 
     public void Start()
     {
@@ -68,6 +60,8 @@ public class BotController : MonoBehaviour
 
         gameManager = FindObjectOfType<GameManager>();
         DEBUG_BOTS = gameManager.GetDebugBots();
+
+        StartCoroutine(TrackPosition());
     }
 
     void Update()
@@ -180,6 +174,7 @@ public class BotController : MonoBehaviour
             if (newPosition != lastPosition)
             {
                 botMovement.SetTargetPosition(newPosition, 5);
+                lastPosition = newPosition;
             }
 
             yield return new WaitForSeconds(1f);
@@ -204,6 +199,27 @@ public class BotController : MonoBehaviour
 
             counter++;
             yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private IEnumerator TrackPosition()
+    {
+        while (true)
+        {
+            Vector2 oldPosition = transform.position;
+            yield return new WaitForSeconds(6f);
+            Vector2 newPosition = transform.position;
+            // get distance between old and new position
+            float distance = Vector2.Distance(oldPosition, newPosition);
+            // if the distance is less than 1, the bot is stuck
+            if (distance < 1 && !bot.GetIsCaptured())
+            {
+                Debug.Log("---Bot is stuck, moving to random free tile");
+                // send bot to random free tile 
+                Vector3 randomPosition = GetRandomFreeTile();
+                botMovement.SetTargetPosition(randomPosition);
+                RestartBotLater();
+            }
         }
     }
 
@@ -405,6 +421,25 @@ public class BotController : MonoBehaviour
         }
 
         return goalHolder.transform;
+    }
+
+    /// <summary>
+    /// Get a random tile from the map, if it's not free, get another random tile until you find a free
+    /// one
+    /// </summary>
+    /// <returns>
+    /// A random free tile on the map.
+    /// </returns>
+    private Vector3 GetRandomFreeTile()
+    {
+        Map map = GameObject.Find("Map").GetComponent<Map>();
+        int x = Random.Range(0, map.GetWidth());
+        int y = Random.Range(0, map.GetHeight());
+        while(!map.TileIsFree(x, y)){
+            x = Random.Range(0, map.GetWidth());
+            y = Random.Range(0, map.GetHeight());
+        }
+        return graph.GetWorldPosition(x, y);
     }
 
     /// <summary>

@@ -24,7 +24,7 @@ public class BotMovement : MonoBehaviour
 
     void Update()
     {
-        if (bot.isClient) return;
+        //if (bot.isClient) return;
 
         if (!bot.GetIsCaptured())
         {
