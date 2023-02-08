@@ -138,7 +138,7 @@ public class Graph
     }
 
     /// <summary>
-    /// Gets the text  of the <param name="debugArray</param> at the given position.
+    /// Gets the text  of the <param name="debugArray"</param> at the given position.
     /// </summary>
     /// <param name="x">The x.</param>
     /// <param name="y">The y.</param>

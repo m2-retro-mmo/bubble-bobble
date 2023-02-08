@@ -15,7 +15,6 @@ public class GameManager : NetworkBehaviour
     public Hort hortPrefab;
     public Map map;
     public Camera cam;
-    public Camera minimapCam;
 
     private UIManager uIManager;
     private GameOverUIManager goUIManager;
@@ -266,8 +265,9 @@ public class GameManager : NetworkBehaviour
 
         NetworkServer.Spawn(bot.gameObject);
 
+        bot.GetComponent<BotController>().SetGraph(graph);
         bot.GetComponent<BotMovement>().SetGraph(graph);
-        bot.StartBot();
+        //bot.StartBot();
     }
 
     private void RemoveBot(byte teamNumber)
@@ -364,11 +364,11 @@ public class GameManager : NetworkBehaviour
             bot.Send();
         }
 
-        // stop all Bot async routines
-        foreach (BotMovement bot in FindObjectsOfType<BotMovement>())
-        {
-            bot.StopEverything();
-        }
+        // // stop all Bot async routines
+        // foreach (BotController bot in FindObjectsOfType<BotController>())
+        // {
+        //     bot.StopEverything();
+        // }
 
         // after countdown go back to lobby
         StartCoroutine(LoadLobbyCountdown());

@@ -2,10 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Mirror;
-using Unity.VisualScripting;
-using System.Runtime.CompilerServices;
-using static UnityEngine.EventSystems.EventTrigger;
 
 /// <summary>
 /// the states of the InteractionID
@@ -52,7 +48,7 @@ public class Bot : CharacterBase
 
     private Collider2D[] interactionColliders;
 
-    private BotMovement botMovement;
+    private BotController botController;
 
     private float prevPriorityValue = 0;
 
@@ -62,52 +58,45 @@ public class Bot : CharacterBase
 
     private const float REFRESH_RATE_GOAL = 10f;
 
-    private const float REFRESH_RATE_BUBBLE = 0.5f;
-
     [SerializeField]
     private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfonsU3CpscyOGBVfnnDrQxmsMqeSotW3s0gT5KUHWWzRuYnQ/formResponse";
-
-    public void Awake()
-    {
-        botMovement = GetComponent<BotMovement>();
-    }
 
     public override void Start()
     {
         base.Start();
 
+        botController = GetComponent<BotController>();
+
         hort = GameObject.FindGameObjectsWithTag("Hort").Where(x => x.GetComponent<Hort>().team == teamNumber).FirstOrDefault().transform;
+
         DEBUG_BOTS = gameManager.GetDebugBots();
+
+        StartBot();
     }
 
+    /// <summary>
+    /// starts the bot including the coroutines for checking the area for interactions and checking for bubbles
+    /// </summary>
+    public void StartBot()
+    {
+        StartCoroutine(CheckAreaOfInterest());
+    }
+
+    /// <summary>
+    /// for resetting the bot 
+    /// stops all coroutines and resets the interaction id
+    /// invokes the start bot method after the given time
+    /// </summary>
+    /// <param name="restartTime">seconds to wait until the bbot will be restarted in seconds</param>
     public void ResetBot(float restartTime)
     {
         prevPriorityValue = 0;
         StopAllCoroutines();
+        CancelInvoke("StartBot");
         SetInteractionID(InteractionID.None);
         SetChangedInteractionID(false);
 
         Invoke("StartBot", restartTime);
-    }
-
-    public void StartBot()
-    {
-        StartCoroutine(CheckAreaOfInterest());
-        StartCoroutine(CheckForBubbles());
-    }
-
-    IEnumerator CheckForBubbles()
-    {
-        while (true)
-        {
-            botPosition = transform.position;
-            // get all colliders in a radius around the bot
-            interactionColliders = Physics2D.OverlapCircleAll(botPosition, interactionRadius);
-
-            CheckForOpponentBubbles();
-
-            yield return new WaitForSeconds(REFRESH_RATE_BUBBLE);
-        }
     }
 
     /// <summary>
@@ -165,26 +154,26 @@ public class Bot : CharacterBase
         // if there are no opponents do nothing
         if (opponentColliders.Length > 0)
         {
+            int index = 0;
+            // shuffle the opponents array to get a random opponent
+            opponentColliders = RandomizeGoalArray(opponentColliders);
+
             // loop through all opponents 
-            foreach (Collider2D collider in opponentColliders)
+            while (index < opponentColliders.Length)
             {
-                CharacterBase opponent = collider.gameObject.GetComponent<CharacterBase>();
+                // // add a random value to the index to get a random opponent
+                // // this is done to avoid that all the bots always targets the same opponent
+                // index += Random.Range(0, 5);
+
+                CharacterBase opponent = opponentColliders[index].gameObject.GetComponent<CharacterBase>();
 
                 // check if the opponent is not captured
                 if (!opponent.GetIsCaptured())
                 {
-                    // set the priority for the opponent interaction
-                    interactionPriorities[(int)InteractionID.Opponent] += opponentPriority;
-
-                    // multiply interactionPriority with interactionWeight
-                    interactionPriorities[(int)InteractionID.Opponent] *= interactionWeights[(int)InteractionID.Opponent];
-
-                    // set the interactionGoal to the opponent
-                    interactionGoals[(int)InteractionID.Opponent] = opponent.transform.Find("Shape").transform;
-
-                    foundInteraction = true;
-                    break;
+                    ApplyInteractionPriority(InteractionID.Opponent, opponentPriority, opponent.transform.Find("Shape").transform);
+                    break; // break the loop if an opponent is found
                 }
+                index++;
             }
         }
     }
@@ -200,51 +189,22 @@ public class Bot : CharacterBase
         // if there are no teammates do nothing
         if (teammateColliders.Length > 0)
         {
-            // loop through all teammates
-            foreach (Collider2D collider in teammateColliders)
+            int index = 0;
+            // shuffle the teammates array to get a random teammate
+            teammateColliders = RandomizeGoalArray(teammateColliders);
+            
+            // loop through all teammates until a teammate is found who is captured
+            while (index < teammateColliders.Length)
             {
-                CharacterBase teammate = collider.gameObject.GetComponent<CharacterBase>();
+                CharacterBase teammate = teammateColliders[index].gameObject.GetComponent<CharacterBase>();
 
                 // check if the teammate is captured - if he is, free teammate
                 if (teammate.GetIsCaptured())
                 {
-                    interactionPriorities[(int)InteractionID.Teammate] += 1f;
-
-                    // multiply interactionPriority with interactionWeight
-                    interactionPriorities[(int)InteractionID.Teammate] *= interactionWeights[(int)InteractionID.Teammate];
-
-                    // set the interactionGoal to teammate
-                    interactionGoals[(int)InteractionID.Teammate] = teammate.transform;
-
-                    foundInteraction = true;
-                    break;
+                    ApplyInteractionPriority(InteractionID.Teammate, 1f, teammate.transform);
+                    break; // break the loop if a teammate is found
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Checks for bubbles of opponents in the area around the player.
-    /// </summary>
-    private void CheckForOpponentBubbles()
-    {
-        // get all opponent bubbles in the area 
-        Collider2D[] opponentBubbleColliders = GetCollidersByTag("Bubble").Where(b => b.GetComponent<Bubble>().GetTeamNumber() == GetOpponentTeamNumber(teamNumber)).ToArray();
-
-        if (opponentBubbleColliders.Length > 0)
-        {
-            foreach (Collider2D bubble in opponentBubbleColliders)
-            {
-                if (!bubble.GetComponent<Bubble>().GetAvoidedByBot())
-                {
-                    detectedBubble = true;
-                    bubble.GetComponent<Bubble>().SetAvoidedByBot(detectedBubble);
-                    botMovement.SetGoal(bubble.transform);
-                    if (DEBUG_BOTS)
-                    {
-                        Debug.Log("set goal to bubble");
-                    }
-                }
+                index++;
             }
         }
     }
@@ -254,34 +214,24 @@ public class Bot : CharacterBase
     /// </summary>
     private void CheckForDiamond()
     {
+        if (GetHoldsDiamond())
+        {
+            // if the bot holds a diamond, the priority for the hort is higher
+            interactionPriorities[(int)InteractionID.Hort] += 1f;
+            return;
+        }
+
         // get all diamonds in the area
         Collider2D[] diamondColliders = GetCollidersByTag("Diamond");
 
         // are there diamonds near by
         if (diamondColliders.Length > 0)
         {
-            if (GetHoldsDiamond())
-            {
-                interactionPriorities[(int)InteractionID.Hort] += 1f;
-                return;
-            }
+            diamondColliders = RandomizeGoalArray(diamondColliders, 3);
 
-            // loop through all opponents 
-            foreach (Collider2D collider in diamondColliders)
-            {
-                Diamond diamond = collider.gameObject.GetComponent<Diamond>();
-                // has a higher priority to Collect a diamond
-                interactionPriorities[(int)InteractionID.Diamond] += 1f;
-
-                // multiply interactionPriority with interactionWeight
-                interactionPriorities[(int)InteractionID.Diamond] *= interactionWeights[(int)InteractionID.Diamond];
-
-                // set the interactionGoal to diamond
-                interactionGoals[(int)InteractionID.Diamond] = diamond.transform;
-
-                foundInteraction = true;
-                break;
-            }
+            // get the first diamond
+            Diamond diamond = diamondColliders[0].gameObject.GetComponent<Diamond>();
+            ApplyInteractionPriority(InteractionID.Diamond, 1f, diamond.transform);
         }
     }
 
@@ -293,65 +243,32 @@ public class Bot : CharacterBase
         // only check for hort if the bot holds a diamond
         if (GetHoldsDiamond() && hort != null)
         {
-            // has a higher priority to Drop diamond
-            interactionPriorities[(int)InteractionID.Hort] += 1f;
-
-            // multiply interactionPriority with interactionWeight
-            interactionPriorities[(int)InteractionID.Hort] *= interactionWeights[(int)InteractionID.Hort];
-
-            // set the interactionGoal to hort
-            interactionGoals[(int)InteractionID.Hort] = hort;
-
-            if (interactionPriorities[(int)InteractionID.Hort] > 0)
-            {
-                foundInteraction = true;
-            }
+            ApplyInteractionPriority(InteractionID.Hort, 1f, hort);
         }
     }
 
     /// <summary>
-    /// Gets the colliders around the bot by tag.
-    /// orders by distance from the bot 
+    /// The function sets the interactionPriority for the given interaction to the given goal
     /// </summary>
-    /// <param name="tagName">The tag name.</param>
-    /// <returns>An array of Collider2DS.</returns>
-    private Collider2D[] GetCollidersByTag(string tagName)
+    /// <param name="InteractionID">The ID of the interaction.</param>
+    /// <param name="Transform">The transform of the object that the interaction is being performed
+    /// on.</param>
+    private void ApplyInteractionPriority(InteractionID id, float priority, Transform goal)
     {
-        Collider2D[] colliders = interactionColliders.Where(c => c.gameObject.tag == tagName).ToArray();
-        // order by distance
-        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+        // increment the interactionPriority for this interaction
+        interactionPriorities[(int)id] += priority;
 
-        return colliders;
-    }
+        // multiply interactionPriority with interactionWeight 
+        interactionPriorities[(int)id] *= interactionWeights[(int)id];
 
-    /// <summary>
-    /// Gets the colliders by team number.
-    /// either bots or player
-    /// </summary>
-    /// <param name="teamNumber">The team number.</param>
-    /// <returns>An array of Collider2DS.</returns>
-    private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
-    {
-        // iterate over interactionColliders and Debug.Log
-        // foreach (Collider2D c in interactionColliders)
-        // {
-        //     Debug.Log("L1: " + c.gameObject.CompareTag("Player"));
-        //     Debug.Log("L2: " + c.gameObject.CompareTag("Bot"));
-        //     Debug.Log("L3: " + c.gameObject.TryGetComponent(out CharacterBase characterBase));
-        //     Debug.Log("L3.5: " + characterBase);
-        //     Debug.Log("L4: " + (characterBase.GetTeamNumber() == teamNumber));
-        // }
+        // set the interactionGoal to to the given goal
+        interactionGoals[(int)id] = goal;
 
-        Collider2D[] colliders = interactionColliders.Where(c =>
-            (c.gameObject.CompareTag("Player") ||
-            c.gameObject.CompareTag("Bot")) &&
-            (c.TryGetComponent(out CharacterBase characterBase)
-            && characterBase.GetTeamNumber() == teamNumber)).ToArray();
-
-        // order by distance
-        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
-
-        return colliders;
+        // set foundInteraction to true if the interactionPriority for this intercation is higher than 0
+        if (interactionPriorities[(int)id] > 0)
+        {
+            foundInteraction = true;
+        }
     }
 
     /// <summary>
@@ -391,7 +308,7 @@ public class Bot : CharacterBase
                 changedInteractionID = true;
                 interactionID = foundInteractionID;
                 // set goal of bot movement to goal position
-                botMovement.SetGoal(interactionGoals[highestPriorityIndex]);
+                botController.SetGoal(interactionGoals[highestPriorityIndex]);
             }
         }
         else // if no interaction was found, increase the radius
@@ -400,36 +317,113 @@ public class Bot : CharacterBase
         }
     }
 
+    /// <summary>
+    /// Gets the colliders around the bot by tag.
+    /// orders by distance from the bot 
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <returns>An array of Collider2DS.</returns>
+    private Collider2D[] GetCollidersByTag(string tagName)
+    {
+        Collider2D[] colliders = interactionColliders.Where(c => c.gameObject.tag == tagName).ToArray();
+
+        // order by distance
+        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+
+        return colliders;
+    }
+
+    /// <summary>
+    /// Gets the colliders by team number.
+    /// either bots or player
+    /// </summary>
+    /// <param name="teamNumber">The team number.</param>
+    /// <returns>An array of Collider2DS.</returns>
+    private Collider2D[] GetCollidersByTeamNumber(int teamNumber)
+    {
+        Collider2D[] colliders = interactionColliders.Where(c =>
+            (c.gameObject.CompareTag("Player") ||
+            c.gameObject.CompareTag("Bot")) &&
+            (c.TryGetComponent(out CharacterBase characterBase)
+            && characterBase.GetTeamNumber() == teamNumber)).ToArray();
+
+        // order by distance
+        colliders = colliders.OrderBy(c => Vector3.Distance(botPosition, c.transform.position)).ToArray();
+
+        return colliders;
+    }
+
+    /// <summary>
+    /// It takes an array of colliders, shuffles the first half of the array, and returns the array
+    /// </summary>
+    /// <param name="colliders">The array of colliders to randomize</param>
+    /// <param name="arrayPart">The part of the array that should be randomized</param>
+    /// <returns>
+    /// The colliders array is being returned.
+    /// </returns>
+    public Collider2D[] RandomizeGoalArray(Collider2D[] colliders, int arrayPart = 2)
+    {
+        if (colliders.Length > 0)
+        {
+            // Shuffle the first half of the array to randomize the order
+            // This is done to prevent bots from always choosing the same target
+            int halfLength = colliders.Length / arrayPart;
+            for (int i = 0; i < halfLength; i++)
+            {
+                int randomIndex = Random.Range(i, halfLength);
+                Collider2D temp = colliders[i];
+                colliders[i] = colliders[randomIndex];
+                colliders[randomIndex] = temp;
+            }
+        }
+        return colliders;
+    }
+
+    /// <summary>
+    /// this method is called when a new bot is created and sets the interaction weights to random values
+    /// </summary>
     public void RandomizeInteractionWeights()
     {
         System.Random rand = new System.Random();
         for (int i = 0; i < interactionWeights.Length; i++)
         {
+            // set random weight between 1 and 10
             int weight = rand.Next(1, 11);
             interactionWeights[i] = weight;
         }
     }
 
+
+    /// <summary>
+    /// The function prepares the data to be sent to the google form
+    /// tracking data like the interaction weights, the number of collected  diamonds, captured and uncaptured characters
+    /// </summary>
     public void Send()
     {
+        // get a bool if this bot was in the winning team
         bool teamWon = gameManager.GetWinnerForTracking() == teamNumber;
+        // create a list of strings to send to the google form that holds the data
         List<string> data = new List<string>();
-
-        //string interactionWeights_text = "";
+        // add the interaction weights to the list
         foreach (float i in interactionWeights)
         {
-            //   interactionWeights_text += i.ToString() + ", ";
             data.Add(i.ToString());
         }
+        // add the number of collected diamonds, captured and uncaptured characters
         data.Add(GetDiamondCounter().ToString());
-        data.Add(botMovement.GetOpponentCapturedCounter().ToString());
+        data.Add(botController.GetOpponentCapturedCounter().ToString());
         data.Add(GetUncapturedCounter().ToString());
         data.Add(teamWon.ToString());
         StartCoroutine(Post(data));
     }
 
+    /// <summary>
+    /// It takes a list of strings, adds them to a WWWForm, and then sends them to a Google Form (data is exported to a google sheet from the google form)
+    /// </summary>
+    /// <param name="data">A list of strings that contains the data to be sent to the Google Form.</param>
     IEnumerator Post(List<string> data)
     {
+        // the entry ids of the answer fields in the google form
         string[] entryFields = { "entry.1555711059", "entry.2141082333", "entry.886997526", "entry.1317052357", "entry.299362154", "entry.1696318452", "entry.822962180", "entry.304877644", "entry.2077812130" };
         WWWForm form = new WWWForm();
         for (int i = 0; i < data.Count; i++)
@@ -437,6 +431,7 @@ public class Bot : CharacterBase
             form.AddField(entryFields[i], data[i]);
         }
         byte[] rawData = form.data;
+        // the url of the google form
         WWW www = new WWW(BASE_URL, rawData);
         yield return www;
     }
