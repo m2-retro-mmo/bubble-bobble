@@ -118,7 +118,7 @@ public class LobbyUIManager : NetworkBehaviour
         });
         username.RegisterCallback<FocusOutEvent>(evt =>
         {
-            UpdateUsernameText();
+            username.value = currentUsername;
         });
 
         // Duration Setup
@@ -195,10 +195,9 @@ public class LobbyUIManager : NetworkBehaviour
         }
     }
 
-    [Client]
+    [ClientCallback]
     private void UpdateUsernameText()
     {
-        if (!NetworkClient.active) return;
         // iterate over connections and find ours
         foreach (BBNetworkManager.ConnectionInfo connection in connections)
         {
@@ -208,11 +207,9 @@ public class LobbyUIManager : NetworkBehaviour
             if (connection.connectionId == serverConnectionId)
             {
                 currentUsername = connection.username;
-                username.value = connection.username;
-                //if focused set cursor to end
-                if (username.panel.focusController.focusedElement == username)
+                if (username.panel.focusController.focusedElement != username)
                 {
-                    username.SelectRange(username.value.Length, username.value.Length);
+                    username.value = connection.username;
                 }
                 ready = connection.readyToBegin;
                 break;
