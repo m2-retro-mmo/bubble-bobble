@@ -69,6 +69,13 @@ public class UIManager : MonoBehaviour
     public void SetBubbleColorOrange()
     {
         isPurpleTeam = false;
+        for (int i = 0; i < bubbleIndicator.childCount; i++)
+        {
+            if (bubbleIndicator.hierarchy.ElementAt(i).style.backgroundImage != emptyBubble)
+            {
+                bubbleIndicator.hierarchy.ElementAt(i).style.backgroundImage = orangeBubble;
+            }
+        }
     }
 
     public void SetBubbleCount(int count)

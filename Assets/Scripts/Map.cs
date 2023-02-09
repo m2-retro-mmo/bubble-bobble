@@ -11,7 +11,6 @@ public enum EnvironmentType
     Water,
     Shelter,
     Obstacle
-    // Bridge
 }
 
 // Custom Integer Vec2 struct for serialization
@@ -41,9 +40,7 @@ public struct GeneratorData
     public int probabilityStoneTiles;
     public int probabilityDecorations;
     public int probabilityTrees;
-    public int diamondSpawnDelay;
     public int diamondSpawnCount;
-    public int diamondCount;
     public float noiseDensity;
     public int iterations;
 
@@ -64,9 +61,7 @@ public struct GeneratorData
 
         // probability of stone tiles
         probabilityStoneTiles = 10;
-        diamondSpawnDelay = 10;
-        diamondSpawnCount = 30;
-        diamondCount = 0;
+        diamondSpawnCount = 50;
         noiseDensity = 50;
         iterations = 3;
     }
@@ -196,7 +191,7 @@ public class Map : NetworkBehaviour
     public void BuildMap()
     {
         // create fresh diamond parent array
-        if (diamondParent != null && spawnedDiamonds == 0)
+        if (diamondParent != null)
         {
             Destroy(diamondParent);
         }
@@ -219,8 +214,7 @@ public class Map : NetworkBehaviour
         DrawTilemap();
         UpdateHortEnvironment();
         PlaceObstacles();
-        StartCoroutine(RandomDiamondSpawning());
-        //SetIsWalkableForObstacles();
+        PlaceDiamonds(generatorData.diamondSpawnCount, true);
         Vector2[] path = {
             new Vector2(0, 0),
             new Vector2(0, generatorData.height),
@@ -253,14 +247,12 @@ public class Map : NetworkBehaviour
         else
         {
             int randomPos = ran.Next(0, freeNeighbors.Count);
-            Debug.Log("randomPos: " + randomPos);
             finalPosition = freeNeighbors[randomPos];
         }
-        Debug.Log("free NeightborCount: " + freeNeighbors.Count);
 
         Diamond item = Instantiate(diamondPrefab, new Vector3(((float)finalPosition.x + 0.5f), ((float)finalPosition.y + 0.5f), 0), Quaternion.identity);
         item.transform.parent = diamondParent.transform;
-        spawnedDiamonds++;
+        UpdateSpawnedDiamond(1);
         NetworkServer.Spawn(item.gameObject);
     }
 
@@ -557,8 +549,9 @@ public class Map : NetworkBehaviour
 
     // Step 9 (Server only)
     [ServerCallback]
-    void PlaceDiamonds(int count)
+    void PlaceDiamonds(int count, bool init)
     {
+        // Debug.LogWarning("called with " + count + " diamonds and init: " + init);
         while (count > 0)
         {
             int x = ran.Next(0, generatorData.width);
@@ -567,24 +560,13 @@ public class Map : NetworkBehaviour
             {
                 Diamond item = Instantiate(diamondPrefab, new Vector3(((float)x + 0.5f), ((float)y + 0.5f), 0), Quaternion.identity);
                 item.transform.parent = diamondParent.transform;
-                spawnedDiamonds++;
+                if (init) this.spawnedDiamonds++;
+                else UpdateSpawnedDiamond(1);
                 count--;
                 NetworkServer.Spawn(item.gameObject);
             }
         }
-    }
-
-    IEnumerator RandomDiamondSpawning()
-    {
-        while (true)
-        {
-            if (spawnedDiamonds < generatorData.diamondSpawnCount / 2 || spawnedDiamonds == 0)
-            {
-                int missingDiamondCount = generatorData.diamondSpawnCount - spawnedDiamonds;
-                PlaceDiamonds(missingDiamondCount);
-            }
-            yield return new WaitForSeconds((float)generatorData.diamondSpawnDelay);
-        }
+        // Debug.LogWarning("placed " + this.spawnedDiamonds + " diamonds");
     }
 
     public enum Direction : int
@@ -782,6 +764,12 @@ public class Map : NetworkBehaviour
     public void UpdateSpawnedDiamond(int count)
     {
         this.spawnedDiamonds += count;
+        if (this.spawnedDiamonds < this.generatorData.diamondSpawnCount)
+        {
+            int missingDiamondCount = this.generatorData.diamondSpawnCount - this.spawnedDiamonds;
+            // Debug.LogWarning("missing: " + missingDiamondCount + ", calc: " + this.generatorData.diamondSpawnCount + " - " + this.spawnedDiamonds);
+            PlaceDiamonds(missingDiamondCount, false);
+        }
         return;
     }
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using System;
 
 public class CharacterBase : NetworkBehaviour
 {
@@ -27,6 +28,8 @@ public class CharacterBase : NetworkBehaviour
     [SerializeField] private GameObject captureBubble;
     private Map map;
 
+    public event Action OnCaptured;
+    public event Action OnUncaptured;
 
     public const string CAPTURED_LAYER = "CapturedPlayersLayer";
     private string defaultLayer;
@@ -59,10 +62,16 @@ public class CharacterBase : NetworkBehaviour
 
     void SetTeamColor()
     {
-        if (teamNumber != 1)
+        switch (teamNumber)
         {
-            collideableRenderer.material = teamBMaterial;
-            captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+            case 0:
+                collideableRenderer.material = teamBMaterial;
+                break;
+            case 1:
+                captureBubble.GetComponent<SpriteRenderer>().sprite = captureBobbleBSprite;
+                break;
+            default:
+                break;
         }
     }
 
@@ -112,6 +121,7 @@ public class CharacterBase : NetworkBehaviour
     public void collectDiamond()
     {
         holdsDiamond = true;
+        map.UpdateSpawnedDiamond(-1);
         animator.SetBool("holdsDiamond", holdsDiamond);
     }
 
@@ -133,6 +143,11 @@ public class CharacterBase : NetworkBehaviour
     [Server]
     public void Capture(int fromTeamNumber)
     {
+        if (isCaptured)
+        {
+            return;
+        }
+
         if (isCaptured) return;
         if (teamNumber == fromTeamNumber) return;
         isCaptured = true;
@@ -144,6 +159,7 @@ public class CharacterBase : NetworkBehaviour
             deliverDiamond(false);
             map.spawnDiamondAround((Vector2)rb.transform.position);
         }
+        OnCaptured?.Invoke();
     }
 
     /**
@@ -155,6 +171,7 @@ public class CharacterBase : NetworkBehaviour
         if (!isCaptured) return;
         isCaptured = false;
         CaptureStateUpdate();
+        OnUncaptured?.Invoke();
     }
 
     [Client]
