@@ -294,7 +294,7 @@ RectTransform:
   - {fileID: 1760942628}
   - {fileID: 133498665}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -838,6 +838,12 @@ PrefabInstance:
     - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
         type: 3}
       propertyPath: floorTiles.Array.data[10]
+      value: 
+      objectReference: {fileID: 11400000, guid: 70b8e49e6af191c4c987c778977a5dba,
+        type: 2}
+    - target: {fileID: 6831340143757223155, guid: 19e842e540cd751458815e2e6c08ec3a,
+        type: 3}
+      propertyPath: floorTiles.Array.data[11]
       value: 
       objectReference: {fileID: 11400000, guid: 70b8e49e6af191c4c987c778977a5dba,
         type: 2}
