@@ -18,8 +18,22 @@ public class MenuUIManager : MonoBehaviour
 
     Label statusText;
 
+    string defaultAddress = null;
+
     void OnEnable()
     {
+
+        // check if an ip address is given through a command line argument
+        var args = System.Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "-ip")
+            {
+                defaultAddress = args[i + 1];
+                break;
+            }
+        }
+
         networkManager = FindObjectOfType<BBNetworkManager>();
         document = GetComponent<UIDocument>();
 
@@ -42,6 +56,11 @@ public class MenuUIManager : MonoBehaviour
         root.Q("Debug").style.display = DisplayStyle.Flex;
 #endif
 
+if (defaultAddress != null)
+        {
+            address.style.display = DisplayStyle.None;
+        }
+
         // hook up events
         joinButton.clicked += joinButton_Click;
         quitButton.clicked += quitButton_Click;
@@ -52,7 +71,7 @@ public class MenuUIManager : MonoBehaviour
     private void joinButton_Click()
     {
         statusText.style.display = DisplayStyle.None;
-        networkManager.networkAddress = address.text;
+        networkManager.networkAddress = defaultAddress != null ? defaultAddress : address.value;
         networkManager.StartClient();
         // check if network client is active
         if (!NetworkClient.active)
