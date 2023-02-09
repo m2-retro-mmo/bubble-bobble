@@ -37,7 +37,7 @@ public struct GeneratorData
     public IntVec2[] hortLocations;
     public int probabilityObstaclesGeneral;
     public int probabilityPillar;
-
+    public int probabilityStoneTiles;
     public int probabilityDecorations;
     public int probabilityTrees;
     public int diamondSpawnCount;
@@ -52,10 +52,15 @@ public struct GeneratorData
         hortScale = 7;
         teams = 2;
         hortLocations = HortLocations(s, teams, width, height, hortScale);
-        probabilityObstaclesGeneral = 5;
-        probabilityPillar = 30;
-        probabilityDecorations = 40;
-        probabilityTrees = 30;
+        
+        // probability of obstacles (sum should be 100)
+        probabilityObstaclesGeneral = 6;
+        probabilityPillar = 20;
+        probabilityDecorations = 15;
+        probabilityTrees = 65;
+
+        // probability of stone tiles
+        probabilityStoneTiles = 10;
         diamondSpawnCount = 50;
         noiseDensity = 50;
         iterations = 3;
@@ -122,6 +127,7 @@ public class Map : NetworkBehaviour
     [Header("Obstacle Settings")]
     public Tile[] pillars;
     public Tile[] bushes;
+    public Tile[] stones;
     public Tile[] accessoirs;
 
     [Header("Standard Water Tiles")]
@@ -440,10 +446,21 @@ public class Map : NetworkBehaviour
             {
                 if (floorEnvironment[x, y] == EnvironmentType.Ground)
                 {
-                    int random = ran.Next(0, floorTiles.GetLength(0) - 1);
-                    floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[random]); // Floor
-                    floorTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
-                    isWalkable[x, y] = true;
+                    // randomly place stone tile
+                    if (ran.Next(0, 100) < generatorData.probabilityStoneTiles)
+                    {
+                        int random = ran.Next(0, stones.GetLength(0) - 1);
+                        floorTilemap.SetTile(new Vector3Int(x, y, 0), stones[random]); // Stones
+                        floorTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        isWalkable[x, y] = true;
+                    }
+                    else
+                    {
+                        int random = ran.Next(0, floorTiles.GetLength(0) - 1);
+                        floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[random]); // Floor
+                        floorTilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+                        isWalkable[x, y] = true;
+                    }
                 }
                 else
                 {
