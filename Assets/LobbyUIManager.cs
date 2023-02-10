@@ -182,6 +182,7 @@ public class LobbyUIManager : NetworkBehaviour
 
         username.SetEnabled(!newValue);
         duration.SetEnabled(!newValue);
+        rerollName.style.display = newValue ? DisplayStyle.None : DisplayStyle.Flex;
     }
 
     private void ActionPlay()
