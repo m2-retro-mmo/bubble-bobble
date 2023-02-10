@@ -61,7 +61,7 @@ public struct GeneratorData
 
         // probability of stone tiles
         probabilityStoneTiles = 10;
-        diamondSpawnCount = 50;
+        diamondSpawnCount = 30;
         noiseDensity = 50;
         iterations = 3;
     }

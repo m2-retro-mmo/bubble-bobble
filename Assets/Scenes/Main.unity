@@ -982,11 +982,10 @@ MonoBehaviour:
     type: 3}
   map: {fileID: 2091722759}
   cam: {fileID: 0}
-  minimapCam: {fileID: 0}
   DEBUG_BOTS: 0
   botPrefab: {fileID: 6793298784149831108, guid: 9af165757aed94f1e86a7868e77749e8,
     type: 3}
-  characterCount: 30
+  characterCount: 15
   gameOver: 0
 --- !u!4 &2103473425
 Transform:
