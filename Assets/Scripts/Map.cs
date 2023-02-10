@@ -52,7 +52,7 @@ public struct GeneratorData
         hortScale = 7;
         teams = 2;
         hortLocations = HortLocations(s, teams, width, height, hortScale);
-        
+
         // probability of obstacles (sum should be 100)
         probabilityObstaclesGeneral = 6;
         probabilityPillar = 20;

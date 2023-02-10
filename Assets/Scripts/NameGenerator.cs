@@ -20,10 +20,10 @@ public class NameGenerator : MonoBehaviour
         {
             LoadData();
         }
-        
+
         int rand = random.Next(0, adjectives.Length - 1);
         string adj = adjectives[rand].ToLower();
-        
+
         rand = random.Next(0, animals.Length - 1);
         string name = animals[rand];
 
@@ -38,7 +38,7 @@ public class NameGenerator : MonoBehaviour
         var animalsFile = Resources.Load<TextAsset>("NameGenerator/animals").text;
         var adjectivesFile = Resources.Load<TextAsset>("NameGenerator/adjectives").text;
 
-        animals = animalsFile.Split(new string[] {System.Environment.NewLine}, System.StringSplitOptions.RemoveEmptyEntries);
-        adjectives = adjectivesFile.Split(new string[] {System.Environment.NewLine}, System.StringSplitOptions.RemoveEmptyEntries);
+        animals = animalsFile.Split("\n", System.StringSplitOptions.RemoveEmptyEntries);
+        adjectives = adjectivesFile.Split("\n", System.StringSplitOptions.RemoveEmptyEntries);
     }
 }
