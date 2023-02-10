@@ -7,6 +7,8 @@ public class LobbyUIManager : NetworkBehaviour
 {
     public static LobbyUIManager singleton { get; internal set; }
 
+    public VisualTreeAsset playerListItemTemplate;
+
     // Synced Variables
     public readonly SyncList<BBNetworkManager.ConnectionInfo> connections = new SyncList<BBNetworkManager.ConnectionInfo>();
     [SyncVar(hook = nameof(OnGameDurationChanged))] public int gameDurationSeconds = 100;
@@ -19,7 +21,9 @@ public class LobbyUIManager : NetworkBehaviour
     RadioButtonGroup duration;
     Button playButton;
     Button exitButton;
+    Button rerollName;
     Label playersLabel;
+    ScrollView playersList;
 
     // Client only
     bool ready = false;
@@ -89,7 +93,9 @@ public class LobbyUIManager : NetworkBehaviour
         duration = root.Q("duration") as RadioButtonGroup;
         playButton = root.Q("playBtn") as Button;
         exitButton = root.Q("exitBtn") as Button;
+        rerollName = root.Q("reroll") as Button;
         playersLabel = root.Q("playersLabel") as Label;
+        playersList = root.Q("playersList") as ScrollView;
 
         connections.Callback += OnConnectionsChanged;
     }
@@ -135,6 +141,7 @@ public class LobbyUIManager : NetworkBehaviour
 
         playButton.clicked += ActionPlay;
         exitButton.clicked += ActionDisconnect;
+        rerollName.clicked += ActionRerollName;
 
         GetPlayerLobbyList();
         UpdateUsernameText();
@@ -148,12 +155,17 @@ public class LobbyUIManager : NetworkBehaviour
 
     private void GetPlayerLobbyList()
     {
-        string playerList = "";
+        playersList.contentContainer.Clear();
         foreach (BBNetworkManager.ConnectionInfo connection in connections)
         {
-            playerList += connection.username + " " + (connection.readyToBegin ? "(ready)" : "(not ready)") + "\n";
+            VisualElement playerListItem = playerListItemTemplate.CloneTree();
+            (playerListItem.Q("name") as Label).text = connection.username;
+            if (connection.readyToBegin)
+            {
+                playerListItem.ElementAt(0).AddToClassList("ready");
+            }
+            playersList.contentContainer.Add(playerListItem);
         }
-        playersLabel.text = playerList;
     }
 
     private void OnGameDurationChanged(int oldValue, int newValue)
@@ -216,6 +228,12 @@ public class LobbyUIManager : NetworkBehaviour
             }
         }
         playButton.text = ready ? "Waiting for others" : "Ready";
+    }
+
+    private void ActionRerollName()
+    {
+        var message = new BBNetworkManager.GetRandomName { };
+        NetworkClient.Send(message);
     }
 
 

@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/menu_style.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#menu_style" />
+    <Style src="project://database/Assets/UI%20Toolkit/global_style.uss?fileID=7433441132597879392&amp;guid=fb904d91575fe472e8389681f114936c&amp;type=3#global_style" />
+    <ui:VisualElement class="playerItem">
+        <ui:VisualElement class="egg" />
+        <ui:VisualElement class="text">
+            <ui:Label text="PlayerName" display-tooltip-when-elided="true" name="name" class="name" />
+            <ui:Label text="Not Ready" display-tooltip-when-elided="true" class="readyness isUnready" />
+            <ui:Label text="Ready" display-tooltip-when-elided="true" class="readyness isReady" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

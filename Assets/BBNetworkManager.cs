@@ -24,7 +24,7 @@ public class BBNetworkManager : NetworkManager
         public bool ready;
     }
 
-    public struct StartGameMessage : NetworkMessage
+    public struct GetRandomName : NetworkMessage
     {
     }
 
@@ -72,7 +72,7 @@ public class BBNetworkManager : NetworkManager
         // register message handlers
         NetworkServer.RegisterHandler<ChangeNameMessage>(OnChangeNameMessage);
         NetworkServer.RegisterHandler<ChangeReadyMessage>(OnChangeReadyMessage);
-        NetworkServer.RegisterHandler<StartGameMessage>(OnStartGameMessage);
+        NetworkServer.RegisterHandler<GetRandomName>(OnGetRandomName);
         NetworkServer.RegisterHandler<ChangeGameDurationMessage>(OnChangeGameDurationMessage);
 
         if (!gameRunning) ServerChangeScene(RoomScene);
@@ -219,9 +219,20 @@ public class BBNetworkManager : NetworkManager
         OnConnectionUpdated();
     }
 
-    private void OnStartGameMessage(NetworkConnection conn, StartGameMessage msg)
+    private void OnGetRandomName(NetworkConnection conn, GetRandomName msg)
     {
-        OnRoomServerPlayersReady();
+        // iterate over connectionRefs and update the one that matches conn
+        for (int i = 0; i < connectionRefs.Count; i++)
+        {
+            if (connectionRefs[i].connectionId == conn.connectionId)
+            {
+                var newConnectionInfo = connectionRefs[i];
+                newConnectionInfo.username = NameGenerator.GetRandomName();
+                connectionRefs[i] = newConnectionInfo;
+                break;
+            }
+        }
+        OnConnectionUpdated();
     }
 
     private void OnChangeGameDurationMessage(NetworkConnection conn, ChangeGameDurationMessage msg)

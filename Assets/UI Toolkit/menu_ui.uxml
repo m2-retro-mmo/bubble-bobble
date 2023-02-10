@@ -2,10 +2,13 @@
     <Style src="project://database/Assets/UI%20Toolkit/menu_style.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#menu_style" />
     <Style src="project://database/Assets/UI%20Toolkit/global_style.uss?fileID=7433441132597879392&amp;guid=fb904d91575fe472e8389681f114936c&amp;type=3#global_style" />
     <ui:VisualElement class="background" style="padding-left: 128px; padding-right: 128px; padding-top: 128px; padding-bottom: 128px; height: 100%; flex-direction: column; justify-content: space-around;">
+        <ui:VisualElement style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
+            <ui:VisualElement name="bgBubble" style="position: relative; background-image: resource(&apos;menu-bubble&apos;); width: 950px; height: 950px; top: auto; left: auto; overflow: hidden; -unity-background-scale-mode: scale-to-fit; transition-property: rotate; transition-duration: 15s; scale: 1.3 1.3; transition-timing-function: ease-in-out;" />
+        </ui:VisualElement>
         <ui:GroupBox style="flex-direction: column; align-items: center; justify-content: space-around;">
-            <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 564px; height: 281px; -unity-background-scale-mode: stretch-to-fill;" />
+            <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 347px; height: 209px; -unity-background-scale-mode: stretch-to-fill;" />
             <ui:Label text="Lost connection to game server" display-tooltip-when-elided="true" name="StatusText" style="margin-top: 32px; display: none;" />
-            <ui:GroupBox style="flex-direction: row; align-items: flex-end; margin-top: 32px;">
+            <ui:GroupBox style="flex-direction: row; align-items: flex-end; margin-top: 64px;">
                 <ui:TextField picking-mode="Ignore" label="IP address" value="filler text" name="AddressField" text="localhost" style="width: 202px;" />
                 <ui:Button text="Join server" display-tooltip-when-elided="true" name="JoinBtn" class="primary" style="width: auto; flex-shrink: 0;" />
             </ui:GroupBox>
@@ -15,5 +18,6 @@
             </ui:GroupBox>
         </ui:GroupBox>
         <ui:Button text="Quit" display-tooltip-when-elided="true" name="QuitBtn" style="width: auto; flex-shrink: 0; position: absolute; top: auto; left: 20px; bottom: 20px;" />
+        <ui:VisualElement style="background-image: resource(&apos;m2team-logo&apos;); width: 111px; height: 31px; position: absolute; bottom: 16px; right: 16px;" />
     </ui:VisualElement>
 </ui:UXML>

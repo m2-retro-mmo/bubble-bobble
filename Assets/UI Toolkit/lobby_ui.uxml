@@ -1,23 +1,34 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/menu_style.uss?fileID=7433441132597879392&amp;guid=fe9ae0cc1bb7c45c7b487e0735df1524&amp;type=3#menu_style" />
     <Style src="project://database/Assets/UI%20Toolkit/global_style.uss?fileID=7433441132597879392&amp;guid=fb904d91575fe472e8389681f114936c&amp;type=3#global_style" />
-    <ui:VisualElement class="background" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; height: 100%;">
-        <ui:GroupBox style="flex-direction: row; flex-grow: 1;">
-            <ui:GroupBox style="width: 40%;">
+    <ui:VisualElement class="background" style="padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 100%;">
+        <ui:GroupBox style="flex-direction: row; flex-grow: 1; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
+            <ui:GroupBox style="width: 40%; background-color: rgb(108, 111, 26); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 64px; padding-right: 64px; padding-top: 32px; padding-bottom: 32px; align-items: stretch;">
                 <ui:GroupBox style="flex-grow: 1; width: auto;">
-                    <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 170px; height: 82px; margin-bottom: 32px;" />
-                    <ui:TextField picking-mode="Ignore" label="Name" value="filler text" text="???" name="username" />
+                    <ui:VisualElement style="align-items: center;">
+                        <ui:VisualElement style="background-image: resource(&apos;bb-logo&apos;); width: 223px; height: 139px; margin-bottom: 28px;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 16px; flex-direction: row;">
+                        <ui:TextField picking-mode="Ignore" label="Name" value="filler text" text="???" name="username" style="flex-grow: 1;" />
+                        <ui:Button display-tooltip-when-elided="true" name="reroll" style="margin-top: 0; background-image: resource(&apos;reroll-name&apos;); width: 40px; height: 40px; position: absolute; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; bottom: 12px; right: 12px; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                    </ui:VisualElement>
                     <ui:RadioButtonGroup label="Game duration" value="-1" choices="30 Seconds, 60 Seconds, 120 Seconds, 240 Seconds" name="duration" />
                 </ui:GroupBox>
                 <ui:GroupBox style="flex-direction: row;">
-                    <ui:Button text="Ready" display-tooltip-when-elided="true" name="playBtn" class="primary" />
+                    <ui:Button text="Ready" display-tooltip-when-elided="true" name="playBtn" class="primary" style="flex-grow: 1;" />
                     <ui:Button text="Leave" display-tooltip-when-elided="true" name="exitBtn" />
                 </ui:GroupBox>
             </ui:GroupBox>
-            <ui:GroupBox style="flex-grow: 1;">
-                <ui:Label text="Players" display-tooltip-when-elided="true" style="font-size: 32px;" />
-                <ui:Label text="Label" display-tooltip-when-elided="true" name="playersLabel" style="flex-wrap: nowrap;" />
+            <ui:GroupBox style="flex-grow: 1; align-items: center;">
+                <ui:VisualElement style="overflow: visible; padding-bottom: 32px; margin-bottom: 32px;">
+                    <ui:VisualElement style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center;">
+                        <ui:VisualElement style="position: absolute; background-image: resource(&apos;menu-bubble&apos;); width: 420px; height: 420px; -unity-background-scale-mode: scale-and-crop; overflow: visible; bottom: 0;" />
+                    </ui:VisualElement>
+                    <ui:Label text="Players" display-tooltip-when-elided="true" style="font-size: 32px; -unity-text-align: upper-center;" />
+                </ui:VisualElement>
+                <ui:ScrollView name="playersList" style="width: 70%; flex-grow: 1; margin-bottom: 64px;" />
             </ui:GroupBox>
         </ui:GroupBox>
     </ui:VisualElement>
+    <ui:VisualElement style="background-image: resource(&apos;m2team-logo&apos;); width: 111px; height: 31px; position: absolute; bottom: 16px; right: 16px;" />
 </ui:UXML>
